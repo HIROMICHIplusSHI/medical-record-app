@@ -24,6 +24,7 @@
 | 07 | [詳細設計書](./07_detailed_design.md) | 全モデル・コントローラーの実装仕様 | 40KB |
 | 08 | [画面設計書](./08_screen_design.md) | 全画面のワイヤーフレームとUI仕様 | 22KB |
 | 09 | [ドキュメント自動化](./09_document_automation.md) | Git Hooks、CHANGELOG生成 | 8KB |
+| - | [セキュリティ仕様](./security.md) | 暗号化、電子署名、アクセス制御 | 12KB |
 
 ### フェーズ別実装ガイド（phases/）
 
@@ -53,15 +54,17 @@ phases/
 - ✅ タグ機能
 - ✅ 検索・フィルタリング
 
-#### Phase 2: 拡張機能（未作成）
+#### Phase 2: 患者管理 + 問診票（作成完了）
 
-Phase 1完了後に作成予定
+| ドキュメント | 説明 | ステータス |
+|-------------|------|----------|
+| [実装ガイド](./phases/phase2/implementation_guide.md) | TDD実装手順、暗号化設定、コード例 | ✅ 完成 |
 
-**Phase 2の予定機能:**
-- 請求書管理（CRUD + PDF生成）
-- 売上ダッシュボード
-- 月次・年次売上分析
-- CSV エクスポート
+**Phase 2の実装機能:**
+- ✅ 患者管理（CRUD + 個人情報暗号化）
+- ✅ 問診票機能（初回記入のみ）
+- ✅ Active Record Encryption設定
+- ✅ ユーザーごとのデータ分離
 
 #### Phase 3: 改善・最適化（未作成）
 
@@ -164,16 +167,18 @@ git commit -m "feat(facility): add revenue calculation method
 
 | ドキュメント | バージョン | 最終更新 | 次回レビュー |
 |-------------|-----------|---------|-------------|
-| 01_requirements.md | 1.0 | 2025-10-12 | Phase 1完了時 |
-| 02_data_model.md | 1.0 | 2025-10-12 | Phase 1完了時 |
-| 03_technical_stack.md | 1.0 | 2025-10-12 | Phase 1完了時 |
-| 04_development_plan.md | 1.0 | 2025-10-12 | Phase 1完了時 |
-| 05_testing_strategy.md | 1.0 | 2025-10-12 | Phase 1完了時 |
+| 01_requirements.md | 1.0 | 2025-10-12 | Phase 2完了時 |
+| 02_data_model.md | 1.1 | 2025-10-12 | Phase 2実装開始時 |
+| 03_technical_stack.md | 1.0 | 2025-10-12 | Phase 2完了時 |
+| 04_development_plan.md | 1.0 | 2025-10-12 | Phase 2完了時 |
+| 05_testing_strategy.md | 1.0 | 2025-10-12 | Phase 2完了時 |
 | 06_cloudflare_r2_setup.md | 1.0 | 2025-10-12 | 本番運用開始時 |
-| 07_detailed_design.md | 1.0 | 2025-10-12 | Phase 1実装開始時 |
-| 08_screen_design.md | 1.0 | 2025-10-12 | Phase 1実装開始時 |
-| 09_document_automation.md | 1.0 | 2025-10-12 | Phase 1実装開始時 |
-| phases/phase1/implementation_guide.md | 1.0 | 2025-10-12 | Phase 1実装開始時 |
+| 07_detailed_design.md | 1.0 | 2025-10-12 | Phase 2実装開始時 |
+| 08_screen_design.md | 1.0 | 2025-10-12 | Phase 2実装開始時 |
+| 09_document_automation.md | 1.0 | 2025-10-12 | Phase 2実装開始時 |
+| security.md | 1.0 | 2025-10-12 | Phase 2実装開始時 |
+| phases/phase1/implementation_guide.md | 1.0 | 2025-10-12 | Phase 1完了 |
+| phases/phase2/implementation_guide.md | 1.0 | 2025-10-12 | Phase 2実装開始時 |
 
 ---
 

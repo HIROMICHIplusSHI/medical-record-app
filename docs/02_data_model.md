@@ -198,33 +198,32 @@ erDiagram
 
 ---
 
-### 2.3 patients（患者）
+### 2.3 patients（患者）**【Phase 2で実装】**
 
 施術を受ける患者の情報を管理するテーブル。
 
-| カラム名 | 型 | NULL | デフォルト | 説明 |
-|---------|-----|------|-----------|------|
-| id | bigint | NO | auto | 主キー |
-| user_id | bigint | NO | - | 外部キー（users） |
-| name | string | NO | - | 患者名 |
-| birth_date | date | YES | NULL | 生年月日 |
-| gender | integer | YES | NULL | 性別（0:未設定, 1:男性, 2:女性, 3:その他） |
-| phone | string | YES | NULL | 電話番号 |
-| email | string | YES | NULL | メールアドレス |
-| allergy_info | text | YES | NULL | アレルギー情報 |
-| medical_history | text | YES | NULL | 既往歴 |
-| notes | text | YES | NULL | 備考 |
-| created_at | datetime | NO | - | 作成日時 |
-| updated_at | datetime | NO | - | 更新日時 |
+| カラム名 | 型 | NULL | デフォルト | 暗号化 | 説明 |
+|---------|-----|------|-----------|--------|------|
+| id | bigint | NO | auto | - | 主キー |
+| user_id | bigint | NO | - | - | 外部キー（users） |
+| name | string | NO | - | ✅ | 患者名 |
+| date_of_birth | date | YES | NULL | ✅ | 生年月日 |
+| gender | integer | YES | NULL | - | 性別（0:未設定, 1:男性, 2:女性, 3:その他） |
+| phone | string | YES | NULL | ✅ | 電話番号 |
+| email | string | YES | NULL | ✅ | メールアドレス（検索可能暗号化） |
+| address | text | YES | NULL | ✅ | 住所 |
+| emergency_contact | string | YES | NULL | ✅ | 緊急連絡先 |
+| created_at | datetime | NO | - | - | 作成日時 |
+| updated_at | datetime | NO | - | - | 更新日時 |
 
 **インデックス:**
 - `user_id`
-- `name`
-- `[user_id, name]` (composite, 検索用)
+- `email` (検索可能暗号化フィールド)
+- `created_at`
 
 **バリデーション:**
 - `name`: 必須、最大100文字
-- `birth_date`: 過去の日付のみ
+- `date_of_birth`: 過去の日付のみ
 - `phone`: 形式チェック（任意）
 - `email`: 形式チェック（任意）
 
@@ -232,6 +231,22 @@ erDiagram
 ```ruby
 enum gender: { unspecified: 0, male: 1, female: 2, other: 3 }
 ```
+
+**暗号化設定（Active Record Encryption）:**
+```ruby
+encrypts :name
+encrypts :date_of_birth
+encrypts :phone
+encrypts :email, deterministic: true  # 検索可能
+encrypts :address
+encrypts :emergency_contact
+```
+
+**備考:**
+- Phase 2で患者管理システムとして実装
+- 個人情報はすべて暗号化（AES-256-GCM）
+- ユーザーに紐づく（施設には紐づかない）
+- 問診票（Questionnaire）と1対1の関係
 
 ---
 
@@ -276,7 +291,47 @@ enum gender: { unspecified: 0, male: 1, female: 2, other: 3 }
 
 ---
 
-### 2.5 cost_sheets（コストシートテンプレート）
+### 2.5 questionnaires（問診票）**【Phase 2で実装】**
+
+患者の初回問診情報を管理するテーブル。
+
+| カラム名 | 型 | NULL | デフォルト | 暗号化 | 説明 |
+|---------|-----|------|-----------|--------|------|
+| id | bigint | NO | auto | - | 主キー |
+| patient_id | bigint | NO | - | - | 外部キー（patients） |
+| medical_history | text | YES | NULL | ✅ | 既往歴（アレルギー、持病等） |
+| current_medication | text | YES | NULL | ✅ | 現在の服薬状況 |
+| desired_treatment | text | YES | NULL | ✅ | 施術希望部位 |
+| concerns | text | YES | NULL | ✅ | 気になる症状 |
+| notes | text | YES | NULL | ✅ | その他自由記述 |
+| created_at | datetime | NO | - | - | 作成日時 |
+| updated_at | datetime | NO | - | - | 更新日時 |
+
+**インデックス:**
+- `patient_id` (unique) - 患者1人につき1つの問診票のみ
+
+**バリデーション:**
+- `patient_id`: 必須、ユニーク
+
+**暗号化設定（Active Record Encryption）:**
+```ruby
+encrypts :medical_history
+encrypts :current_medication
+encrypts :desired_treatment
+encrypts :concerns
+encrypts :notes
+```
+
+**備考:**
+- Phase 2で実装
+- 患者1人につき1つの問診票のみ（has_one関係）
+- 初回来院時に記入
+- カルテ（MedicalRecord）への反映機能あり
+- すべての医療情報を暗号化
+
+---
+
+### 2.6 cost_sheets（コストシートテンプレート）
 
 施術や薬剤の料金テンプレートを管理するテーブル。
 
