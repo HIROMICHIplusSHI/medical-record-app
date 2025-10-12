@@ -42,6 +42,102 @@ RSpec.describe 'Patients', type: :request do
       expect(response.body).to include('ユーザーの患者')
       expect(response.body).not_to include('他のユーザーの患者')
     end
+
+    context '検索機能' do
+      let!(:patient1) { create(:patient, user: user, name: '山田太郎', phone: '090-1234-5678') }
+      let!(:patient2) { create(:patient, user: user, name: '田中花子', phone: '080-9876-5432') }
+      let!(:patient3) { create(:patient, user: user, name: '佐藤次郎', phone: '070-1111-2222') }
+
+      it '氏名で検索できる' do
+        get patients_path, params: { query: '山田' }
+        expect(response).to have_http_status(:success)
+        expect(response.body).to include('山田太郎')
+        expect(response.body).not_to include('田中花子')
+        expect(response.body).not_to include('佐藤次郎')
+      end
+
+      it '電話番号で検索できる' do
+        get patients_path, params: { query: '090' }
+        expect(response).to have_http_status(:success)
+        expect(response.body).to include('山田太郎')
+        expect(response.body).not_to include('田中花子')
+        expect(response.body).not_to include('佐藤次郎')
+      end
+
+      it '部分一致で検索できる' do
+        get patients_path, params: { query: '田' }
+        expect(response).to have_http_status(:success)
+        expect(response.body).to include('山田太郎')
+        expect(response.body).to include('田中花子')
+        expect(response.body).not_to include('佐藤次郎')
+      end
+
+      it '検索クエリが空の場合は全ての患者を表示する' do
+        get patients_path, params: { query: '' }
+        expect(response).to have_http_status(:success)
+        expect(response.body).to include('山田太郎')
+        expect(response.body).to include('田中花子')
+        expect(response.body).to include('佐藤次郎')
+      end
+
+      it 'マッチする患者がいない場合は何も表示しない' do
+        get patients_path, params: { query: '存在しない患者' }
+        expect(response).to have_http_status(:success)
+        expect(response.body).not_to include('山田太郎')
+        expect(response.body).not_to include('田中花子')
+        expect(response.body).not_to include('佐藤次郎')
+      end
+    end
+
+    context 'ページネーション' do
+      it 'デフォルトで25件ずつ表示する' do
+        patients = create_list(:patient, 30, user: user)
+        get patients_path
+        expect(response).to have_http_status(:success)
+        # recentスコープで降順なので、最後の25件が表示される
+        patients.last(25).each do |patient|
+          expect(response.body).to include(patient.name)
+        end
+        # 最初の5件は表示されない
+        patients.first(5).each do |patient|
+          expect(response.body).not_to include(patient.name)
+        end
+      end
+
+      it 'pageパラメータで2ページ目を表示できる' do
+        patients = create_list(:patient, 30, user: user)
+        get patients_path, params: { page: 2 }
+        expect(response).to have_http_status(:success)
+        # 2ページ目なので最初の5件が表示される
+        patients.first(5).each do |patient|
+          expect(response.body).to include(patient.name)
+        end
+        # 最後の25件は表示されない
+        patients.last(25).each do |patient|
+          expect(response.body).not_to include(patient.name)
+        end
+      end
+
+      it '検索結果にもページネーションが適用される' do
+        # 検索でヒットする患者30名（ゼロパディングで一意性を確保）
+        search_patients = (1..30).map do |i|
+          create(:patient, user: user, name: "検索テスト患者#{format('%02d', i)}")
+        end
+        # ヒットしない患者5名
+        create_list(:patient, 5, user: user, name: '別の患者')
+
+        get patients_path, params: { query: '検索テスト' }
+        expect(response).to have_http_status(:success)
+        # recentスコープで降順なので、最後の25件が表示される
+        search_patients.last(25).each do |patient|
+          expect(response.body).to include(patient.name)
+        end
+        # 最初の5件は表示されない
+        search_patients.first(5).each do |patient|
+          expect(response.body).not_to include(patient.name)
+        end
+      end
+    end
   end
 
   describe 'GET /patients/:id' do

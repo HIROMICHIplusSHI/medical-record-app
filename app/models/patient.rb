@@ -29,4 +29,18 @@ class Patient < ApplicationRecord
 
   # スコープ
   scope :recent, -> { order(created_at: :desc) }
+
+  # 検索スコープ（暗号化フィールド対応）
+  # 氏名または電話番号で検索
+  scope :search, lambda { |query|
+    return all if query.blank?
+
+    # 全角数字を半角に変換
+    normalized_query = query.tr('０-９', '0-9')
+
+    # 全データを取得して、復号化後にメモリ内でフィルタリング
+    all.select do |patient|
+      patient.name&.include?(normalized_query) || patient.phone&.include?(normalized_query)
+    end
+  }
 end

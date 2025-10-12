@@ -4,6 +4,8 @@ class PatientsController < ApplicationController
 
   def index
     @patients = current_user.patients.recent
+    @patients = @patients.search(params[:query]) if params[:query].present?
+    @patients = Kaminari.paginate_array(@patients).page(params[:page]).per(25)
   end
 
   def show; end
