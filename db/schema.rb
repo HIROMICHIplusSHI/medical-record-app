@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2025_10_12_035236) do
+ActiveRecord::Schema[7.1].define(version: 2025_10_12_120753) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -25,6 +25,47 @@ ActiveRecord::Schema[7.1].define(version: 2025_10_12_035236) do
     t.datetime "updated_at", null: false
     t.index ["user_id", "name"], name: "index_facilities_on_user_id_and_name"
     t.index ["user_id"], name: "index_facilities_on_user_id"
+  end
+
+  create_table "patients", force: :cascade do |t|
+    t.bigint "user_id", null: false
+    t.string "name", null: false
+    t.date "date_of_birth"
+    t.integer "gender", default: 0
+    t.string "phone"
+    t.string "email"
+    t.text "address"
+    t.string "emergency_contact"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["created_at"], name: "index_patients_on_created_at"
+    t.index ["email"], name: "index_patients_on_email"
+    t.index ["user_id"], name: "index_patients_on_user_id"
+  end
+
+  create_table "questionnaires", force: :cascade do |t|
+    t.bigint "patient_id", null: false
+    t.text "current_medications"
+    t.text "allergies"
+    t.text "past_surgeries"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.text "full_name"
+    t.text "full_name_kana"
+    t.text "birth_date"
+    t.text "gender"
+    t.text "phone"
+    t.text "email"
+    t.text "postal_code"
+    t.text "address"
+    t.text "emergency_contact"
+    t.text "medical_conditions"
+    t.text "pregnancy_info"
+    t.text "desired_treatments"
+    t.text "past_treatments"
+    t.text "skin_conditions"
+    t.text "other_concerns"
+    t.index ["patient_id"], name: "index_questionnaires_on_patient_id", unique: true
   end
 
   create_table "users", force: :cascade do |t|
@@ -44,4 +85,6 @@ ActiveRecord::Schema[7.1].define(version: 2025_10_12_035236) do
   end
 
   add_foreign_key "facilities", "users"
+  add_foreign_key "patients", "users"
+  add_foreign_key "questionnaires", "patients"
 end

@@ -30,6 +30,8 @@ Metrics/MethodLength:
   Max: 15
   Exclude:
     - 'db/migrate/*'
+  AllowedMethods:
+    - 'questionnaire_params'
 
 Layout/LineLength:
   Max: 120

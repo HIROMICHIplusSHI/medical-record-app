@@ -1,0 +1,24 @@
+ja:
+  time:
+    formats:
+      long: "%Y年%m月%d日 %H:%M"
+      short: "%Y/%m/%d %H:%M"
+  date:
+    formats:
+      long: "%Y年%m月%d日"
+      short: "%Y/%m/%d"
+  activerecord:
+    attributes:
+      patient:
+        name: 氏名
+        date_of_birth: 生年月日
+        gender: 性別
+        phone: 電話番号
+        email: メールアドレス
+        address: 住所
+        emergency_contact: 緊急連絡先
+        genders:
+          unspecified: 未指定
+          male: 男性
+          female: 女性
+          other: その他

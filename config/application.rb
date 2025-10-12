@@ -36,6 +36,20 @@ module App
     # config.time_zone = "Central Time (US & Canada)"
     # config.eager_load_paths << Rails.root.join("extras")
 
+    # 日本語をデフォルトロケールに設定
+    config.i18n.default_locale = :ja
+    config.i18n.available_locales = [:ja, :en]
+
+    # Active Record Encryption設定
+    # 環境変数が設定されている場合はそれを使用（CI環境用）
+    # なければcredentialsから読み込む（ローカル環境用）
+    config.active_record.encryption.primary_key = ENV['ACTIVE_RECORD_ENCRYPTION_PRIMARY_KEY'] ||
+                                                   Rails.application.credentials.dig(:active_record_encryption, :primary_key)
+    config.active_record.encryption.deterministic_key = ENV['ACTIVE_RECORD_ENCRYPTION_DETERMINISTIC_KEY'] ||
+                                                         Rails.application.credentials.dig(:active_record_encryption, :deterministic_key)
+    config.active_record.encryption.key_derivation_salt = ENV['ACTIVE_RECORD_ENCRYPTION_KEY_DERIVATION_SALT'] ||
+                                                           Rails.application.credentials.dig(:active_record_encryption, :key_derivation_salt)
+
     # Don't generate system test files.
     config.generators.system_tests = nil
   end
