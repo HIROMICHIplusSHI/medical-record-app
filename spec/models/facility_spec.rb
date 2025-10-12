@@ -62,17 +62,17 @@ RSpec.describe Facility, type: :model do
     xdescribe '#total_revenue' do
       before do
         create(:medical_record, facility: facility, user: user,
-               treatment_date: Date.today, total_amount: 50000)
+                                treatment_date: Date.today, total_amount: 50_000)
         create(:medical_record, facility: facility, user: user,
-               treatment_date: Date.today - 1.day, total_amount: 30000)
+                                treatment_date: Date.today - 1.day, total_amount: 30_000)
       end
 
       it '日付範囲なしで総売上を返す' do
-        expect(facility.total_revenue).to eq(80000)
+        expect(facility.total_revenue).to eq(80_000)
       end
 
       it '日付範囲内の売上を返す' do
-        expect(facility.total_revenue(Date.today, Date.today)).to eq(50000)
+        expect(facility.total_revenue(Date.today, Date.today)).to eq(50_000)
       end
     end
 

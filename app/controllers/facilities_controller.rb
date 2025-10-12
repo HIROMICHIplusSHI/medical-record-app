@@ -1,13 +1,12 @@
 class FacilitiesController < ApplicationController
   before_action :authenticate_user!
-  before_action :set_facility, only: [:show, :edit, :update, :destroy]
+  before_action :set_facility, only: %i[show edit update destroy]
 
   def index
     @facilities = current_user.facilities.recent
   end
 
-  def show
-  end
+  def show; end
 
   def new
     @facility = current_user.facilities.build
@@ -23,8 +22,7 @@ class FacilitiesController < ApplicationController
     end
   end
 
-  def edit
-  end
+  def edit; end
 
   def update
     if @facility.update(facility_params)
@@ -44,9 +42,9 @@ class FacilitiesController < ApplicationController
   def set_facility
     @facility = current_user.facilities.find_by(id: params[:id])
 
-    unless @facility
-      redirect_to facilities_path, alert: 'アクセス権限がありません。'
-    end
+    return if @facility
+
+    redirect_to facilities_path, alert: 'アクセス権限がありません。'
   end
 
   def facility_params
