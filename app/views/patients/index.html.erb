@@ -10,6 +10,16 @@
     </div>
   <% end %>
 
+  <div class="mb-6">
+    <%= form_with url: patients_path, method: :get, local: true, class: "flex gap-2" do |form| %>
+      <%= form.text_field :query, value: params[:query], placeholder: "氏名または電話番号で検索", class: "flex-1 rounded-lg border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-lg p-3" %>
+      <%= form.submit "検索", class: "bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-6 rounded-lg" %>
+      <% if params[:query].present? %>
+        <%= link_to "クリア", patients_path, class: "bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-6 rounded-lg" %>
+      <% end %>
+    <% end %>
+  </div>
+
   <% if @patients.any? %>
     <div class="bg-white shadow-md rounded">
       <table class="min-w-full">
@@ -40,6 +50,10 @@
           <% end %>
         </tbody>
       </table>
+    </div>
+
+    <div class="mt-6 flex justify-center">
+      <%= paginate @patients, params: { query: params[:query] } %>
     </div>
   <% else %>
     <div class="bg-white shadow-md rounded p-8 text-center">
