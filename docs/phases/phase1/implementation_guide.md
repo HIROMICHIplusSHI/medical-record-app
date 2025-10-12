@@ -4,7 +4,7 @@
 **作成日**: 2025-10-12
 **バージョン**: 1.0
 **言語**: 日本語
-**対象**: Phase 1 MVP開発（Week 3-6）
+**対象**: Phase 1 MVP 開発（Week 3-6）
 
 ---
 
@@ -12,23 +12,26 @@
 
 ### 1.1 本ドキュメントの目的
 
-本書は、Phase 1（MVP開発）の実装を段階的に進めるための実践的なガイドです。
+本書は、Phase 1（MVP 開発）の実装を段階的に進めるための実践的なガイドです。
 
 **対象読者:**
+
 - 開発者（自分自身）
 - 将来のメンテナンス担当者
 
 **記載内容:**
+
 - 週次実装タスク
-- TDD実装フロー
+- TDD 実装フロー
 - 具体的なコード例
 - トラブルシューティング
 
 ### 1.2 Phase 1 の目標
 
-**期間**: Week 3-6（4週間）
+**期間**: Week 3-6（4 週間）
 
 **成果物:**
+
 - ✅ 施術場所管理（CRUD）
 - ✅ 患者管理（CRUD + 検索）
 - ✅ コストシート管理（CRUD）
@@ -37,9 +40,10 @@
 - ✅ 検索・フィルタリング
 
 **品質基準:**
+
 - テストカバレッジ: 80%以上
-- RuboCop違反: 0件
-- すべてのSystemSpecがパス
+- RuboCop 違反: 0 件
+- すべての SystemSpec がパス
 
 ---
 
@@ -47,7 +51,7 @@
 
 ### 2.1 必須確認事項
 
-Phase 1開始前に以下を確認：
+Phase 1 開始前に以下を確認：
 
 ```bash
 # Ruby バージョン
@@ -80,7 +84,7 @@ rails db:create
 rails db:migrate:status
 ```
 
-### 2.3 Git初期化確認
+### 2.3 Git 初期化確認
 
 ```bash
 # ブランチ確認
@@ -93,13 +97,13 @@ git checkout -b feature/phase1-setup
 
 ---
 
-## 3. Week 3-4: 基本CRUD実装
+## 3. Week 3-4: 基本 CRUD 実装
 
 ### 3.1 Day 1-2: Facility（施術場所）実装
 
-#### 3.1.1 TDD実装フロー
+#### 3.1.1 TDD 実装フロー
 
-**Step 1: Model Specを書く（Red）**
+**Step 1: Model Spec を書く（Red）**
 
 ```ruby
 # spec/models/facility_spec.rb
@@ -191,7 +195,7 @@ RSpec.describe Facility, type: :model do
 end
 ```
 
-**Step 2: Modelを実装（Green）**
+**Step 2: Model を実装（Green）**
 
 ```ruby
 # app/models/facility.rb
@@ -260,7 +264,7 @@ rails db:migrate
 bundle exec rspec spec/models/facility_spec.rb
 ```
 
-**Step 5: Factory作成**
+**Step 5: Factory 作成**
 
 ```ruby
 # spec/factories/facilities.rb
@@ -282,7 +286,7 @@ FactoryBot.define do
 end
 ```
 
-**Step 6: Request Specを書く（Red）**
+**Step 6: Request Spec を書く（Red）**
 
 ```ruby
 # spec/requests/facilities_spec.rb
@@ -432,7 +436,7 @@ RSpec.describe 'Facilities', type: :request do
 end
 ```
 
-**Step 7: Controllerを実装（Green）**
+**Step 7: Controller を実装（Green）**
 
 ```ruby
 # app/controllers/facilities_controller.rb
@@ -512,7 +516,7 @@ Rails.application.routes.draw do
 end
 ```
 
-**Step 9: Viewsを実装**
+**Step 9: Views を実装**
 
 ```erb
 <%# app/views/facilities/index.html.erb %>
@@ -751,7 +755,7 @@ end
 </div>
 ```
 
-**Step 10: System Specを書く（E2Eテスト）**
+**Step 10: System Spec を書く（E2E テスト）**
 
 ```ruby
 # spec/system/facilities_spec.rb
@@ -864,7 +868,7 @@ bundle exec rspec spec/system/facilities_spec.rb
 bundle exec rspec
 ```
 
-**Step 12: RuboCop実行**
+**Step 12: RuboCop 実行**
 
 ```bash
 bundle exec rubocop -A
@@ -881,15 +885,15 @@ git commit -m "Add Facility CRUD with full test coverage"
 
 ### 3.2 Day 3-4: Patient（患者）実装
 
-Patient実装は Facility とほぼ同様の流れです。
+Patient 実装は Facility とほぼ同様の流れです。
 
 **差分ポイント:**
 
-1. **enum型（gender）の追加**
+1. **enum 型（gender）の追加**
 2. **検索機能（Ransack）**
 3. **年齢計算メソッド**
 
-**追加するGem:**
+**追加する Gem:**
 
 ```ruby
 # Gemfile
@@ -900,7 +904,7 @@ gem 'ransack', '~> 4.0'
 bundle install
 ```
 
-**Model実装:**
+**Model 実装:**
 
 ```ruby
 # app/models/patient.rb
@@ -943,7 +947,7 @@ class Patient < ApplicationRecord
 end
 ```
 
-**Controller実装（検索機能付き）:**
+**Controller 実装（検索機能付き）:**
 
 ```ruby
 # app/controllers/patients_controller.rb
@@ -1080,13 +1084,14 @@ end
 
 ### 3.3 Day 5-6: CostSheet（コストシート）実装
 
-CostSheetは比較的シンプルなCRUDです。
+CostSheet は比較的シンプルな CRUD です。
 
 **特徴:**
+
 - カテゴリ選択（treatment/medicine/supplies/other）
 - 標準価格の設定
 
-実装手順はFacilityと同様。
+実装手順は Facility と同様。
 
 ---
 
@@ -1162,7 +1167,7 @@ rails active_storage:install
 rails db:migrate
 ```
 
-**storage.yml確認:**
+**storage.yml 確認:**
 
 ```yaml
 # config/storage.yml
@@ -1190,7 +1195,7 @@ config.active_storage.service = :local
 config.active_storage.service = :cloudflare
 ```
 
-#### 4.1.3 Model実装
+#### 4.1.3 Model 実装
 
 ```ruby
 # app/models/medical_record.rb
@@ -1313,111 +1318,118 @@ cat app/javascript/application.js
 
 ```javascript
 // app/javascript/application.js
-import "@hotwired/turbo-rails"
-import "./controllers"
+import '@hotwired/turbo-rails';
+import './controllers';
 ```
 
 #### 4.2.2 cost_items_controller.js 実装
 
 ```javascript
 // app/javascript/controllers/cost_items_controller.js
-import { Controller } from "@hotwired/stimulus"
+import { Controller } from '@hotwired/stimulus';
 
 export default class extends Controller {
-  static targets = ["container", "template", "total", "addButton"]
+  static targets = ['container', 'template', 'total', 'addButton'];
   static values = {
     costSheets: Array,
-    maxItems: { type: Number, default: 10 }
-  }
+    maxItems: { type: Number, default: 10 },
+  };
 
   connect() {
-    this.updateTotal()
-    this.updateAddButtonState()
+    this.updateTotal();
+    this.updateAddButtonState();
   }
 
   addItem(event) {
-    event.preventDefault()
+    event.preventDefault();
 
     if (this.itemCount >= this.maxItemsValue) {
-      alert(`コスト項目は最大${this.maxItemsValue}件までです`)
-      return
+      alert(`コスト項目は最大${this.maxItemsValue}件までです`);
+      return;
     }
 
-    const content = this.templateTarget.innerHTML.replace(/NEW_RECORD/g, new Date().getTime())
-    this.containerTarget.insertAdjacentHTML('beforeend', content)
-    this.updateAddButtonState()
+    const content = this.templateTarget.innerHTML.replace(
+      /NEW_RECORD/g,
+      new Date().getTime()
+    );
+    this.containerTarget.insertAdjacentHTML('beforeend', content);
+    this.updateAddButtonState();
   }
 
   removeItem(event) {
-    event.preventDefault()
-    const item = event.target.closest('.cost-item')
+    event.preventDefault();
+    const item = event.target.closest('.cost-item');
 
     if (this.itemCount <= 1) {
-      alert('最低1つのコスト項目が必要です')
-      return
+      alert('最低1つのコスト項目が必要です');
+      return;
     }
 
-    const destroyInput = item.querySelector('input[name*="_destroy"]')
+    const destroyInput = item.querySelector('input[name*="_destroy"]');
     if (destroyInput) {
-      destroyInput.value = '1'
-      item.style.display = 'none'
+      destroyInput.value = '1';
+      item.style.display = 'none';
     } else {
-      item.remove()
+      item.remove();
     }
 
-    this.calculateTotal()
-    this.updateAddButtonState()
+    this.calculateTotal();
+    this.updateAddButtonState();
   }
 
   selectCostSheet(event) {
-    const select = event.target
-    const costSheetId = select.value
+    const select = event.target;
+    const costSheetId = select.value;
 
-    if (!costSheetId) return
+    if (!costSheetId) return;
 
-    const costSheet = this.costSheetsValue.find(cs => cs.id == costSheetId)
-    if (!costSheet) return
+    const costSheet = this.costSheetsValue.find((cs) => cs.id == costSheetId);
+    if (!costSheet) return;
 
-    const item = select.closest('.cost-item')
-    const nameInput = item.querySelector('.item-name')
-    const priceInput = item.querySelector('.unit-price')
+    const item = select.closest('.cost-item');
+    const nameInput = item.querySelector('.item-name');
+    const priceInput = item.querySelector('.unit-price');
 
-    if (nameInput) nameInput.value = costSheet.item_name
-    if (priceInput) priceInput.value = costSheet.standard_price
+    if (nameInput) nameInput.value = costSheet.item_name;
+    if (priceInput) priceInput.value = costSheet.standard_price;
 
-    this.calculateTotal()
+    this.calculateTotal();
   }
 
   calculateTotal() {
-    let total = 0
+    let total = 0;
 
-    this.containerTarget.querySelectorAll('.cost-item:not([style*="display: none"])').forEach(item => {
-      const price = parseFloat(item.querySelector('.unit-price').value) || 0
-      const qty = parseInt(item.querySelector('.quantity').value) || 1
-      const subtotal = price * qty
+    this.containerTarget
+      .querySelectorAll('.cost-item:not([style*="display: none"])')
+      .forEach((item) => {
+        const price = parseFloat(item.querySelector('.unit-price').value) || 0;
+        const qty = parseInt(item.querySelector('.quantity').value) || 1;
+        const subtotal = price * qty;
 
-      const subtotalDisplay = item.querySelector('.subtotal-display')
-      if (subtotalDisplay) {
-        subtotalDisplay.textContent = `¥${subtotal.toLocaleString()}`
-      }
+        const subtotalDisplay = item.querySelector('.subtotal-display');
+        if (subtotalDisplay) {
+          subtotalDisplay.textContent = `¥${subtotal.toLocaleString()}`;
+        }
 
-      total += subtotal
-    })
+        total += subtotal;
+      });
 
-    this.totalTarget.textContent = `¥${total.toLocaleString()}`
+    this.totalTarget.textContent = `¥${total.toLocaleString()}`;
   }
 
   updateTotal(event) {
-    this.calculateTotal()
+    this.calculateTotal();
   }
 
   get itemCount() {
-    return this.containerTarget.querySelectorAll('.cost-item:not([style*="display: none"])').length
+    return this.containerTarget.querySelectorAll(
+      '.cost-item:not([style*="display: none"])'
+    ).length;
   }
 
   updateAddButtonState() {
     if (this.hasAddButtonTarget) {
-      this.addButtonTarget.disabled = this.itemCount >= this.maxItemsValue
+      this.addButtonTarget.disabled = this.itemCount >= this.maxItemsValue;
     }
   }
 }
@@ -1427,38 +1439,38 @@ export default class extends Controller {
 
 ```javascript
 // app/javascript/controllers/image_preview_controller.js
-import { Controller } from "@hotwired/stimulus"
+import { Controller } from '@hotwired/stimulus';
 
 export default class extends Controller {
-  static targets = ["input", "preview", "container"]
+  static targets = ['input', 'preview', 'container'];
   static values = {
     maxFiles: { type: Number, default: 5 },
-    maxSize: { type: Number, default: 10485760 } // 10MB
-  }
+    maxSize: { type: Number, default: 10485760 }, // 10MB
+  };
 
   preview(event) {
-    const files = Array.from(event.target.files)
+    const files = Array.from(event.target.files);
 
     // ファイル数チェック
-    const currentFiles = this.previewTargets.length
+    const currentFiles = this.previewTargets.length;
     if (currentFiles + files.length > this.maxFilesValue) {
-      alert(`画像は最大${this.maxFilesValue}枚までアップロードできます`)
-      this.inputTarget.value = ''
-      return
+      alert(`画像は最大${this.maxFilesValue}枚までアップロードできます`);
+      this.inputTarget.value = '';
+      return;
     }
 
     // ファイルサイズチェック
     for (const file of files) {
       if (file.size > this.maxSizeValue) {
-        alert(`${file.name}のサイズが10MBを超えています`)
-        this.inputTarget.value = ''
-        return
+        alert(`${file.name}のサイズが10MBを超えています`);
+        this.inputTarget.value = '';
+        return;
       }
     }
 
     // プレビュー表示
-    files.forEach(file => {
-      const reader = new FileReader()
+    files.forEach((file) => {
+      const reader = new FileReader();
       reader.onload = (e) => {
         const html = `
           <div class="image-preview-item relative" data-image-preview-target="preview">
@@ -1467,29 +1479,29 @@ export default class extends Controller {
               ×
             </button>
           </div>
-        `
-        this.containerTarget.insertAdjacentHTML('beforeend', html)
-      }
-      reader.readAsDataURL(file)
-    })
+        `;
+        this.containerTarget.insertAdjacentHTML('beforeend', html);
+      };
+      reader.readAsDataURL(file);
+    });
   }
 
   remove(event) {
-    event.preventDefault()
-    const previewItem = event.target.closest('.image-preview-item')
-    previewItem.remove()
+    event.preventDefault();
+    const previewItem = event.target.closest('.image-preview-item');
+    previewItem.remove();
 
     // ファイル入力をリセット（再選択可能にする）
-    this.inputTarget.value = ''
+    this.inputTarget.value = '';
   }
 }
 ```
 
 ---
 
-### 4.3 Day 5-6: MedicalRecordsController + Views実装
+### 4.3 Day 5-6: MedicalRecordsController + Views 実装
 
-#### 4.3.1 Controller実装
+#### 4.3.1 Controller 実装
 
 ```ruby
 # app/controllers/medical_records_controller.rb
@@ -1579,7 +1591,7 @@ class MedicalRecordsController < ApplicationController
 end
 ```
 
-#### 4.3.2 フォームView実装
+#### 4.3.2 フォーム View 実装
 
 ```erb
 <%# app/views/medical_records/_form.html.erb %>
@@ -1835,7 +1847,7 @@ open coverage/index.html
 
 **目標: 80%以上**
 
-### 5.3 RuboCop実行
+### 5.3 RuboCop 実行
 
 ```bash
 # 自動修正
@@ -1885,20 +1897,20 @@ driven_by :selenium_chrome  # ヘッドレスモードを無効化
 
 ### 6.3 コード品質
 
-- [ ] RuboCop違反 0件
-- [ ] N+1クエリ検出なし（Bullet gem）
+- [ ] RuboCop 違反 0 件
+- [ ] N+1 クエリ検出なし（Bullet gem）
 - [ ] 日本語ロケールファイル完成
 
 ### 6.4 ドキュメント
 
-- [ ] README更新（Phase 1完了）
-- [ ] CHANGELOG作成
+- [ ] README 更新（Phase 1 完了）
+- [ ] CHANGELOG 作成
 
 ---
 
 ## 7. Phase 1 完了後のアクション
 
-### 7.1 Git操作
+### 7.1 Git 操作
 
 ```bash
 # Phase 1完了コミット
@@ -1921,9 +1933,9 @@ git merge feature/phase1-setup
 git checkout -b feature/phase2-invoices
 ```
 
-### 7.2 本番デプロイ準備（Phase 4まで待つ）
+### 7.2 本番デプロイ準備（Phase 4 まで待つ）
 
-Phase 1完了時点では**デプロイしない**。Phase 2（請求書機能）完了後にデプロイを検討。
+Phase 1 完了時点では**デプロイしない**。Phase 2（請求書機能）完了後にデプロイを検討。
 
 ---
 
@@ -1974,9 +1986,9 @@ ENV['R2_ENDPOINT']
 ENV['R2_BUCKET_NAME']
 ```
 
-### 8.3 N+1クエリ警告
+### 8.3 N+1 クエリ警告
 
-**問題:** Bulletが N+1 を検出
+**問題:** Bullet が N+1 を検出
 
 **解決策:**
 
@@ -1988,7 +2000,7 @@ ENV['R2_BUCKET_NAME']
                      .page(params[:page])
 ```
 
-### 8.4 Ransack検索が動作しない
+### 8.4 Ransack 検索が動作しない
 
 **問題:** 検索フォームが反応しない
 
@@ -2015,7 +2027,7 @@ bundle install
 
 **Document Version**: 1.0
 **Last Updated**: 2025-10-12
-**Next Review**: Phase 1完了時
+**Next Review**: Phase 1 完了時
 
 ---
 
