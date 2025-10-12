@@ -97,6 +97,87 @@ RSpec.describe Patient, type: :model do
         expect(user.patients.recent).to eq([patient3, patient2, patient1])
       end
     end
+
+    describe '.search' do
+      let!(:patient1) { create(:patient, user: user, name: '山田太郎', phone: '090-1234-5678') }
+      let!(:patient2) { create(:patient, user: user, name: '田中花子', phone: '080-9876-5432') }
+      let!(:patient3) { create(:patient, user: user, name: '佐藤次郎', phone: '070-1111-2222') }
+
+      context 'クエリが空白の場合' do
+        it '全ての患者を返す' do
+          result = user.patients.search('')
+          expect(result).to match_array([patient1, patient2, patient3])
+        end
+
+        it 'nilの場合も全ての患者を返す' do
+          result = user.patients.search(nil)
+          expect(result).to match_array([patient1, patient2, patient3])
+        end
+      end
+
+      context '氏名で検索' do
+        it '完全一致で検索できる' do
+          result = user.patients.search('山田太郎')
+          expect(result).to eq([patient1])
+        end
+
+        it '部分一致で検索できる（姓のみ）' do
+          result = user.patients.search('山田')
+          expect(result).to eq([patient1])
+        end
+
+        it '部分一致で検索できる（名のみ）' do
+          result = user.patients.search('花子')
+          expect(result).to eq([patient2])
+        end
+
+        it '部分一致で検索できる（共通文字）' do
+          result = user.patients.search('田')
+          expect(result).to match_array([patient1, patient2])
+        end
+      end
+
+      context '電話番号で検索' do
+        it '完全一致で検索できる' do
+          result = user.patients.search('090-1234-5678')
+          expect(result).to eq([patient1])
+        end
+
+        it '部分一致で検索できる（先頭）' do
+          result = user.patients.search('090')
+          expect(result).to eq([patient1])
+        end
+
+        it '部分一致で検索できる（中間）' do
+          result = user.patients.search('1234')
+          expect(result).to eq([patient1])
+        end
+
+        it '全角数字でも検索できる' do
+          result = user.patients.search('０９０')
+          expect(result).to eq([patient1])
+        end
+
+        it '全角・半角混在でも検索できる' do
+          result = user.patients.search('090-１２３４')
+          expect(result).to eq([patient1])
+        end
+      end
+
+      context '複数の患者がマッチする場合' do
+        it '全ての該当患者を返す' do
+          result = user.patients.search('1')
+          expect(result.size).to be >= 2
+        end
+      end
+
+      context 'マッチする患者がいない場合' do
+        it '空の配列を返す' do
+          result = user.patients.search('存在しない患者')
+          expect(result).to be_empty
+        end
+      end
+    end
   end
 
   describe '暗号化' do
