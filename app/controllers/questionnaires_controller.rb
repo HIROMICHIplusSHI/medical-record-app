@@ -3,8 +3,12 @@ class QuestionnairesController < ApplicationController
   before_action :set_patient
   before_action :set_questionnaire, only: %i[edit update destroy]
 
+  # フィーチャーフラグ: Phase 3（カルテ連携）で有効化予定
+  USE_CHECKBOX_UI = false
+
   def new
     @questionnaire = @patient.build_questionnaire
+    @use_checkbox_ui = USE_CHECKBOX_UI
   end
 
   def create
@@ -25,6 +29,7 @@ class QuestionnairesController < ApplicationController
 
   def edit
     redirect_to new_patient_questionnaire_path(@patient), alert: '問診票が見つかりません。' unless @questionnaire
+    @use_checkbox_ui = USE_CHECKBOX_UI
   end
 
   def update
