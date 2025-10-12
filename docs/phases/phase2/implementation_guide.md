@@ -3,6 +3,38 @@
 ## 概要
 Phase 2では、患者管理システムと問診票機能を実装します。患者はユーザー（施設利用者）に紐づき、複数の施設での施術履歴を一元管理できる構造とします。
 
+## 実装状況
+
+### ✅ 完了（2025-10-12）
+- [x] Patientモデルの実装
+  - Active Record Encryptionによる暗号化設定
+  - バリデーション（氏名、生年月日、電話番号、メール）
+  - enum（性別管理）
+  - スコープ（最新順）
+  - 17テストケース（全て成功）
+- [x] Questionnaireモデルの実装
+  - すべての医療情報を暗号化
+  - 患者とのユニークな紐付け
+  - 6テストケース（全て成功）
+- [x] Active Record Encryption設定
+  - development/test環境の暗号化キー設定
+  - credentials.yml.encへの安全な保存
+- [x] データベースマイグレーション
+  - patientsテーブル作成
+  - questionnairesテーブル作成
+
+### 🚧 作業中
+- [ ] Patientsコントローラーの実装
+- [ ] Questionnairesコントローラーの実装
+- [ ] ビュー（患者一覧、詳細、フォーム）
+- [ ] ビュー（問診票フォーム）
+
+### ⏳ 未着手
+- [ ] 検索機能
+- [ ] リクエストスペック
+- [ ] システムスペック（E2E）
+- [ ] iPad/PCでの動作確認
+
 ## 実装機能
 
 ### 1. 患者管理（Patient）
@@ -51,15 +83,17 @@ Phase 2では、患者管理システムと問診票機能を実装します。�
 ```ruby
 belongs_to :user
 has_one :questionnaire, dependent: :destroy
-has_many :medical_records, dependent: :restrict_with_error
+has_many :medical_records, dependent: :restrict_with_error  # Phase 3で実装
 
 # 暗号化フィールド
 encrypts :name
-encrypts :date_of_birth
 encrypts :phone
 encrypts :email, deterministic: true  # 検索可能
 encrypts :address
 encrypts :emergency_contact
+
+# 注意: date_of_birthはdateカラムのため暗号化不可
+# genderはenumで管理（unspecified: 0, male: 1, female: 2, other: 3）
 ```
 
 ### Questionnaire（問診票）
@@ -68,10 +102,15 @@ belongs_to :patient
 
 # 暗号化フィールド
 encrypts :medical_history        # 既往歴
-encrypts :current_medication     # 服薬状況
-encrypts :desired_treatment      # 施術希望部位
-encrypts :concerns               # 気になる症状
-encrypts :notes                  # 自由記述
+encrypts :current_medications    # 現在の服薬状況
+encrypts :allergies              # アレルギー
+encrypts :past_surgeries         # 過去の手術歴
+encrypts :family_history         # 家族歴
+encrypts :lifestyle_notes        # 生活習慣
+encrypts :concerns               # 相談内容
+
+# バリデーション
+validates :patient, uniqueness: true  # 患者1人につき1つのみ
 ```
 
 ## データ構造
