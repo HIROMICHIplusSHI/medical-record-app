@@ -6,41 +6,63 @@ Phase 2では、患者管理システムと問診票機能を実装します。�
 ## 実装状況
 
 ### ✅ 完了（2025-10-12）
+
+#### Phase 2-A: 基本機能実装 → PR #1マージ完了
+
 - [x] Patientモデルの実装
   - Active Record Encryptionによる暗号化設定
   - バリデーション（氏名、生年月日、電話番号、メール）
   - enum（性別管理）
   - スコープ（最新順）
   - 17テストケース（全て成功）
-- [x] Questionnaireモデルの実装
+
+- [x] Questionnaireモデルの実装・リニューアル
   - すべての医療情報を暗号化
   - 患者とのユニークな紐付け
-  - 6テストケース（全て成功）
+  - 15テストケース（全て成功）
+  - **旧仕様から新仕様へ完全移行**
+    - 基本情報・医療情報・施術情報の3セクション構成
+    - iPad対応のユーザーフレンドリーなフォームデザイン
+    - すべてのフィールドを暗号化
+
 - [x] Active Record Encryption設定
   - development/test環境の暗号化キー設定
   - credentials.yml.encへの安全な保存
+  - **CI環境の暗号化キー設定（GitHub Secrets）**
+    - `.github/workflows/ci.yml`に環境変数追加
+    - `config/application.rb`でENVまたはcredentialsから読み込む二重構成
+    - 3つのGitHub Secretsを設定（primary_key, deterministic_key, key_derivation_salt）
+
 - [x] データベースマイグレーション
   - patientsテーブル作成
   - questionnairesテーブル作成
+  - **問診票テーブルのリストラクチャリング**
+    - 旧カラム削除、新カラム追加のマイグレーション実行
+
 - [x] Patientsコントローラーの実装
   - CRUD操作の完全実装
   - ユーザー認証とアクセス制御
   - 29リクエストスペック（全て成功）
+
 - [x] Patientsビューの実装
   - 患者一覧（index）
   - 患者詳細（show）
   - 新規登録/編集フォーム（new/edit）
   - Tailwind CSSによるレスポンシブデザイン
+
 - [x] 日本語対応
   - ja.ymlによる国際化
   - 性別enumの日本語ラベル
   - デフォルトロケールを日本語に設定（config/application.rb）
+
 - [x] ブラウザ動作確認
   - ログイン機能確認
   - 患者登録・一覧表示動作確認
   - 暗号化データの正常な保存・表示確認
-  - 問診票作成・編集動作確認
+  - **問診票作成・編集動作確認（新仕様フォーム）**
   - 問診票の暗号化データ保存・復号化確認
+  - Chrome DevToolsを使用した動作検証
+
 - [x] OmniAuth設定の一時無効化
   - Phase 2では通常ログインのみ使用
   - 将来的にGoogle OAuth実装予定
@@ -50,21 +72,64 @@ Phase 2では、患者管理システムと問診票機能を実装します。�
   - 患者との紐付け管理
   - 重複作成の防止
   - 23リクエストスペック（全て成功）
+  - Strong Parametersの適切な設定
+
 - [x] Questionnairesビューの実装
   - 問診票作成フォーム（new）
   - 問診票編集フォーム（edit）
   - Tailwind CSSによるレスポンシブデザイン
   - 患者詳細ページへの統合
+  - **大きなタッチターゲットでiPad入力に最適化**
 
-### ⏳ 未着手
-- [ ] 検索機能
-- [ ] システムスペック（E2E）
+- [x] テストスイートの完全更新
+  - FactoryBot定義を新仕様に更新
+  - モデルスペックを新仕様に更新（バリデーション・暗号化テスト）
+  - リクエストスペックを新仕様に更新（パラメータ構造変更）
+
+- [x] コード品質管理
+  - **RuboCop違反修正（15→0）**
+  - `questionnaire_params`をAllowedMethodsに追加
+  - コードスタイルの統一
+
+- [x] CI/CD整備
+  - **GitHub Actions CI成功**
+  - 暗号化キー設定によるテスト実行環境構築
+  - 全38テストがCI環境で成功
+
+- [x] Git/PR管理
+  - **PR #1作成・レビュー・マージ完了**
+  - feature/p2-patientブランチの完了と削除
+  - squashマージで履歴を整理
+  - 33ファイル変更（+2089行、-28行）
+
+### 🔄 進行中（feature/p2-enhancements ブランチ）
+
+#### Phase 2-B: 機能拡張・品質向上
+
+- [ ] 検索機能の強化
+  - 患者検索機能の追加実装
+  - 複数条件での検索対応
+
+- [ ] システムスペック（E2E）追加
+  - 患者登録フローのE2Eテスト
+  - 問診票入力フローのE2Eテスト
+  - PlaywrightまたはCapybaraを使用
+
+- [ ] チェックボックスベースUIの実装
+  - 医療情報（既往歴、アレルギー等）のチェックボックス化
+  - 条件分岐表示の実装
+  - ユーザビリティ向上
+
 - [ ] iPad/PCでの動作確認
+  - 実機でのタッチ操作確認
+  - レスポンシブデザインの検証
 
-### 📊 テストカバレッジ
-- モデルテスト: 23/23 成功（Patient: 17, Questionnaire: 6）
+### 📊 テストカバレッジ（Phase 2-A完了時点）
+- モデルテスト: 32/32 成功（Patient: 17, Questionnaire: 15）
 - リクエストテスト: 52/52 成功（Patients: 29, Questionnaires: 23）
-- 合計: 75テストケース 全て成功 ✅
+- 合計: 84テストケース 全て成功 ✅
+- RuboCop: 30ファイル - 0違反 ✅
+- CI: GitHub Actions - 全グリーン ✅
 
 ## 実装機能
 
@@ -279,8 +344,35 @@ Phase 3（カルテ管理）で必要となる準備：
 
 ## 成功基準
 
+### Phase 2-A（完了）
 - ✅ すべてのテストがパス（日本語記述）
-- ✅ CI/CDがグリーン
+- ✅ CI/CDがグリーン（GitHub Actions）
 - ✅ RuboCop 0違反
 - ✅ 個人情報が正しく暗号化されている
-- ✅ iPad/PCで動作確認完了
+- ✅ ブラウザ動作確認完了（Chrome DevTools使用）
+
+### Phase 2-B（進行中）
+- [ ] E2Eテストの追加
+- [ ] チェックボックスUIの実装
+- [ ] iPad/PCで実機動作確認完了
+
+## 実装メモ
+
+### CI環境の暗号化キー設定
+CI環境ではRails credentialsファイルにアクセスできないため、以下の対応を実施：
+1. GitHub Secretsに暗号化キーを登録
+2. `.github/workflows/ci.yml`で環境変数として設定
+3. `config/application.rb`で環境変数優先、なければcredentialsから読み込む設定に変更
+
+### 問診票テーブルのリストラクチャリング
+当初の設計から仕様変更があり、以下のマイグレーション実行：
+- `db/migrate/20251012120753_restructure_questionnaires.rb`
+- 旧カラム（name, date_of_birth等）を削除
+- 新カラム（full_name, full_name_kana, birth_date等）を追加
+- すべてtext型で暗号化対応
+
+### ブラウザテストの注意点
+Chrome DevToolsを使用した動作確認時、date型のinput要素は直接fillできないため、JavaScriptでvalueを設定する必要がある。
+
+### RuboCop設定の調整
+Strong Parametersの`questionnaire_params`メソッドが15行を超えるため、`.rubocop.yml`の`Metrics/MethodLength`の`AllowedMethods`に追加。
