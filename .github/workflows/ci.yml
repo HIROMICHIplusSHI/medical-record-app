@@ -48,6 +48,9 @@ jobs:
           bin/rails db:create
           bin/rails db:schema:load
 
+      - name: Precompile assets
+        run: bundle exec rails assets:precompile
+
       - name: Run RuboCop
         run: bundle exec rubocop --parallel
 
