@@ -16,8 +16,8 @@ Capybara.register_driver(:cuprite) do |app|
       'no-sandbox': nil,
       'disable-gpu': nil,
     },
-    inspector: ENV['INSPECTOR'],
-    headless: !ENV['HEADLESS'].in?(%w[n 0 no false]),
+    inspector: ENV.fetch('INSPECTOR', nil),
+    headless: !ENV['HEADLESS'].in?(%w[n 0 no false])
   )
 end
 
