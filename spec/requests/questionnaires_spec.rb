@@ -113,7 +113,7 @@ RSpec.describe 'Questionnaires', type: :request do
       end
 
       it '他のユーザーの患者の問診票は編集できない' do
-        other_questionnaire = create(:questionnaire, patient: other_patient)
+        create(:questionnaire, patient: other_patient)
         get edit_patient_questionnaire_path(other_patient)
         expect(response).to redirect_to(patients_path)
       end

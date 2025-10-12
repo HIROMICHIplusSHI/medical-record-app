@@ -58,7 +58,7 @@ RSpec.describe Questionnaire, type: :model do
 
     it 'full_nameが暗号化されている' do
       raw_value = ActiveRecord::Base.connection.execute(
-        "SELECT full_name FROM questionnaires WHERE id = #{questionnaire.id}",
+        "SELECT full_name FROM questionnaires WHERE id = #{questionnaire.id}"
       ).first['full_name']
 
       expect(raw_value).not_to eq('田中 花子')
@@ -66,7 +66,7 @@ RSpec.describe Questionnaire, type: :model do
 
     it 'phoneが暗号化されている' do
       raw_value = ActiveRecord::Base.connection.execute(
-        "SELECT phone FROM questionnaires WHERE id = #{questionnaire.id}",
+        "SELECT phone FROM questionnaires WHERE id = #{questionnaire.id}"
       ).first['phone']
 
       expect(raw_value).not_to eq('090-1234-5678')
@@ -74,7 +74,7 @@ RSpec.describe Questionnaire, type: :model do
 
     it 'medical_conditionsが暗号化されている' do
       raw_value = ActiveRecord::Base.connection.execute(
-        "SELECT medical_conditions FROM questionnaires WHERE id = #{questionnaire.id}",
+        "SELECT medical_conditions FROM questionnaires WHERE id = #{questionnaire.id}"
       ).first['medical_conditions']
 
       expect(raw_value).not_to eq('高血圧、治療中')
@@ -82,7 +82,7 @@ RSpec.describe Questionnaire, type: :model do
 
     it 'current_medicationsが暗号化されている' do
       raw_value = ActiveRecord::Base.connection.execute(
-        "SELECT current_medications FROM questionnaires WHERE id = #{questionnaire.id}",
+        "SELECT current_medications FROM questionnaires WHERE id = #{questionnaire.id}"
       ).first['current_medications']
 
       expect(raw_value).not_to eq('アムロジピン 5mg、メトホルミン 500mg')
@@ -90,7 +90,7 @@ RSpec.describe Questionnaire, type: :model do
 
     it 'allergiesが暗号化されている' do
       raw_value = ActiveRecord::Base.connection.execute(
-        "SELECT allergies FROM questionnaires WHERE id = #{questionnaire.id}",
+        "SELECT allergies FROM questionnaires WHERE id = #{questionnaire.id}"
       ).first['allergies']
 
       expect(raw_value).not_to eq('花粉症、猫アレルギー')
@@ -98,7 +98,7 @@ RSpec.describe Questionnaire, type: :model do
 
     it 'desired_treatmentsが暗号化されている' do
       raw_value = ActiveRecord::Base.connection.execute(
-        "SELECT desired_treatments FROM questionnaires WHERE id = #{questionnaire.id}",
+        "SELECT desired_treatments FROM questionnaires WHERE id = #{questionnaire.id}"
       ).first['desired_treatments']
 
       expect(raw_value).not_to eq('眉毛、リップアートメイク')

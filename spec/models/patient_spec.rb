@@ -34,7 +34,7 @@ RSpec.describe Patient, type: :model do
       let(:user) { create(:user) }
 
       it '正しい電話番号形式は有効' do
-        valid_phones = ['03-1234-5678', '0312345678', '090-1234-5678', '09012345678']
+        valid_phones = %w[03-1234-5678 0312345678 090-1234-5678 09012345678]
         valid_phones.each do |phone|
           patient = build(:patient, user: user, phone: phone)
           expect(patient).to be_valid
@@ -80,7 +80,7 @@ RSpec.describe Patient, type: :model do
         unspecified: 0,
         male: 1,
         female: 2,
-        other: 3,
+        other: 3
       )
     end
   end
@@ -106,7 +106,7 @@ RSpec.describe Patient, type: :model do
     it 'nameが暗号化されている' do
       # データベースの値を直接確認
       raw_value = ActiveRecord::Base.connection.execute(
-        "SELECT name FROM patients WHERE id = #{patient.id}",
+        "SELECT name FROM patients WHERE id = #{patient.id}"
       ).first['name']
 
       expect(raw_value).not_to eq(patient.name)
@@ -115,7 +115,7 @@ RSpec.describe Patient, type: :model do
     it 'emailが暗号化されている' do
       patient_with_email = create(:patient, user: user, email: 'test@example.com')
       raw_value = ActiveRecord::Base.connection.execute(
-        "SELECT email FROM patients WHERE id = #{patient_with_email.id}",
+        "SELECT email FROM patients WHERE id = #{patient_with_email.id}"
       ).first['email']
 
       expect(raw_value).not_to eq('test@example.com')

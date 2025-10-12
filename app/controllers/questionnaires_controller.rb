@@ -1,7 +1,7 @@
 class QuestionnairesController < ApplicationController
   before_action :authenticate_user!
   before_action :set_patient
-  before_action :set_questionnaire, only: [:edit, :update, :destroy]
+  before_action :set_questionnaire, only: %i[edit update destroy]
 
   def new
     @questionnaire = @patient.build_questionnaire
@@ -75,7 +75,7 @@ class QuestionnairesController < ApplicationController
       :desired_treatments,
       :past_treatments,
       :skin_conditions,
-      :other_concerns,
+      :other_concerns
     )
   end
 end

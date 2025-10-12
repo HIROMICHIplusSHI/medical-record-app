@@ -6,7 +6,7 @@ class Patient < ApplicationRecord
   # 暗号化
   encrypts :name
   encrypts :phone
-  encrypts :email, deterministic: true  # 検索可能な暗号化
+  encrypts :email, deterministic: true # 検索可能な暗号化
   encrypts :address
   encrypts :emergency_contact
 
