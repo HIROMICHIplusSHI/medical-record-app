@@ -62,6 +62,19 @@
     </dl>
 
     <div class="mt-6 pt-6 border-t border-gray-200">
+      <h2 class="text-xl font-bold text-gray-900 mb-4">問診票</h2>
+      <% if @patient.questionnaire.present? %>
+        <div class="flex space-x-3">
+          <%= link_to "問診票を表示", edit_patient_questionnaire_path(@patient), class: "bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded" %>
+          <%= button_to "問診票を削除", patient_questionnaire_path(@patient), method: :delete, data: { turbo_confirm: "本当に削除しますか？" }, class: "bg-yellow-500 hover:bg-yellow-700 text-white font-bold py-2 px-4 rounded" %>
+        </div>
+      <% else %>
+        <p class="text-gray-600 mb-4">まだ問診票が登録されていません。</p>
+        <%= link_to "問診票を作成", new_patient_questionnaire_path(@patient), class: "bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded" %>
+      <% end %>
+    </div>
+
+    <div class="mt-6 pt-6 border-t border-gray-200">
       <%= button_to "この患者を削除", @patient, method: :delete, data: { turbo_confirm: "本当に削除しますか？この操作は取り消せません。" }, class: "bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded" %>
     </div>
   </div>

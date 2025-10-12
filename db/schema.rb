@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2025_10_12_111012) do
+ActiveRecord::Schema[7.1].define(version: 2025_10_12_120753) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -45,15 +45,26 @@ ActiveRecord::Schema[7.1].define(version: 2025_10_12_111012) do
 
   create_table "questionnaires", force: :cascade do |t|
     t.bigint "patient_id", null: false
-    t.text "medical_history"
     t.text "current_medications"
     t.text "allergies"
     t.text "past_surgeries"
-    t.text "family_history"
-    t.text "lifestyle_notes"
-    t.text "concerns"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.text "full_name"
+    t.text "full_name_kana"
+    t.text "birth_date"
+    t.text "gender"
+    t.text "phone"
+    t.text "email"
+    t.text "postal_code"
+    t.text "address"
+    t.text "emergency_contact"
+    t.text "medical_conditions"
+    t.text "pregnancy_info"
+    t.text "desired_treatments"
+    t.text "past_treatments"
+    t.text "skin_conditions"
+    t.text "other_concerns"
     t.index ["patient_id"], name: "index_questionnaires_on_patient_id", unique: true
   end
 

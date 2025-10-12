@@ -1,4 +1,12 @@
 ja:
+  time:
+    formats:
+      long: "%Y年%m月%d日 %H:%M"
+      short: "%Y/%m/%d %H:%M"
+  date:
+    formats:
+      long: "%Y年%m月%d日"
+      short: "%Y/%m/%d"
   activerecord:
     attributes:
       patient:

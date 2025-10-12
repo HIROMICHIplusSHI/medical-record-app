@@ -34,10 +34,27 @@ Phase 2では、患者管理システムと問診票機能を実装します。�
 - [x] 日本語対応
   - ja.ymlによる国際化
   - 性別enumの日本語ラベル
+  - デフォルトロケールを日本語に設定（config/application.rb）
+- [x] ブラウザ動作確認
+  - ログイン機能確認
+  - 患者登録・一覧表示動作確認
+  - 暗号化データの正常な保存・表示確認
+  - 問診票作成・編集動作確認
+  - 問診票の暗号化データ保存・復号化確認
+- [x] OmniAuth設定の一時無効化
+  - Phase 2では通常ログインのみ使用
+  - 将来的にGoogle OAuth実装予定
 
-### 🚧 作業中
-- [ ] Questionnairesコントローラーの実装
-- [ ] ビュー（問診票フォーム）
+- [x] Questionnairesコントローラーの実装
+  - CRUD操作の完全実装
+  - 患者との紐付け管理
+  - 重複作成の防止
+  - 23リクエストスペック（全て成功）
+- [x] Questionnairesビューの実装
+  - 問診票作成フォーム（new）
+  - 問診票編集フォーム（edit）
+  - Tailwind CSSによるレスポンシブデザイン
+  - 患者詳細ページへの統合
 
 ### ⏳ 未着手
 - [ ] 検索機能
@@ -46,8 +63,8 @@ Phase 2では、患者管理システムと問診票機能を実装します。�
 
 ### 📊 テストカバレッジ
 - モデルテスト: 23/23 成功（Patient: 17, Questionnaire: 6）
-- リクエストテスト: 29/29 成功（Patients: 29）
-- 合計: 52テストケース 全て成功 ✅
+- リクエストテスト: 52/52 成功（Patients: 29, Questionnaires: 23）
+- 合計: 75テストケース 全て成功 ✅
 
 ## 実装機能
 
@@ -69,27 +86,42 @@ Phase 2では、患者管理システムと問診票機能を実装します。�
 - ✅ 検索機能（氏名、電話番号）
 - ✅ 患者一覧・詳細表示
 
-### 2. 問診票（Questionnaire）
+### 2. 問診票（Questionnaire）- 改訂版
+
+#### 設計思想
+- **ユーザーフレンドリー**: iPad等のタブレットで患者様が直接入力
+- **チェックボックス主体**: テキスト入力を最小限に抑える
+- **段階的な質問**: 該当する場合のみ詳細を表示
+- **アートメイク特化**: アートメイク施術に最適化された項目
 
 #### 問診内容
-- **個人情報入力**
-  - 氏名
-  - 生年月日
-  - 連絡先（電話番号、メールアドレス）
-  - 住所
+- **基本情報（必須）**
+  - 氏名（漢字）、フリガナ
+  - 生年月日、性別
+  - 電話番号、メールアドレス（任意）
+  - 住所、緊急連絡先（任意）
 
-- **医療情報**
-  - 既往歴（アレルギー、持病等）
-  - 現在の服薬状況
-  - 施術希望部位
-  - 気になる症状
-  - その他自由記述
+- **医療情報（チェックボックス主体）**
+  - 既往歴・治療中の病気（あり/なし → 該当項目をチェック）
+  - アレルギー（あり/なし → 該当項目をチェック）
+  - 現在の服薬状況（あり/なし → 該当項目をチェック）
+  - 手術歴（あり/なし → 詳細入力）
+  - 妊娠・授乳情報（女性のみ）
+
+- **施術情報（アートメイク用）**
+  - 希望施術（眉、アイライン、リップ等）
+  - 過去のアートメイク経験
+  - 肌の状態・トラブル
+  - その他相談事項
 
 #### 機能
-- ✅ 問診票入力フォーム
+- 🔄 問診票入力フォーム（新仕様で再実装中）
 - ✅ 患者1人につき1つの問診票（has_one関係）
-- ✅ 入力内容の暗号化
-- ✅ カルテへの反映機能（Phase 3で実装）
+- ✅ 入力内容の暗号化（JSON形式で柔軟に保存）
+- ⏳ カルテへの反映機能（Phase 3で実装）
+
+#### 詳細仕様
+→ 詳しくは `docs/phases/phase2/questionnaire_specification.md` を参照
 
 ## データモデル
 
@@ -110,21 +142,37 @@ encrypts :emergency_contact
 # genderはenumで管理（unspecified: 0, male: 1, female: 2, other: 3）
 ```
 
-### Questionnaire（問診票）
+### Questionnaire（問診票）- 改訂版
 ```ruby
 belongs_to :patient
 
-# 暗号化フィールド
-encrypts :medical_history        # 既往歴
-encrypts :current_medications    # 現在の服薬状況
+# 基本情報（暗号化）
+encrypts :full_name              # 氏名（漢字）
+encrypts :full_name_kana         # フリガナ
+encrypts :birth_date             # 生年月日
+encrypts :gender                 # 性別
+encrypts :phone                  # 電話番号
+encrypts :email                  # メールアドレス
+encrypts :postal_code            # 郵便番号
+encrypts :address                # 住所
+encrypts :emergency_contact      # 緊急連絡先
+
+# 医療情報（JSON形式で暗号化）
+encrypts :medical_conditions     # 既往歴・治療中の病気
 encrypts :allergies              # アレルギー
-encrypts :past_surgeries         # 過去の手術歴
-encrypts :family_history         # 家族歴
-encrypts :lifestyle_notes        # 生活習慣
-encrypts :concerns               # 相談内容
+encrypts :current_medications    # 服薬状況
+encrypts :past_surgeries         # 手術歴
+encrypts :pregnancy_info         # 妊娠・授乳情報
+
+# 施術情報（JSON形式で暗号化）
+encrypts :desired_treatments     # 希望施術
+encrypts :past_treatments        # 過去のアートメイク経験
+encrypts :skin_conditions        # 肌の状態
+encrypts :other_concerns         # その他相談事項
 
 # バリデーション
-validates :patient, uniqueness: true  # 患者1人につき1つのみ
+validates :patient, uniqueness: true
+validates :full_name, :full_name_kana, :birth_date, :gender, :phone, presence: true
 ```
 
 ## データ構造
