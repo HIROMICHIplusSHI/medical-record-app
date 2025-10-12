@@ -1,0 +1,10 @@
+<div class="container mx-auto px-4 py-8">
+  <div class="flex justify-between items-center mb-6">
+    <h1 class="text-3xl font-bold text-gray-900">新しい施設を登録</h1>
+    <%= link_to "一覧に戻る", facilities_path, class: "bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded" %>
+  </div>
+
+  <div class="bg-white shadow-md rounded p-6">
+    <%= render "form", facility: @facility %>
+  </div>
+</div>
