@@ -848,16 +848,97 @@ end
 
 ---
 
-## 12. 参考資料
+## 12. Phase 2 実装状況
 
-### 12.1 公式ドキュメント
+### 12.1 実装済みのE2Eテスト環境
+
+**実装日**: 2025-10-12
+
+#### セットアップ内容
+
+**1. Capybara + Cuprite設定**
+
+`spec/support/capybara.rb`に以下を実装:
+- Cuprite (ヘッドレスChrome) ドライバー設定
+- ウィンドウサイズ: 1400x1400
+- 環境変数対応 (`INSPECTOR`, `HEADLESS`)
+- 失敗時スクリーンショット自動保存機能
+
+**2. Warden Test Helpers設定**
+
+`spec/support/warden.rb`に認証ヘルパーを追加:
+- `login_as user` でシステムスペック内でのログイン対応
+- テスト後の自動クリーンアップ (`Warden.test_reset!`)
+
+**3. Rails Helper設定**
+
+`spec/rails_helper.rb`を更新:
+- `spec/support/**/*.rb`の自動読み込み有効化
+
+#### 実装済みテストケース
+
+**spec/system/patient_workflows_spec.rb**
+
+最小限の重要フローをテスト:
+```ruby
+describe '基本的な患者管理フロー' do
+  it 'ユーザーが患者を登録・閲覧・削除できる', js: true do
+    # 患者一覧 → 新規登録 → 詳細表示 → 削除
+  end
+end
+```
+
+**テスト内容**:
+1. 患者一覧ページにアクセス
+2. 新規患者登録フォームで入力
+3. 登録成功を確認
+4. 一覧に表示されることを確認
+5. 患者を削除
+6. 削除成功を確認
+
+**テスト結果**:
+- System spec: 1 example, 0 failures (1.72秒)
+- Full suite: 128 examples, 0 failures, 6 pending (2.29秒)
+
+#### レスポンシブデザイン確認
+
+Ferrum (Cuprite) を使用して以下のデバイスサイズで動作確認済み:
+- **デスクトップ**: 1400x1000
+- **タブレット (iPad相当)**: 768x1024
+- **モバイル (iPhone相当)**: 375x667
+
+全てのサイズでログイン画面が正常に表示されることを確認。
+
+#### E2Eテスト戦略
+
+**最小限アプローチを採用した理由**:
+- Request Specsで詳細なCRUDテストは既に実装済み (29 examples passing)
+- E2Eテストは重要なユーザーフロー (登録→閲覧→削除) のみに絞り込み
+- 実行時間の最適化 (1.72秒)
+- メンテナンス負荷の軽減
+
+**今後の拡張予定**:
+- Phase 2機能の追加時に対応するE2Eテストを追加
+- 検索・ページネーション機能がmainブランチにマージされたらテスト追加
+
+### 12.2 コード品質
+
+**RuboCop対応状況**:
+- 自動修正適用済み
+- 1件の警告 (`page.save_screenshot`) は意図的な実装のため保持
+
+---
+
+## 13. 参考資料
+
+### 13.1 公式ドキュメント
 
 - **RSpec**: https://rspec.info/
 - **Capybara**: https://github.com/teamcapybara/capybara
 - **Cuprite**: https://github.com/rubycdp/cuprite
 - **FactoryBot**: https://github.com/thoughtbot/factory_bot
 
-### 12.2 参考記事
+### 13.2 参考記事
 
 - [Hotwire + RSpecでのSystemSpec書き方](https://qiita.com/)
 - [Capybara Cheat Sheet](https://devhints.io/capybara)
@@ -865,6 +946,6 @@ end
 
 ---
 
-**Document Version**: 1.0
+**Document Version**: 1.1
 **Last Updated**: 2025-10-12
-**Next Review**: Phase 1完了時
+**Next Review**: Phase 2完了時

@@ -26,6 +26,10 @@ Metrics/BlockLength:
     - 'config/environments/*'
     - 'config/routes.rb'
 
+Lint/Debugger:
+  Exclude:
+    - 'spec/support/capybara.rb'  # save_screenshot is intentional for test debugging
+
 Metrics/MethodLength:
   Max: 15
   Exclude:
