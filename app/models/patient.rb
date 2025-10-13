@@ -4,8 +4,7 @@ class Patient < ApplicationRecord
   has_one :questionnaire, dependent: :destroy
   has_many :medical_records, dependent: :restrict_with_error
 
-  # 暗号化
-  encrypts :name
+  # 暗号化（患者名は検索性能のため暗号化しない）
   encrypts :phone
   encrypts :email, deterministic: true # 検索可能な暗号化
   encrypts :address
@@ -44,4 +43,13 @@ class Patient < ApplicationRecord
       patient.name&.include?(normalized_query) || patient.phone&.include?(normalized_query)
     end
   }
+
+  # Ransack設定
+  def self.ransackable_attributes(_auth_object = nil)
+    %w[id name gender date_of_birth created_at updated_at]
+  end
+
+  def self.ransackable_associations(_auth_object = nil)
+    %w[user medical_records questionnaire]
+  end
 end

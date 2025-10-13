@@ -34,6 +34,16 @@ class MedicalRecord < ApplicationRecord
   scope :by_patient, ->(patient_id) { where(patient_id: patient_id) if patient_id.present? }
   scope :by_facility, ->(facility_id) { where(facility_id: facility_id) if facility_id.present? }
 
+  # Ransack設定
+  def self.ransackable_attributes(_auth_object = nil)
+    %w[visit_date treatment_location chief_complaint diagnosis treatment_content notes
+       patient_id facility_id created_at updated_at]
+  end
+
+  def self.ransackable_associations(_auth_object = nil)
+    %w[patient facility tags]
+  end
+
   private
 
   def photos_count_limit
