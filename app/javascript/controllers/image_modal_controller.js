@@ -90,6 +90,27 @@ export default class extends Controller {
       this.updateImage()
     } else if (event.key === "Escape") {
       this.close()
+    } else if (event.key === "Tab") {
+      // Focus trap: keep focus within modal
+      const focusableElements = this.modalTarget.querySelectorAll(
+        'button:not([disabled]), [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
+      )
+      const firstElement = focusableElements[0]
+      const lastElement = focusableElements[focusableElements.length - 1]
+
+      if (event.shiftKey) {
+        // Shift+Tab on first element → go to last
+        if (document.activeElement === firstElement) {
+          lastElement.focus()
+          event.preventDefault()
+        }
+      } else {
+        // Tab on last element → go to first
+        if (document.activeElement === lastElement) {
+          firstElement.focus()
+          event.preventDefault()
+        }
+      }
     }
   }
 
