@@ -174,7 +174,8 @@ RSpec.describe MedicalRecord, type: :model do
 
     it 'コスト項目を更新できる' do
       medical_record = create(:medical_record, user: user, patient: patient, facility: facility)
-      cost_item = create(:cost_item, medical_record: medical_record, item_name: 'テスト項目', quantity: 1, unit_price: 50_000)
+      cost_item = create(:cost_item, medical_record: medical_record, item_name: 'テスト項目', quantity: 1,
+                                     unit_price: 50_000)
       medical_record.reload
 
       medical_record.update(
@@ -191,7 +192,8 @@ RSpec.describe MedicalRecord, type: :model do
 
     it 'コスト項目を削除できる' do
       medical_record = create(:medical_record, user: user, patient: patient, facility: facility)
-      cost_item = create(:cost_item, medical_record: medical_record, item_name: 'テスト項目', quantity: 1, unit_price: 10_000)
+      cost_item = create(:cost_item, medical_record: medical_record, item_name: 'テスト項目', quantity: 1,
+                                     unit_price: 10_000)
       medical_record.reload
 
       expect do
