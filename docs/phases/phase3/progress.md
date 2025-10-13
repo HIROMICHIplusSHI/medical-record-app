@@ -2,7 +2,7 @@
 
 **作成日**: 2025-10-13
 **最終更新**: 2025-10-13
-**バージョン**: 1.0
+**バージョン**: 1.2
 
 ---
 
@@ -21,10 +21,9 @@
 
 | PR# | 機能 | ステータス | マージ日 |
 |-----|------|----------|---------|
-| #1 | コストシート管理 | ✅ マージ済み | 2025-10-13 |
-| #2 | 患者検索・ページネーション・問診票UI | ✅ マージ済み | 2025-10-13 |
-| #3 | カルテ+コスト項目 | ✅ マージ済み | 2025-10-13 |
-| - | コストシート連携+Tom Select | ✅ コミット完了 | 2025-10-13 |
+| #4 | コストシート管理 | ✅ マージ済み | 2025-10-13 |
+| #5 | カルテ基本機能 | ✅ マージ済み | 2025-10-13 |
+| #6 | カルテ+コスト項目+コストシート連携+Tom Select | ✅ マージ済み | 2025-10-13 |
 
 ### 実装済み機能
 
@@ -330,32 +329,154 @@ Co-Authored-By: Claude <noreply@anthropic.com>"
 
 ---
 
-## 4. 次のタスク
+## 4. 未実装機能と先延ばし課題
 
 ### 4.1 Phase 3 残りの実装
 
-| タスク | 優先度 | 推定時間 |
-|--------|--------|---------|
-| 画像アップロード（Active Storage） | 🔴 高 | 4h |
-| タグ機能 | 🟡 中 | 3h |
-| 検索強化（Ransack） | 🟡 中 | 3h |
-| E2Eテスト拡充 | 🔴 高 | 4h |
-| UI/UX最終調整 | 🟢 低 | 2h |
+#### Phase 3中盤（機能実装優先）
 
-### 4.2 次回セッション
+| タスク | 優先度 | 推定時間 | 詳細 |
+|--------|--------|---------|------|
+| 画像アップロード（Active Storage） | 🔴 高 | 4h | カルテに施術写真を添付（最大5枚） |
+| タグ機能 | 🟡 中 | 3h | Tag + MedicalRecordTag中間テーブル |
+| 検索強化（Ransack） | 🟡 中 | 3h | 複雑な条件での検索機能 |
 
-**推奨**: 画像アップロード機能（Active Storage）の実装
+#### Phase 3後半（機能実装完了後）
 
-**理由**:
-- カルテ機能の重要な要素
-- ユーザーからの要望が高い
-- 技術的難易度が中程度で学習効果が高い
+| タスク | 優先度 | 推定時間 | 詳細 |
+|--------|--------|---------|------|
+| System E2Eテスト拡充 | 🔴 高 | 6-8h | 全機能の統合テスト（仕様固定後に実施） |
+| UI/UX最終調整 | 🟢 低 | 2h | アクセシビリティ・レスポンシブ対応 |
+
+**E2E延期理由**:
+- 現在機能追加中で仕様変更が頻繁
+- 仕様固定後に一気に書く方が効率的
+- CI実行時間の最適化も同時実施
+
+### 4.2 Important Issues（Phase 4持ち越し）
+
+PR #6のコードレビューで発見された改善項目。現状動作しているが、保守性・品質向上のため将来対応が必要。
+
+#### Issue #3: JavaScript イベントリスナーの重複問題
+**問題**: DOM cloneでイベントリスナーが重複する可能性（アンチパターン）
+
+**現在の実装**:
+```javascript
+// app/javascript/controllers/cost_items_controller.js:1248
+addItem(event) {
+  const content = this.templateTarget.innerHTML.replace(/NEW_RECORD/g, new Date().getTime())
+  this.containerTarget.insertAdjacentHTML('beforeend', content)
+}
+```
+
+**推奨改善策**:
+- イベント委譲パターンの使用
+- Stimulusのtarget機能を活用
+- クローンではなく動的生成に変更
+
+**優先度**: 🟡 中
+**推定工数**: 2h
+**対応時期**: Phase 4
+
+#### Issue #4: JavaScript/Ruby 小数点処理の不一致
+**問題**: JavaScriptはFloat、RubyはDecimalで計算
+
+**現状**:
+```javascript
+// JavaScript側（Float演算）
+const subtotal = price * qty
+```
+
+```ruby
+# Ruby側（Decimal演算）
+self.subtotal = unit_price * quantity
+```
+
+**推奨改善策**:
+- JavaScript側でDecimal.jsライブラリ使用
+- または、整数のみの金額計算に統一
+
+**優先度**: 🟢 低（日本円は小数なし、実害なし）
+**推定工数**: 1h
+**対応時期**: Phase 4
+
+#### Issue #5: System E2Eテストの不足
+**問題**: JavaScript動作のE2Eテストがない（現在無効化中）
+
+**テスト不足箇所**:
+- コスト項目の動的追加・削除
+- 金額計算のリアルタイム更新
+- Tom Selectの動作
+- コストシート連携の自動入力
+- 画像アップロード（未実装）
+- タグ機能（未実装）
+- 検索機能（未実装）
+
+**推奨改善策**:
+- Capybara + Selenium/Cuprite でSystemテスト追加
+- JavaScriptドライバーでの動作確認
+- エッジケースのテストケース追加
+- CI実行時間の最適化
+
+**優先度**: 🔴 高（JavaScriptの品質保証）
+**推定工数**: 6-8h
+**対応時期**: Phase 3後半（全機能実装後）
+**延期理由**: 仕様変更頻度が高く、機能固定後に一気に書く方が効率的
+
+### 4.3 設計書との整合性確認
+
+#### ✅ 整合性OK
+- User, Facility, Patient, Questionnaire: Phase 2で実装完了
+- CostSheet, CostItem, MedicalRecord: Phase 3で実装完了
+- ネスト属性、動的フォーム: Phase 3で実装完了
+
+#### ⏳ 未実装（設計書に記載あり）
+- **Tag, MedicalRecordTag**: タグ機能（Phase 3残り）
+- **Invoice**: 請求書機能（Phase 4予定）
+- **Active Storage設定**: 画像アップロード（Phase 3残り）
+- **Ransack gem**: 高度な検索（Phase 3残り）
+
+#### ℹ️ 設計書との差異
+- **MedicalRecord属性**: 設計書には`counseling_content`があるが、実装では以下に変更:
+  - `visit_date` (来院日)
+  - `treatment_location` (施術部位)
+  - `chief_complaint` (主訴)
+  - `diagnosis` (診断)
+  - `treatment_content` (施術内容)
+  - `notes` (メモ)
+- **理由**: より実用的なカルテ項目に変更
+
+### 4.4 次回セッション推奨
+
+#### Phase 3中盤の実装順序
+
+**優先度1**: 画像アップロード機能（Active Storage）
+- **理由**: カルテ機能の重要な要素、ユーザー要望高
+- **工数**: 4h
+- **ブランチ**: `feature/p3-05-image-upload`
+
+**優先度2**: タグ機能
+- **理由**: カルテ分類・検索の基盤
+- **工数**: 3h
+- **ブランチ**: `feature/p3-06-tags`
+
+**優先度3**: 検索強化（Ransack）
+- **理由**: タグ機能と組み合わせて高度な検索を実現
+- **工数**: 3h
+- **ブランチ**: `feature/p3-08-ransack-search`
+
+#### Phase 3後半（全機能実装後）
+
+**最終仕上げ**: System E2Eテスト拡充
+- **理由**: 仕様固定後に一気に書く（CI最適化含む）
+- **工数**: 6-8h
+- **ブランチ**: `feature/p3-09-e2e-tests`
 
 **準備**:
 ```bash
-# 次回セッション開始時
+# 次回セッション開始時（画像アップロードから）
+git checkout main && git pull
 git checkout -b feature/p3-05-image-upload
-# Phase 3実装ガイド「6. Week 4: 画像アップロード」参照
 ```
 
 ---
@@ -365,6 +486,8 @@ git checkout -b feature/p3-05-image-upload
 | バージョン | 日付 | 変更内容 |
 |-----------|------|---------|
 | 1.0 | 2025-10-13 | 初版作成 - Phase 3-03, 3-04完了記録 |
+| 1.1 | 2025-10-13 | PR番号修正 (#4-6), PR #6マージ完了記録 |
+| 1.2 | 2025-10-13 | 未実装機能・Important Issues・設計書整合性を追加、E2E実装タイミング調整 |
 
 ---
 

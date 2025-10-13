@@ -76,13 +76,12 @@ phases/
 | [実装進捗記録](./phases/phase3/progress.md) | 詳細な実装記録と技術的課題 | ✅ 最新 |
 
 **Phase 3の実装機能:**
-- ✅ コストシート管理（PR #1マージ済み）
-- ✅ 患者検索・ページネーション・問診票UI（PR #2マージ済み）
-- ✅ カルテ基本機能（PR #3マージ済み）
-- ✅ コスト項目 + nested attributes（PR #3マージ済み）
-- ✅ 動的フォーム（Stimulus）（PR #3マージ済み）
-- ✅ コストシート連携 + 自動入力（コミット完了）
-- ✅ Tom Select導入（iPad/Safari対応）（コミット完了）
+- ✅ コストシート管理（PR #4マージ済み）
+- ✅ カルテ基本機能（PR #5マージ済み）
+- ✅ カルテ+コスト項目（PR #6マージ済み）
+- ✅ コストシート連携 + 自動入力（PR #6マージ済み）
+- ✅ Tom Select導入（iPad/Safari対応）（PR #6マージ済み）
+- ✅ 動的フォーム（Stimulus）（PR #6マージ済み）
 - ⏳ 画像アップロード（Active Storage）
 - ⏳ タグ機能
 - ⏳ 検索強化（Ransack）+ E2Eテスト
@@ -206,7 +205,7 @@ git commit -m "feat(facility): add revenue calculation method
 | phases/phase2/implementation_guide.md | 1.0 | 2025-10-12 | Phase 2実装開始時 |
 | phases/phase3/implementation_guide.md | 1.0 | 2025-10-13 | Phase 3実装開始時 |
 | phases/phase3/pr_workflow.md | 1.1 | 2025-10-13 | Phase 3実装中 |
-| phases/phase3/progress.md | 1.0 | 2025-10-13 | Phase 3実装中 |
+| phases/phase3/progress.md | 1.2 | 2025-10-13 | Phase 3実装中 |
 
 ---
 
