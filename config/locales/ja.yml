@@ -8,6 +8,46 @@ ja:
       long: "%Y年%m月%d日"
       short: "%Y/%m/%d"
   activerecord:
+    errors:
+      messages:
+        record_invalid: "バリデーションに失敗しました: %{errors}"
+        restrict_dependent_destroy:
+          has_one: "%{record}が存在しているので削除できません"
+          has_many: "%{record}が存在しているので削除できません"
+  errors:
+    format: "%{attribute}%{message}"
+    messages:
+      accepted: を受諾してください
+      blank: を入力してください
+      confirmation: と%{attribute}の入力が一致しません
+      empty: を入力してください
+      equal_to: は%{count}にしてください
+      even: は偶数にしてください
+      exclusion: は予約されています
+      greater_than: は%{count}より大きい値にしてください
+      greater_than_or_equal_to: は%{count}以上の値にしてください
+      in: は%{count}の範囲に含めてください
+      inclusion: は一覧にありません
+      invalid: は不正な値です
+      less_than: は%{count}より小さい値にしてください
+      less_than_or_equal_to: は%{count}以下の値にしてください
+      model_invalid: "バリデーションに失敗しました: %{errors}"
+      not_a_number: は数値で入力してください
+      not_an_integer: は整数で入力してください
+      odd: は奇数にしてください
+      other_than: は%{count}以外の値にしてください
+      present: は入力しないでください
+      required: を入力してください
+      taken: はすでに存在します
+      too_long: は%{count}文字以内で入力してください
+      too_short: は%{count}文字以上で入力してください
+      wrong_length: は%{count}文字で入力してください
+  activerecord:
+    models:
+      patient: 患者
+      facility: 施設
+      medical_record: カルテ
+      cost_sheet: コスト項目
     attributes:
       patient:
         name: 氏名
@@ -22,13 +62,20 @@ ja:
           male: 男性
           female: 女性
           other: その他
+      facility:
+        name: 施設名
+        address: 住所
+        phone: 電話番号
+        memo: メモ
       cost_sheet:
         item_name: 項目名
         standard_price: 標準価格
         category: カテゴリ
         memo: メモ
       medical_record:
+        patient: 患者
         patient_id: 患者
+        facility: 施設
         facility_id: 施術場所
         visit_date: 来院日
         treatment_location: 施術部位
