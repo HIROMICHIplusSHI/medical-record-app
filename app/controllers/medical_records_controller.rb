@@ -48,7 +48,9 @@ class MedicalRecordsController < ApplicationController
   private
 
   def set_medical_record
-    @medical_record = current_user.medical_records.find(params[:id])
+    @medical_record = current_user.medical_records
+                                  .includes(:cost_items)
+                                  .find(params[:id])
   end
 
   def medical_record_params
