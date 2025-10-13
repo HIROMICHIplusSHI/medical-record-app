@@ -92,10 +92,10 @@ RSpec.describe 'MedicalRecords', type: :request do
             diagnosis: '加齢による皮膚の弾力低下',
             treatment_content: 'ボトックス注射を実施',
             cost_items_attributes: [
-              { item_name: 'ボトックス注射', quantity: 1, unit_price: 50000 },
-              { item_name: 'ヒアルロン酸注射', quantity: 2, unit_price: 30000 }
-            ]
-          }
+              { item_name: 'ボトックス注射', quantity: 1, unit_price: 50_000 },
+              { item_name: 'ヒアルロン酸注射', quantity: 2, unit_price: 30_000 },
+            ],
+          },
         }
       end
 
@@ -108,7 +108,7 @@ RSpec.describe 'MedicalRecords', type: :request do
 
       it '作成されたカルテの合計金額が正しい' do
         post medical_records_path, params: valid_params_with_costs
-        expect(MedicalRecord.last.total_cost).to eq(110000)
+        expect(MedicalRecord.last.total_cost).to eq(110_000)
       end
     end
 

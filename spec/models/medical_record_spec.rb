@@ -84,9 +84,9 @@ RSpec.describe MedicalRecord, type: :model do
     end
 
     it 'コスト項目の合計金額を正しく計算する' do
-      create(:cost_item, medical_record: medical_record, quantity: 2, unit_price: 30000)
-      create(:cost_item, medical_record: medical_record, quantity: 1, unit_price: 50000)
-      expect(medical_record.total_cost).to eq(110000)
+      create(:cost_item, medical_record: medical_record, quantity: 2, unit_price: 30_000)
+      create(:cost_item, medical_record: medical_record, quantity: 1, unit_price: 50_000)
+      expect(medical_record.total_cost).to eq(110_000)
     end
   end
 
@@ -106,30 +106,30 @@ RSpec.describe MedicalRecord, type: :model do
         diagnosis: '老化',
         treatment_content: 'ボトックス',
         cost_items_attributes: [
-          { item_name: 'ボトックス注射', quantity: 1, unit_price: 50000 },
-          { item_name: 'ヒアルロン酸注射', quantity: 2, unit_price: 30000 }
+          { item_name: 'ボトックス注射', quantity: 1, unit_price: 50_000 },
+          { item_name: 'ヒアルロン酸注射', quantity: 2, unit_price: 30_000 },
         ]
       )
 
       expect(medical_record.save).to be true
       expect(medical_record.cost_items.count).to eq(2)
-      expect(medical_record.total_cost).to eq(110000)
+      expect(medical_record.total_cost).to eq(110_000)
     end
 
     it 'コスト項目を更新できる' do
       medical_record = create(:medical_record, user: user, patient: patient, facility: facility)
-      cost_item = create(:cost_item, medical_record: medical_record, quantity: 1, unit_price: 50000)
+      cost_item = create(:cost_item, medical_record: medical_record, quantity: 1, unit_price: 50_000)
 
       medical_record.update(
         cost_items_attributes: [
-          { id: cost_item.id, quantity: 3, unit_price: 40000 }
+          { id: cost_item.id, quantity: 3, unit_price: 40_000 },
         ]
       )
 
       cost_item.reload
       expect(cost_item.quantity).to eq(3)
-      expect(cost_item.unit_price).to eq(40000)
-      expect(cost_item.total_price).to eq(120000)
+      expect(cost_item.unit_price).to eq(40_000)
+      expect(cost_item.total_price).to eq(120_000)
     end
 
     it 'コスト項目を削除できる' do
@@ -139,7 +139,7 @@ RSpec.describe MedicalRecord, type: :model do
       expect do
         medical_record.update(
           cost_items_attributes: [
-            { id: cost_item.id, _destroy: '1' }
+            { id: cost_item.id, _destroy: '1' },
           ]
         )
       end.to change(CostItem, :count).by(-1)

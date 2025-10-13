@@ -22,12 +22,12 @@
   <div class="grid grid-cols-1 gap-6 sm:grid-cols-2">
     <div>
       <%= f.label :patient_id, class: "block text-sm font-medium text-gray-700" %>
-      <%= f.collection_select :patient_id, @patients, :id, :name, { prompt: '患者を選択' }, class: "mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm rounded-md" %>
+      <%= f.collection_select :patient_id, @patients, :id, :name, { prompt: '患者を選択' }, { class: "mt-1 block w-full px-4 py-3 text-xl border-gray-300 focus:outline-none focus:ring-blue-500 focus:border-blue-500 rounded-md shadow-sm", data: { controller: "tom-select" } } %>
     </div>
 
     <div>
       <%= f.label :facility_id, class: "block text-sm font-medium text-gray-700" %>
-      <%= f.collection_select :facility_id, @facilities, :id, :name, { prompt: '施術場所を選択' }, class: "mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm rounded-md" %>
+      <%= f.collection_select :facility_id, @facilities, :id, :name, { prompt: '施術場所を選択' }, { class: "mt-1 block w-full px-4 py-3 text-xl border-gray-300 focus:outline-none focus:ring-blue-500 focus:border-blue-500 rounded-md shadow-sm", data: { controller: "tom-select" } } %>
     </div>
 
     <div>
@@ -62,7 +62,7 @@
   </div>
 
   <!-- コスト項目セクション -->
-  <div class="border-t border-gray-200 pt-6">
+  <div class="border-t border-gray-200 pt-6" data-cost-sheets="<%= (@cost_sheets || []).to_json(only: [:id, :item_name, :standard_price]) %>">
     <div class="flex items-center justify-between mb-4">
       <h3 class="text-lg font-medium text-gray-900">コスト項目</h3>
       <button type="button" id="add-cost-item" class="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">

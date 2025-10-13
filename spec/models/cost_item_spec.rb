@@ -3,6 +3,7 @@ require 'rails_helper'
 RSpec.describe CostItem, type: :model do
   describe 'アソシエーション' do
     it { is_expected.to belong_to(:medical_record) }
+    it { is_expected.to belong_to(:cost_sheet).optional }
   end
 
   describe 'バリデーション' do
@@ -47,6 +48,24 @@ RSpec.describe CostItem, type: :model do
         cost_item.valid?
         expect(cost_item.total_price).to eq(80_000)
       end
+    end
+  end
+
+  describe 'CostSheet連携' do
+    let(:user) { create(:user) }
+    let(:cost_sheet) { create(:cost_sheet, user: user, item_name: 'ヒアルロン酸注射', standard_price: 30_000) }
+    let(:medical_record) { create(:medical_record, user: user) }
+
+    it 'CostSheetと任意で関連付けられる' do
+      cost_item = build(:cost_item, medical_record: medical_record, cost_sheet: cost_sheet)
+      expect(cost_item.valid?).to be true
+      expect(cost_item.cost_sheet).to eq(cost_sheet)
+    end
+
+    it 'CostSheetなしでも作成できる' do
+      cost_item = build(:cost_item, medical_record: medical_record, cost_sheet: nil)
+      expect(cost_item.valid?).to be true
+      expect(cost_item.cost_sheet).to be_nil
     end
   end
 end

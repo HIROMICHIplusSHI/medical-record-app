@@ -4,8 +4,23 @@ export default class extends Controller {
   static targets = ["container", "template"]
 
   connect() {
+    this.loadCostSheets()
     this.setupEventListeners()
     this.updateAllTotals()
+  }
+
+  loadCostSheets() {
+    const costSheetsContainer = document.querySelector('[data-cost-sheets]')
+    if (costSheetsContainer) {
+      try {
+        this.costSheets = JSON.parse(costSheetsContainer.dataset.costSheets)
+      } catch (e) {
+        console.error('CostSheetデータの読み込みに失敗しました', e)
+        this.costSheets = []
+      }
+    } else {
+      this.costSheets = []
+    }
   }
 
   setupEventListeners() {
@@ -51,6 +66,39 @@ export default class extends Controller {
     document.querySelectorAll('.quantity-field, .unit-price-field').forEach(field => {
       field.addEventListener('input', (e) => this.calculateRowTotal(e.target))
     })
+
+    // CostSheet選択ドロップダウンの変更イベント
+    document.querySelectorAll('.cost-sheet-select').forEach(select => {
+      select.replaceWith(select.cloneNode(true)) // 重複イベント防止
+    })
+    document.querySelectorAll('.cost-sheet-select').forEach(select => {
+      select.addEventListener('change', (e) => this.handleCostSheetSelection(e.target))
+    })
+  }
+
+  handleCostSheetSelection(selectElement) {
+    const selectedId = parseInt(selectElement.value)
+    if (!selectedId || !this.costSheets) return
+
+    const costSheet = this.costSheets.find(cs => cs.id === selectedId)
+    if (!costSheet) return
+
+    const row = selectElement.closest('.cost-item-row')
+    if (!row) return
+
+    // 項目名と単価を自動入力
+    const itemNameField = row.querySelector('.item-name-field')
+    const unitPriceField = row.querySelector('.unit-price-field')
+
+    if (itemNameField) {
+      itemNameField.value = costSheet.item_name || ''
+    }
+
+    if (unitPriceField) {
+      unitPriceField.value = costSheet.standard_price || 0
+      // 単価変更後に合計を再計算
+      this.calculateRowTotal(unitPriceField)
+    }
   }
 
   removeItem(e) {

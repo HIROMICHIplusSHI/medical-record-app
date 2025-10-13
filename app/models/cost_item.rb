@@ -1,5 +1,6 @@
 class CostItem < ApplicationRecord
   belongs_to :medical_record
+  belongs_to :cost_sheet, optional: true
 
   # バリデーション
   validates :item_name, presence: true, length: { maximum: 200 }

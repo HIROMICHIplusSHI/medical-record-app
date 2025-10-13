@@ -72,15 +72,15 @@
                 <tr>
                   <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900"><%= cost_item.item_name %></td>
                   <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 text-right"><%= cost_item.quantity %></td>
-                  <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 text-right">¥<%= number_with_delimiter(cost_item.unit_price) %></td>
-                  <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 text-right font-medium">¥<%= number_with_delimiter(cost_item.total_price) %></td>
+                  <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 text-right">¥<%= number_with_delimiter(cost_item.unit_price.to_i) %></td>
+                  <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 text-right font-medium">¥<%= number_with_delimiter(cost_item.total_price.to_i) %></td>
                 </tr>
               <% end %>
             </tbody>
             <tfoot class="bg-gray-50">
               <tr>
                 <td colspan="3" class="px-6 py-4 text-right text-sm font-semibold text-gray-900">合計金額</td>
-                <td class="px-6 py-4 whitespace-nowrap text-right text-base font-bold text-gray-900">¥<%= number_with_delimiter(@medical_record.total_cost) %></td>
+                <td class="px-6 py-4 whitespace-nowrap text-right text-base font-bold text-gray-900">¥<%= number_with_delimiter(@medical_record.total_cost.to_i) %></td>
               </tr>
             </tfoot>
           </table>
