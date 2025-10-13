@@ -137,22 +137,46 @@ RSpec.describe 'Tags', type: :request do
   end
 
   describe 'DELETE /tags/:id' do
-    it 'タグを削除する' do
-      tag_to_delete = create(:tag, user: user)
-      expect do
-        delete tag_path(tag_to_delete)
-      end.to change(Tag, :count).by(-1)
+    context 'タグが使用されていない場合' do
+      it 'タグを削除する' do
+        tag_to_delete = create(:tag, user: user)
+        expect do
+          delete tag_path(tag_to_delete)
+        end.to change(Tag, :count).by(-1)
+      end
+
+      it 'タグ一覧にリダイレクトする' do
+        delete tag_path(tag)
+        expect(response).to redirect_to(tags_path)
+      end
+
+      it '成功メッセージを表示する' do
+        delete tag_path(tag)
+        follow_redirect!
+        expect(response.body).to include('タグを削除しました')
+      end
     end
 
-    it 'タグ一覧にリダイレクトする' do
-      delete tag_path(tag)
-      expect(response).to redirect_to(tags_path)
-    end
+    context 'タグが使用されている場合' do
+      let(:patient) { create(:patient, user: user) }
+      let(:facility) { create(:facility, user: user) }
+      let(:medical_record) { create(:medical_record, user: user, patient: patient, facility: facility) }
 
-    it '成功メッセージを表示する' do
-      delete tag_path(tag)
-      follow_redirect!
-      expect(response.body).to include('タグを削除しました')
+      before do
+        medical_record.tags << tag
+      end
+
+      it 'タグを削除しない' do
+        expect do
+          delete tag_path(tag)
+        end.not_to change(Tag, :count)
+      end
+
+      it 'エラーメッセージを表示する' do
+        delete tag_path(tag)
+        expect(flash[:alert]).to include('使用中です')
+        expect(flash[:alert]).to include('削除できません')
+      end
     end
   end
 

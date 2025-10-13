@@ -32,8 +32,12 @@ class TagsController < ApplicationController
   end
 
   def destroy
-    @tag.destroy
-    redirect_to tags_path, notice: 'タグを削除しました。'
+    if @tag.medical_records.exists?
+      redirect_to tags_path, alert: "このタグは#{@tag.medical_records.count}件のカルテで使用中です。削除できません。"
+    else
+      @tag.destroy
+      redirect_to tags_path, notice: 'タグを削除しました。'
+    end
   end
 
   private
