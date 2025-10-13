@@ -2,7 +2,7 @@
 
 **作成日**: 2025-10-13
 **最終更新**: 2025-10-13
-**バージョン**: 1.3
+**バージョン**: 1.4
 
 ---
 
@@ -12,7 +12,8 @@
 2. [Phase 3-03: カルテ+コスト項目（完了）](#2-phase-3-03-カルテコスト項目完了)
 3. [Phase 3-04: コストシート連携+UI改善（完了）](#3-phase-3-04-コストシート連携ui改善完了)
 4. [Phase 3-05: 画像アップロード機能（完了）](#4-phase-3-05-画像アップロード機能完了)
-5. [次のタスク](#5-次のタスク)
+5. [Phase 3-06: タグ機能（完了）](#5-phase-3-06-タグ機能完了)
+6. [次のタスク](#6-次のタスク)
 
 ---
 
@@ -26,6 +27,7 @@
 | #5 | カルテ基本機能 | ✅ マージ済み | 2025-10-13 |
 | #6 | カルテ+コスト項目+コストシート連携+Tom Select | ✅ マージ済み | 2025-10-13 |
 | #7 | 画像アップロード＋プレビュー＋モーダル表示 | ✅ マージ済み | 2025-10-13 |
+| #8 | タグ機能実装 | 🔄 レビュー中 | - |
 
 ### 実装済み機能
 
@@ -39,10 +41,10 @@
 - ✅ 画像アップロード（Active Storage、最大5枚、10MB制限）
 - ✅ 画像プレビュー（複数選択対応、個別削除）
 - ✅ 画像モーダル表示（全画面、スワイプ対応、キーボードナビゲーション）
+- ✅ タグ機能（多対多関連、AJAX作成、使用中チェック）
 
 ### 未実装機能
 
-- ⏳ タグ機能
 - ⏳ 検索強化（Ransack）
 - ⏳ E2Eテスト拡充
 
@@ -600,17 +602,393 @@ Co-Authored-By: Claude <noreply@anthropic.com>"
 
 ---
 
-## 5. 未実装機能と先延ばし課題
+## 5. Phase 3-06: タグ機能（完了）
 
-### 5.1 Phase 3 残りの実装
+### 実装日
+2025-10-13
+
+### 実装内容
+
+**PR #8**: カルテへのタグ付け機能
+
+#### 5.1 多対多関連の実装
+
+**マイグレーション**:
+```ruby
+# db/migrate/YYYYMMDDHHMMSS_create_tags.rb
+create_table :tags do |t|
+  t.references :user, null: false, foreign_key: true
+  t.string :name, null: false
+  t.string :category
+  t.string :color, default: '#3B82F6'
+  t.timestamps
+
+  t.index [:user_id, :name], unique: true
+end
+
+# db/migrate/YYYYMMDDHHMMSS_create_medical_record_tags.rb
+create_table :medical_record_tags do |t|
+  t.references :medical_record, null: false, foreign_key: true
+  t.references :tag, null: false, foreign_key: true
+  t.timestamps
+
+  t.index [:medical_record_id, :tag_id], unique: true
+end
+```
+
+**モデル設計**:
+```ruby
+# app/models/tag.rb
+class Tag < ApplicationRecord
+  belongs_to :user
+  has_many :medical_record_tags, dependent: :destroy
+  has_many :medical_records, through: :medical_record_tags
+
+  validates :name, presence: true, length: { maximum: 50 },
+                   uniqueness: { scope: :user_id }
+  validates :color, format: { with: /\A#[0-9A-Fa-f]{6}\z/ }, allow_blank: true
+
+  scope :by_name, -> { order(:name) }
+  scope :by_category, ->(category) { where(category: category) if category.present? }
+end
+
+# app/models/medical_record.rb
+has_many :medical_record_tags, dependent: :destroy
+has_many :tags, through: :medical_record_tags
+```
+
+#### 5.2 アコーディオン形式のタグ作成UI
+
+**課題**: モーダル表示で問題が発生（ページ下部に表示、展開不可）
+
+**解決策**: アコーディオン形式に変更
+
+**実装詳細** (`app/views/medical_records/_form.html.erb`):
+```erb
+<div data-controller="tag-accordion">
+  <div class="flex justify-between items-center mb-2">
+    <%= f.label :tag_ids, "タグ", class: "block text-sm font-medium text-gray-700" %>
+    <button type="button" data-action="click->tag-accordion#toggle" class="text-sm text-blue-600">
+      + タグを作成
+    </button>
+  </div>
+
+  <!-- アコーディオン展開エリア（formタグなし） -->
+  <div data-tag-accordion-target="form" class="hidden mb-4">
+    <!-- タグ作成フォーム -->
+  </div>
+
+  <!-- 既存タグ一覧 -->
+  <div data-tag-accordion-target="tagList">
+    <% current_user.tags.by_name.each do |tag| %>
+      <label class="inline-flex items-center">
+        <%= check_box_tag 'medical_record[tag_ids][]', tag.id,
+            medical_record.tag_ids.include?(tag.id),
+            class: "sr-only peer", id: "medical_record_tag_#{tag.id}" %>
+        <span class="px-3 py-2 rounded-full text-sm">
+          <%= tag.name %>
+        </span>
+      </label>
+    <% end %>
+  </div>
+</div>
+```
+
+#### 5.3 AJAX タグ作成（Stimulus.js）
+
+**コントローラー**: `app/javascript/controllers/tag_accordion_controller.js`
+
+**主要機能**:
+- ページ遷移なしでタグ作成
+- リアルタイムでチェックボックスリストに追加
+- 新規作成タグは自動選択状態
+- CSRF トークン送信
+- エラーハンドリング
+
+**実装**:
+```javascript
+async submit(event) {
+  event.preventDefault()
+
+  const formData = new FormData()
+  formData.append('tag[name]', this.nameInputTarget.value)
+  formData.append('tag[category]', this.categoryInputTarget.value)
+  formData.append('tag[color]', this.colorInputTarget.value)
+
+  const response = await fetch('/tags', {
+    method: 'POST',
+    body: formData,
+    headers: {
+      'X-CSRF-Token': document.querySelector('[name="csrf-token"]').content,
+      'Accept': 'application/json'
+    }
+  })
+
+  if (response.ok) {
+    const tag = await response.json()
+    this.addTagToList(tag)  // DOMに追加
+    this.formTarget.classList.add('hidden')
+    this.resetForm()
+  }
+}
+
+addTagToList(tag) {
+  // チェックボックス + スタイル付きラベルを動的生成
+  // 新規タグは checked: true で自動選択
+}
+```
+
+#### 5.4 タグ削除時の使用中チェック
+
+**課題**: 使用中のタグでも削除可能（データ整合性リスク）
+
+**解決策**: 削除前にカルテでの使用をチェック
+
+**実装** (`app/controllers/tags_controller.rb`):
+```ruby
+def destroy
+  if @tag.medical_records.exists?
+    redirect_to tags_path, alert: "このタグは#{@tag.medical_records.count}件のカルテで使用中です。削除できません。"
+  else
+    @tag.destroy
+    redirect_to tags_path, notice: 'タグを削除しました。'
+  end
+end
+```
+
+**テスト追加**:
+```ruby
+describe 'DELETE /tags/:id' do
+  context 'タグが使用されている場合' do
+    before { medical_record.tags << tag }
+
+    it 'タグを削除しない' do
+      expect { delete tag_path(tag) }.not_to change(Tag, :count)
+    end
+
+    it 'エラーメッセージを表示する' do
+      delete tag_path(tag)
+      expect(flash[:alert]).to include('使用中です')
+    end
+  end
+end
+```
+
+#### 5.5 不要なビューファイル削除
+
+**レビュー指摘**: create/update/destroy.html.erb は不要
+
+**理由**:
+- `create`: JSON APIのみ使用
+- `update`, `destroy`: リダイレクトで十分
+
+**削除したファイル**:
+- `app/views/tags/create.html.erb`
+- `app/views/tags/update.html.erb`
+- `app/views/tags/destroy.html.erb`
+- 対応するspec
+
+ファイル3つ
+
+### 技術的課題と解決
+
+#### 課題1: ネストフォーム問題（Critical）
+
+**問題**: 写真削除の`button_to`が`<form>`タグを生成し、メインフォーム内にネストフォームが発生 → フォーム送信が機能不全
+
+**発生箇所**: `app/views/medical_records/_form.html.erb:153`
+```erb
+<!-- 問題のあるコード -->
+<%= button_to remove_photo_medical_record_path(...), method: :delete do %>
+  <!-- この内部でformタグが生成される -->
+<% end %>
+```
+
+**根本原因**: HTMLは`<form>`のネストを禁止しており、ブラウザが不正なDOMを構築
+
+**解決策**: `link_to` + `turbo_method` に変更
+```erb
+<%= link_to remove_photo_medical_record_path(medical_record, photo_id: attachment.id),
+    data: { turbo_method: :delete, turbo_confirm: 'この画像を削除しますか？' },
+    class: "... inline-block" do %>
+  <!-- リンクなのでネストフォーム問題なし -->
+<% end %>
+```
+
+#### 課題2: Stimulus Target エラー
+
+**問題**: `Cannot set property modalTarget which has only a getter`
+
+**原因**: Stimulus targetsは読み取り専用プロパティ
+
+**解決策**: 直接DOM参照に変更
+```javascript
+// Before (エラー)
+this.modalTarget = document.getElementById('tag-modal')
+
+// After (修正)
+const modal = document.getElementById('tag-modal')
+```
+
+#### 課題3: Rails 7.1 API変更
+
+**問題**: `NoMethodError: undefined method 'keys' for #<ActiveModel::Errors>`
+
+**原因**: Rails 7.1で`errors.keys`が`errors.attribute_names`に変更
+
+**修正** (`app/models/medical_record.rb:57`):
+```ruby
+# Before
+cost_items_error_keys = errors.keys.select { |key| key.to_s.start_with?('cost_items') }
+
+# After
+cost_items_error_keys = errors.attribute_names.select { |key| key.to_s.start_with?('cost_items') }
+```
+
+#### 課題4: Rubocop AbcSize 違反
+
+**問題**: メソッドの複雑度超過（17制限）
+
+**修正**: メソッド分割
+```ruby
+# TagsController#create: 20.2 → 17以下に分割
+def create
+  @tag = current_user.tags.build(tag_params)
+  if @tag.save
+    respond_to_success  # 分割
+  else
+    respond_to_failure  # 分割
+  end
+end
+
+def respond_to_success
+  respond_to do |format|
+    format.html { redirect_to tags_path, notice: 'タグを作成しました。' }
+    format.json { render json: tag_json, status: :created }
+  end
+end
+
+# MedicalRecord#localize_cost_items_errors: 22.02 → 4メソッドに分割
+```
+
+### コードレビュー対応
+
+**エージェント使用**:
+1. **general-purpose**: 初回レビュー（総合評価 9.2/10）
+2. **root-cause-analyst**: 根本原因分析（リスクレベル: Low、技術的負債: Medium 6/10）
+
+**レビュー結果サマリー**:
+
+#### ✅ 優れている点
+- 堅牢なアーキテクチャ設計（多対多関連、複合インデックス）
+- 優れたUX設計（アコーディオン、リアルタイム追加）
+- 包括的なテストカバレッジ（302 examples, 0 failures）
+- セキュリティ対策完備（認証、ユーザー隔離、CSRF保護）
+- コード品質（Rubocop準拠、Rails 7.1対応）
+
+#### 🔧 対応した改善提案
+- ✅ 不要なビューファイル削除
+- ✅ タグ削除時の使用中チェック追加
+- ✅ テストケース追加
+
+#### 🔮 将来的な改善提案（Phase 4以降）
+- N+1クエリ対策（カウンターキャッシュ）
+- エラー表示のUX改善（alert() → toast通知）
+- タグ名の大文字小文字を無視した重複チェック
+
+### テスト
+
+**追加したテスト**:
+```ruby
+# spec/models/tag_spec.rb
+- アソシエーション、バリデーション、スコープ
+
+# spec/models/medical_record_tag_spec.rb
+- 中間テーブルのユニーク制約
+
+# spec/requests/tags_spec.rb (26 examples)
+- CRUD操作全般
+- 認証チェック
+- タグ削除の使用中チェック（新規追加）
+```
+
+**テスト結果**:
+```
+302 examples, 0 failures, 14 pending
+Rubocop: 62 files inspected, no offenses detected
+```
+
+### 成果
+
+- ✅ タグモデル・コントローラー・ビュー作成完了
+- ✅ カルテへのタグ付け機能（多対多関連）
+- ✅ アコーディオン形式のタグ作成UI
+- ✅ AJAXによるページ遷移なしタグ作成
+- ✅ タグ削除時の使用中チェック
+- ✅ ネストフォーム問題の解決
+- ✅ Rails 7.1互換性対応
+- ✅ Rubocop AbcSize違反修正
+- ✅ コードレビュー対応完了
+- ✅ テストカバレッジ維持
+
+### コミット
+
+**初回コミット**:
+```bash
+git commit -m "feat: Phase 3-06 タグ機能実装
+
+## 実装内容
+- タグモデル・コントローラー・ビュー作成
+- カルテへのタグ付け機能（多対多関連）
+- カルテフォーム内でのタグ作成（アコーディオン形式）
+- タグ管理画面（一覧・作成・編集・削除）
+
+## 主な修正
+- ネストフォーム問題の修正（button_to → link_to）
+- コスト項目バリデーションエラーの日本語化
+- Rails 7.1対応（errors.keys → errors.attribute_names）
+- Rubocop AbcSize違反の修正（メソッド分割）
+
+## テスト
+- タグモデル・関連のテスト追加
+- リクエストスペック追加
+- 全テストパス: 300 examples, 0 failures"
+```
+
+**レビュー対応コミット**:
+```bash
+git commit -m "refactor: レビュー指摘事項の対応
+
+## 変更内容
+
+### ファイル削除
+- 不要なビューファイルを削除（create/update/destroy.html.erb）
+- 対応するspecファイルも削除
+- JSON APIとリダイレクトで十分なため不要
+
+### 機能追加
+- タグ削除時の使用中チェック実装
+- 使用中のタグは削除不可、カルテ件数を含むエラーメッセージ表示
+- テストケース追加（使用中/未使用時の削除動作）
+
+## テスト結果
+- 302 examples, 0 failures
+- Rubocop violations: 0"
+```
+
+---
+
+## 6. 未実装機能と先延ばし課題
+
+### 6.1 Phase 3 残りの実装
 
 #### Phase 3中盤（機能実装優先）
 
 | タスク | 優先度 | 推定時間 | 詳細 | 状態 |
 |--------|--------|---------|------|------|
 | ~~画像アップロード（Active Storage）~~ | 🔴 高 | 4h | カルテに施術写真を添付（最大5枚） | ✅ 完了（PR #7） |
-| タグ機能 | 🟡 中 | 3h | Tag + MedicalRecordTag中間テーブル | ⏳ 次回 |
-| 検索強化（Ransack） | 🟡 中 | 3h | 複雑な条件での検索機能 | ⏳ 未着手 |
+| ~~タグ機能~~ | 🟡 中 | 3h | Tag + MedicalRecordTag中間テーブル | ✅ 完了（PR #8） |
+| 検索強化（Ransack） | 🟡 中 | 3h | 複雑な条件での検索機能 | ⏳ 次回 |
 
 #### Phase 3後半（機能実装完了後）
 
@@ -624,7 +1002,7 @@ Co-Authored-By: Claude <noreply@anthropic.com>"
 - 仕様固定後に一気に書く方が効率的
 - CI実行時間の最適化も同時実施
 
-### 5.2 Important Issues（Phase 4持ち越し）
+### 6.2 Important Issues（Phase 4持ち越し）
 
 PR #6のコードレビューで発見された改善項目。現状動作しているが、保守性・品質向上のため将来対応が必要。
 
@@ -694,7 +1072,7 @@ self.subtotal = unit_price * quantity
 **対応時期**: Phase 3後半（全機能実装後）
 **延期理由**: 仕様変更頻度が高く、機能固定後に一気に書く方が効率的
 
-### 5.3 設計書との整合性確認
+### 6.3 設計書との整合性確認
 
 #### ✅ 整合性OK
 - User, Facility, Patient, Questionnaire: Phase 2で実装完了
@@ -702,7 +1080,7 @@ self.subtotal = unit_price * quantity
 - ネスト属性、動的フォーム: Phase 3で実装完了
 
 #### ⏳ 未実装（設計書に記載あり）
-- **Tag, MedicalRecordTag**: タグ機能（Phase 3残り）
+- ~~**Tag, MedicalRecordTag**: タグ機能~~ → ✅ Phase 3-06で実装完了
 - **Invoice**: 請求書機能（Phase 4予定）
 - ~~**Active Storage設定**: 画像アップロード~~ → ✅ Phase 3-05で実装完了
 - **Ransack gem**: 高度な検索（Phase 3残り）
@@ -717,34 +1095,36 @@ self.subtotal = unit_price * quantity
   - `notes` (メモ)
 - **理由**: より実用的なカルテ項目に変更
 
-### 5.4 次回セッション推奨
+### 6.4 次回セッション推奨
 
 #### Phase 3中盤の実装順序
 
 **優先度1**: ~~画像アップロード機能（Active Storage）~~ → ✅ 完了（PR #7）
 
-**優先度2**: タグ機能（次回実装）
-- **理由**: カルテ分類・検索の基盤
-- **工数**: 3h
-- **ブランチ**: `feature/p3-06-tags`
+**優先度2**: ~~タグ機能~~ → ✅ 完了（PR #8）
 
-**優先度3**: 検索強化（Ransack）
+**優先度3**: 検索強化（Ransack）（次回実装）
 - **理由**: タグ機能と組み合わせて高度な検索を実現
-- **工数**: 3h
-- **ブランチ**: `feature/p3-08-ransack-search`
+- **工数**: 3-4h
+- **ブランチ**: `feature/p3-07-ransack-search`
+- **実装内容**:
+  - Ransack gem導入
+  - カルテ検索フォーム（患者名、タグ、日付範囲、施設）
+  - 検索結果のソート機能
+  - ページネーション統合
 
 #### Phase 3後半（全機能実装後）
 
 **最終仕上げ**: System E2Eテスト拡充
 - **理由**: 仕様固定後に一気に書く（CI最適化含む）
 - **工数**: 6-8h
-- **ブランチ**: `feature/p3-09-e2e-tests`
+- **ブランチ**: `feature/p3-08-e2e-tests`
 
 **準備**:
 ```bash
-# 次回セッション開始時（タグ機能から）
+# 次回セッション開始時（検索機能から）
 git checkout main && git pull
-git checkout -b feature/p3-06-tags
+git checkout -b feature/p3-07-ransack-search
 ```
 
 ---
@@ -757,6 +1137,7 @@ git checkout -b feature/p3-06-tags
 | 1.1 | 2025-10-13 | PR番号修正 (#4-6), PR #6マージ完了記録 |
 | 1.2 | 2025-10-13 | 未実装機能・Important Issues・設計書整合性を追加、E2E実装タイミング調整 |
 | 1.3 | 2025-10-13 | Phase 3-05（画像アップロード機能）完了記録、PR #7追加 |
+| 1.4 | 2025-10-13 | Phase 3-06（タグ機能）完了記録、PR #8追加、次回実装はRansack検索 |
 
 ---
 
