@@ -10,9 +10,23 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2025_10_13_010625) do
+ActiveRecord::Schema[7.1].define(version: 2025_10_13_021339) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
+
+  create_table "cost_items", force: :cascade do |t|
+    t.bigint "medical_record_id", null: false
+    t.string "item_name", null: false
+    t.integer "quantity", default: 1, null: false
+    t.decimal "unit_price", precision: 10, scale: 2, null: false
+    t.decimal "total_price", precision: 10, scale: 2, null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.bigint "cost_sheet_id"
+    t.index ["cost_sheet_id"], name: "index_cost_items_on_cost_sheet_id"
+    t.index ["medical_record_id", "created_at"], name: "index_cost_items_on_medical_record_id_and_created_at"
+    t.index ["medical_record_id"], name: "index_cost_items_on_medical_record_id"
+  end
 
   create_table "cost_sheets", force: :cascade do |t|
     t.bigint "user_id", null: false
@@ -116,6 +130,8 @@ ActiveRecord::Schema[7.1].define(version: 2025_10_13_010625) do
     t.index ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true
   end
 
+  add_foreign_key "cost_items", "cost_sheets"
+  add_foreign_key "cost_items", "medical_records"
   add_foreign_key "cost_sheets", "users"
   add_foreign_key "facilities", "users"
   add_foreign_key "medical_records", "facilities"

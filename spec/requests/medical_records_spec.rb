@@ -80,6 +80,38 @@ RSpec.describe 'MedicalRecords', type: :request do
       end
     end
 
+    context 'コスト項目を含むパラメータの場合' do
+      let(:valid_params_with_costs) do
+        {
+          medical_record: {
+            patient_id: patient.id,
+            facility_id: facility.id,
+            visit_date: Date.today,
+            treatment_location: '顔全体',
+            chief_complaint: 'しわが気になる',
+            diagnosis: '加齢による皮膚の弾力低下',
+            treatment_content: 'ボトックス注射を実施',
+            cost_items_attributes: [
+              { item_name: 'ボトックス注射', quantity: 1, unit_price: 50_000 },
+              { item_name: 'ヒアルロン酸注射', quantity: 2, unit_price: 30_000 },
+            ],
+          },
+        }
+      end
+
+      it 'カルテとコスト項目が同時に作成される' do
+        expect do
+          post medical_records_path, params: valid_params_with_costs
+        end.to change(MedicalRecord, :count).by(1)
+           .and change(CostItem, :count).by(2)
+      end
+
+      it '作成されたカルテの合計金額が正しい' do
+        post medical_records_path, params: valid_params_with_costs
+        expect(MedicalRecord.last.total_cost).to eq(110_000)
+      end
+    end
+
     context '無効なパラメータの場合' do
       let(:invalid_params) do
         {

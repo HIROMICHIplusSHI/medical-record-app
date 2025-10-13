@@ -2,6 +2,14 @@ class MedicalRecord < ApplicationRecord
   belongs_to :patient
   belongs_to :facility
   belongs_to :user
+  has_many :cost_items, dependent: :destroy
+
+  accepts_nested_attributes_for :cost_items, allow_destroy: true, reject_if: :all_blank
+
+  # コスト項目の合計金額を計算
+  def total_cost
+    cost_items.sum(:total_price)
+  end
 
   # バリデーション
   validates :visit_date, presence: true

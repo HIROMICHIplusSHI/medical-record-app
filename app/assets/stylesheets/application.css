@@ -13,3 +13,51 @@
  *= require_tree .
  *= require_self
  */
+
+/* セレクトボックスのオプション文字サイズを大きく */
+select option {
+  font-size: 20px;
+  padding: 14px 18px;
+  line-height: 1.7;
+  min-height: 48px;
+}
+
+/* Tom Select カスタマイズ - iPad最適化 */
+.ts-wrapper .ts-control {
+  min-height: 44px;
+  padding: 10px 14px;
+  font-size: 16px;
+  line-height: 1.5;
+}
+
+.ts-wrapper .ts-control input {
+  font-size: 16px;
+}
+
+.ts-dropdown .option {
+  font-size: 16px;
+  padding: 12px 14px;
+  min-height: 44px;
+  line-height: 1.5;
+}
+
+.ts-dropdown .option.active {
+  background-color: #3b82f6;
+  color: white;
+}
+
+.ts-wrapper .item {
+  font-size: 16px;
+  padding: 4px 8px;
+}
+
+/* ドロップダウンをタップしやすく */
+.ts-dropdown {
+  max-height: 400px;
+}
+
+.ts-dropdown .optgroup-header {
+  font-size: 15px;
+  padding: 10px 14px;
+  font-weight: 600;
+}

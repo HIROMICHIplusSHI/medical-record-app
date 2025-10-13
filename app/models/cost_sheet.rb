@@ -1,5 +1,6 @@
 class CostSheet < ApplicationRecord
   belongs_to :user
+  has_many :cost_items, dependent: :nullify
 
   # カテゴリ定数
   CATEGORIES = {

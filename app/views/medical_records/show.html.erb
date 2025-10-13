@@ -50,6 +50,44 @@
         <% end %>
       </dl>
     </div>
+
+    <!-- コスト項目セクション -->
+    <% if @medical_record.cost_items.any? %>
+      <div class="border-t border-gray-200">
+        <div class="px-4 py-5 sm:px-6">
+          <h3 class="text-lg leading-6 font-medium text-gray-900">コスト項目</h3>
+        </div>
+        <div class="border-t border-gray-200">
+          <table class="min-w-full divide-y divide-gray-200">
+            <thead class="bg-gray-50">
+              <tr>
+                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">項目名</th>
+                <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">数量</th>
+                <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">単価</th>
+                <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">合計</th>
+              </tr>
+            </thead>
+            <tbody class="bg-white divide-y divide-gray-200">
+              <% @medical_record.cost_items.each do |cost_item| %>
+                <tr>
+                  <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900"><%= cost_item.item_name %></td>
+                  <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 text-right"><%= cost_item.quantity %></td>
+                  <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 text-right">¥<%= number_with_delimiter(cost_item.unit_price.to_i) %></td>
+                  <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 text-right font-medium">¥<%= number_with_delimiter(cost_item.total_price.to_i) %></td>
+                </tr>
+              <% end %>
+            </tbody>
+            <tfoot class="bg-gray-50">
+              <tr>
+                <td colspan="3" class="px-6 py-4 text-right text-sm font-semibold text-gray-900">合計金額</td>
+                <td class="px-6 py-4 whitespace-nowrap text-right text-base font-bold text-gray-900">¥<%= number_with_delimiter(@medical_record.total_cost.to_i) %></td>
+              </tr>
+            </tfoot>
+          </table>
+        </div>
+      </div>
+    <% end %>
+
     <div class="px-4 py-3 bg-gray-50 text-right sm:px-6">
       <%= link_to '一覧に戻る', medical_records_path, class: "inline-flex items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500" %>
     </div>

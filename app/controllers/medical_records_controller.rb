@@ -48,7 +48,9 @@ class MedicalRecordsController < ApplicationController
   private
 
   def set_medical_record
-    @medical_record = current_user.medical_records.find(params[:id])
+    @medical_record = current_user.medical_records
+                                  .includes(:cost_items)
+                                  .find(params[:id])
   end
 
   def medical_record_params
@@ -60,12 +62,14 @@ class MedicalRecordsController < ApplicationController
       :chief_complaint,
       :diagnosis,
       :treatment_content,
-      :notes
+      :notes,
+      cost_items_attributes: %i[id cost_sheet_id item_name quantity unit_price _destroy]
     )
   end
 
   def load_form_data
     @patients = current_user.patients.order(:name)
     @facilities = current_user.facilities.by_name
+    @cost_sheets = current_user.cost_sheets.by_name
   end
 end

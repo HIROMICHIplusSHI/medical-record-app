@@ -1,0 +1,40 @@
+<div class="cost-item-row bg-gray-50 p-4 rounded-lg">
+  <div class="grid grid-cols-1 gap-4 sm:grid-cols-12">
+    <div class="sm:col-span-12 mb-2">
+      <%= f.label :cost_sheet_id, "コストシートから選択（任意）", class: "block text-base font-medium text-gray-700 mb-1" %>
+      <%= f.collection_select :cost_sheet_id, @cost_sheets || [], :id, :item_name, { prompt: 'コストシートから選択', include_blank: true }, { class: "cost-sheet-select mt-1 block w-full px-4 py-3 text-base border-gray-300 focus:outline-none focus:ring-blue-500 focus:border-blue-500 rounded-md shadow-sm", data: { controller: "tom-select" } } %>
+    </div>
+
+    <div class="sm:col-span-5">
+      <%= f.label :item_name, "項目名", class: "block text-sm font-medium text-gray-700" %>
+      <%= f.text_field :item_name, class: "item-name-field mt-1 focus:ring-blue-500 focus:border-blue-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md", placeholder: "例: ボトックス注射" %>
+    </div>
+
+    <div class="sm:col-span-2">
+      <%= f.label :quantity, "数量", class: "block text-sm font-medium text-gray-700" %>
+      <%= f.number_field :quantity, value: f.object.quantity || 1, min: 1, class: "quantity-field mt-1 focus:ring-blue-500 focus:border-blue-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md" %>
+    </div>
+
+    <div class="sm:col-span-2">
+      <%= f.label :unit_price, "単価", class: "block text-sm font-medium text-gray-700" %>
+      <%= f.number_field :unit_price, step: 1, min: 0, class: "unit-price-field mt-1 focus:ring-blue-500 focus:border-blue-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md", placeholder: "0" %>
+    </div>
+
+    <div class="sm:col-span-2">
+      <%= f.label :total_price, "合計", class: "block text-sm font-medium text-gray-700" %>
+      <div class="total-price mt-1 block w-full py-2 px-3 bg-gray-100 border border-gray-300 rounded-md text-sm text-gray-700">
+        ¥0
+      </div>
+    </div>
+
+    <div class="sm:col-span-1 flex items-end">
+      <button type="button" class="remove-cost-item w-full inline-flex justify-center items-center px-3 py-2 border border-red-300 shadow-sm text-sm font-medium rounded-md text-red-700 bg-white hover:bg-red-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500">
+        <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+        </svg>
+      </button>
+    </div>
+  </div>
+
+  <%= f.hidden_field :_destroy, class: "destroy-field" %>
+</div>

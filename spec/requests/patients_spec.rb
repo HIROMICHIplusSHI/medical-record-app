@@ -91,49 +91,58 @@ RSpec.describe 'Patients', type: :request do
 
     context 'ページネーション' do
       it 'デフォルトで25件ずつ表示する' do
-        patients = create_list(:patient, 30, user: user)
+        # created_atを明示的に設定してソート順を確定
+        # patients[0] = 1秒前, patients[29] = 30秒前
+        patients = (1..30).map do |i|
+          create(:patient, user: user, created_at: i.seconds.ago)
+        end
         get patients_path
         expect(response).to have_http_status(:success)
-        # recentスコープで降順なので、最後の25件が表示される
-        patients.last(25).each do |patient|
+        # recentスコープで降順なので、最初の25件（1-25秒前、配列で0-24）が表示される
+        patients.first(25).each do |patient|
           expect(response.body).to include(patient.name)
         end
-        # 最初の5件は表示されない
-        patients.first(5).each do |patient|
+        # 最後の5件（26-30秒前、配列で25-29）は表示されない
+        patients.last(5).each do |patient|
           expect(response.body).not_to include(patient.name)
         end
       end
 
       it 'pageパラメータで2ページ目を表示できる' do
-        patients = create_list(:patient, 30, user: user)
+        # created_atを明示的に設定してソート順を確定
+        # patients[0] = 1秒前, patients[29] = 30秒前
+        patients = (1..30).map do |i|
+          create(:patient, user: user, created_at: i.seconds.ago)
+        end
         get patients_path, params: { page: 2 }
         expect(response).to have_http_status(:success)
-        # 2ページ目なので最初の5件が表示される
-        patients.first(5).each do |patient|
+        # recentスコープで降順なので、2ページ目には最後の5件（26-30秒前、配列で25-29）が表示される
+        patients.last(5).each do |patient|
           expect(response.body).to include(patient.name)
         end
-        # 最後の25件は表示されない
-        patients.last(25).each do |patient|
+        # 最初の25件（1-25秒前、配列で0-24）は表示されない
+        patients.first(25).each do |patient|
           expect(response.body).not_to include(patient.name)
         end
       end
 
       it '検索結果にもページネーションが適用される' do
-        # 検索でヒットする患者30名（ゼロパディングで一意性を確保）
+        # 検索でヒットする患者30名（created_atを明示的に設定）
+        # search_patients[0] = 1秒前, search_patients[29] = 30秒前
         search_patients = (1..30).map do |i|
-          create(:patient, user: user, name: "検索テスト患者#{format('%02d', i)}")
+          create(:patient, user: user, name: "検索テスト患者#{format('%02d', i)}", created_at: i.seconds.ago)
         end
         # ヒットしない患者5名
         create_list(:patient, 5, user: user, name: '別の患者')
 
         get patients_path, params: { query: '検索テスト' }
         expect(response).to have_http_status(:success)
-        # recentスコープで降順なので、最後の25件が表示される
-        search_patients.last(25).each do |patient|
+        # recentスコープで降順なので、最初の25件（1-25秒前、配列で0-24）が表示される
+        search_patients.first(25).each do |patient|
           expect(response.body).to include(patient.name)
         end
-        # 最初の5件は表示されない
-        search_patients.first(5).each do |patient|
+        # 最後の5件（26-30秒前、配列で25-29）は表示されない
+        search_patients.last(5).each do |patient|
           expect(response.body).not_to include(patient.name)
         end
       end

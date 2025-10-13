@@ -30,3 +30,20 @@ cost_sheets_data.each do |data|
 end
 
 puts "#{CostSheet.count} cost sheets created"
+
+# 施術場所のサンプルデータ作成
+facilities_data = [
+  { name: '本院（東京）', address: '東京都渋谷区〇〇1-2-3', phone: '03-1234-5678' },
+  { name: '大阪分院', address: '大阪府大阪市北区△△2-3-4', phone: '06-2345-6789' },
+  { name: '名古屋分院', address: '愛知県名古屋市中区□□3-4-5', phone: '052-3456-7890' },
+  { name: '福岡分院', address: '福岡県福岡市中央区◇◇4-5-6', phone: '092-4567-8901' },
+]
+
+facilities_data.each do |data|
+  Facility.find_or_create_by!(user: user, name: data[:name]) do |f|
+    f.address = data[:address]
+    f.phone = data[:phone]
+  end
+end
+
+puts "#{Facility.count} facilities created"
