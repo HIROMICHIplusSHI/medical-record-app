@@ -301,4 +301,159 @@ RSpec.describe 'MedicalRecords', type: :request do
       expect(response).to redirect_to(new_user_session_path)
     end
   end
+
+  describe 'Ransack検索機能' do
+    let(:patient_a) { create(:patient, user: user, name: '山田太郎') }
+    let(:patient_b) { create(:patient, user: user, name: '佐藤花子') }
+    let(:facility_a) { create(:facility, user: user, name: '東京院') }
+    let(:facility_b) { create(:facility, user: user, name: '大阪院') }
+    let(:tag_a) { create(:tag, user: user, name: 'ボトックス') }
+    let(:tag_b) { create(:tag, user: user, name: 'ヒアルロン酸') }
+
+    let!(:record1) do
+      create(:medical_record,
+             user: user,
+             patient: patient_a,
+             facility: facility_a,
+             visit_date: Date.new(2025, 1, 10),
+             chief_complaint: '額のしわが気になる',
+             tags: [tag_a])
+    end
+
+    let!(:record2) do
+      create(:medical_record,
+             user: user,
+             patient: patient_b,
+             facility: facility_b,
+             visit_date: Date.new(2025, 2, 15),
+             chief_complaint: 'ほうれい線の改善',
+             tags: [tag_b])
+    end
+
+    let!(:record3) do
+      create(:medical_record,
+             user: user,
+             patient: patient_a,
+             facility: facility_a,
+             visit_date: Date.new(2025, 3, 20),
+             chief_complaint: '目元のたるみ',
+             tags: [tag_a, tag_b])
+    end
+
+    describe '患者名で検索' do
+      it '患者名の部分一致で検索できる' do
+        get medical_records_path, params: { q: { patient_name_cont: '山田' } }
+        expect(response).to have_http_status(:success)
+        expect(response.body).to include('額のしわが気になる')
+        expect(response.body).to include('目元のたるみ')
+        expect(response.body).not_to include('ほうれい線の改善')
+      end
+    end
+
+    describe '施設で検索' do
+      it '施設IDで検索できる' do
+        get medical_records_path, params: { q: { facility_id_eq: facility_a.id } }
+        expect(response).to have_http_status(:success)
+        expect(response.body).to include('額のしわが気になる')
+        expect(response.body).to include('目元のたるみ')
+        expect(response.body).not_to include('ほうれい線の改善')
+      end
+    end
+
+    describe '日付範囲で検索' do
+      it '来院日の範囲で検索できる' do
+        get medical_records_path, params: {
+          q: {
+            visit_date_gteq: Date.new(2025, 2, 1),
+            visit_date_lteq: Date.new(2025, 2, 28),
+          },
+        }
+        expect(response).to have_http_status(:success)
+        expect(response.body).to include('ほうれい線の改善')
+        expect(response.body).not_to include('額のしわが気になる')
+        expect(response.body).not_to include('目元のたるみ')
+      end
+    end
+
+    describe 'タグで検索' do
+      it 'タグIDで検索できる' do
+        get medical_records_path, params: { q: { tags_id_eq: tag_a.id } }
+        expect(response).to have_http_status(:success)
+        expect(response.body).to include('額のしわが気になる')
+        expect(response.body).to include('目元のたるみ')
+        expect(response.body).not_to include('ほうれい線の改善')
+      end
+    end
+
+    describe '主訴・診断・施術内容で検索' do
+      it '主訴のキーワードで検索できる' do
+        get medical_records_path, params: { q: { chief_complaint_cont: 'しわ' } }
+        expect(response).to have_http_status(:success)
+        expect(response.body).to include('額のしわが気になる')
+        expect(response.body).not_to include('ほうれい線の改善')
+        expect(response.body).not_to include('目元のたるみ')
+      end
+    end
+
+    describe '複合検索' do
+      it '複数の条件を組み合わせて検索できる' do
+        get medical_records_path, params: {
+          q: {
+            patient_name_cont: '山田',
+            facility_id_eq: facility_a.id,
+            tags_id_eq: tag_a.id,
+          },
+        }
+        expect(response).to have_http_status(:success)
+        expect(response.body).to include('額のしわが気になる')
+        expect(response.body).to include('目元のたるみ')
+        expect(response.body).not_to include('ほうれい線の改善')
+      end
+    end
+
+    describe 'ソート機能' do
+      it '来院日の昇順でソートできる' do
+        get medical_records_path, params: { q: { s: 'visit_date asc' } }
+        expect(response).to have_http_status(:success)
+        # 最初のカルテが record1 (2025-01-10) であることを確認
+        body = response.body
+        index1 = body.index('額のしわが気になる')
+        index2 = body.index('ほうれい線の改善')
+        index3 = body.index('目元のたるみ')
+        expect(index1).to be < index2
+        expect(index2).to be < index3
+      end
+
+      it '来院日の降順でソートできる' do
+        get medical_records_path, params: { q: { s: 'visit_date desc' } }
+        expect(response).to have_http_status(:success)
+        # 最初のカルテが record3 (2025-03-20) であることを確認
+        body = response.body
+        index1 = body.index('額のしわが気になる')
+        index2 = body.index('ほうれい線の改善')
+        index3 = body.index('目元のたるみ')
+        expect(index3).to be < index2
+        expect(index2).to be < index1
+      end
+    end
+
+    describe '他のユーザーのデータは検索されない' do
+      let(:other_user) { create(:user) }
+      let(:other_patient) { create(:patient, user: other_user, name: '鈴木一郎') }
+      let(:other_facility) { create(:facility, user: other_user, name: '福岡院') }
+      let!(:other_record) do
+        create(:medical_record,
+               user: other_user,
+               patient: other_patient,
+               facility: other_facility,
+               chief_complaint: '他のユーザーのカルテ')
+      end
+
+      it '他のユーザーのカルテは検索結果に含まれない' do
+        get medical_records_path, params: { q: { chief_complaint_cont: 'カルテ' } }
+        expect(response).to have_http_status(:success)
+        expect(response.body).not_to include('他のユーザーのカルテ')
+      end
+    end
+  end
 end
