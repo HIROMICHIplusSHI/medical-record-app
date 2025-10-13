@@ -44,7 +44,9 @@ RSpec.describe 'Header Navigation', type: :system do
       within('header') do
         # 現在のページリンクが特別なスタイルを持つ
         # Tailwindの場合、bg-blue-700やborder-bottomなどでハイライト
-        expect(page).to have_css('a[href="/medical_records"].bg-blue-700, a[href="/medical_records"][aria-current="page"]')
+        selector = 'a[href="/medical_records"].bg-blue-700, ' \
+                   'a[href="/medical_records"][aria-current="page"]'
+        expect(page).to have_css(selector)
       end
     end
 
@@ -52,7 +54,8 @@ RSpec.describe 'Header Navigation', type: :system do
       visit patients_path
 
       within('header') do
-        expect(page).to have_css('a[href="/patients"].bg-blue-700, a[href="/patients"][aria-current="page"]')
+        selector = 'a[href="/patients"].bg-blue-700, a[href="/patients"][aria-current="page"]'
+        expect(page).to have_css(selector)
       end
     end
   end
