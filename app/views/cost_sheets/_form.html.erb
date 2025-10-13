@@ -1,0 +1,58 @@
+<%= form_with(model: cost_sheet, local: true, class: "space-y-6") do |f| %>
+  <% if cost_sheet.errors.any? %>
+    <div class="bg-red-50 border-l-4 border-red-400 p-4 mb-4">
+      <div class="flex">
+        <div class="flex-shrink-0">
+          <svg class="h-5 w-5 text-red-400" viewBox="0 0 20 20" fill="currentColor">
+            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"/>
+          </svg>
+        </div>
+        <div class="ml-3">
+          <h3 class="text-sm font-medium text-red-800">
+            <%= pluralize(cost_sheet.errors.count, "件") %>のエラーがあります
+          </h3>
+          <div class="mt-2 text-sm text-red-700">
+            <ul class="list-disc list-inside space-y-1">
+              <% cost_sheet.errors.full_messages.each do |message| %>
+                <li><%= message %></li>
+              <% end %>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  <% end %>
+
+  <div>
+    <%= f.label :item_name, "項目名", class: "block text-sm font-medium text-gray-700" %>
+    <%= f.text_field :item_name, class: "mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm", placeholder: "例: フェイシャル施術" %>
+  </div>
+
+  <div>
+    <%= f.label :standard_price, "標準価格", class: "block text-sm font-medium text-gray-700" %>
+    <div class="mt-1 relative rounded-md shadow-sm">
+      <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+        <span class="text-gray-500 sm:text-sm">¥</span>
+      </div>
+      <%= f.number_field :standard_price, class: "block w-full pl-7 pr-12 rounded-md border-gray-300 focus:border-blue-500 focus:ring-blue-500 sm:text-sm", placeholder: "10000" %>
+    </div>
+  </div>
+
+  <div>
+    <%= f.label :category, "カテゴリ", class: "block text-sm font-medium text-gray-700" %>
+    <%= f.select :category,
+                 options_for_select(CostSheet::CATEGORIES.map { |k, v| [v, k] }, cost_sheet.category),
+                 { include_blank: "カテゴリを選択" },
+                 class: "mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm" %>
+  </div>
+
+  <div>
+    <%= f.label :memo, "メモ", class: "block text-sm font-medium text-gray-700" %>
+    <%= f.text_area :memo, rows: 4, class: "mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm", placeholder: "施術に関する補足情報など" %>
+  </div>
+
+  <div class="flex items-center justify-between pt-4">
+    <%= link_to "キャンセル", cost_sheets_path, class: "text-gray-600 hover:text-gray-900 font-medium" %>
+    <%= f.submit "保存", class: "bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-6 rounded-lg shadow cursor-pointer" %>
+  </div>
+<% end %>
