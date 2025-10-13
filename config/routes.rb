@@ -8,6 +8,7 @@ Rails.application.routes.draw do
       resource :questionnaire, only: [:new, :create, :edit, :update, :destroy]
     end
     resources :cost_sheets
+    resources :tags
     resources :medical_records do
       member do
         delete :remove_photo

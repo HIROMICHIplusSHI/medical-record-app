@@ -3,6 +3,8 @@ class MedicalRecord < ApplicationRecord
   belongs_to :facility
   belongs_to :user
   has_many :cost_items, dependent: :destroy
+  has_many :medical_record_tags, dependent: :destroy
+  has_many :tags, through: :medical_record_tags
   has_many_attached :photos
 
   accepts_nested_attributes_for :cost_items, allow_destroy: true, reject_if: :all_blank
@@ -20,6 +22,9 @@ class MedicalRecord < ApplicationRecord
   validates :treatment_content, presence: true
   validate :photos_count_limit
   validate :photos_size_limit
+
+  # コールバック
+  after_validation :localize_cost_items_errors
 
   # スコープ
   scope :recent, -> { order(visit_date: :desc, created_at: :desc) }
@@ -44,6 +49,31 @@ class MedicalRecord < ApplicationRecord
 
     photos.each do |photo|
       errors.add(:photos, "#{photo.filename}のサイズが10MBを超えています") if photo.byte_size > 10.megabytes
+    end
+  end
+
+  def localize_cost_items_errors
+    remove_cost_items_errors
+    add_localized_cost_items_errors
+  end
+
+  def remove_cost_items_errors
+    cost_items_error_keys = errors.attribute_names.select { |key| key.to_s.start_with?('cost_items') }
+    cost_items_error_keys.each { |key| errors.delete(key) }
+  end
+
+  def add_localized_cost_items_errors
+    cost_items.each_with_index do |cost_item, index|
+      next if cost_item.marked_for_destruction? || cost_item.valid?
+
+      add_item_errors(cost_item, index)
+    end
+  end
+
+  def add_item_errors(cost_item, index)
+    cost_item.errors.each do |error|
+      attribute_name = CostItem.human_attribute_name(error.attribute)
+      errors.add(:base, "コスト項目#{index + 1}: #{attribute_name}#{error.message}")
     end
   end
 end
