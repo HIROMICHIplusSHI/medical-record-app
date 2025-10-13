@@ -4,7 +4,7 @@ require 'capybara/rspec'
 require 'capybara/cuprite'
 
 # Capybara基本設定
-Capybara.default_max_wait_time = 5
+Capybara.default_max_wait_time = 10 # CI環境での待機時間を延長
 Capybara.default_normalize_ws = true
 
 # Cupriteドライバー設定（ヘッドレスChrome）
@@ -15,7 +15,10 @@ Capybara.register_driver(:cuprite) do |app|
     browser_options: {
       'no-sandbox': nil,
       'disable-gpu': nil,
+      'disable-dev-shm-usage': nil, # CI環境での共有メモリ問題を回避
     },
+    process_timeout: 20, # CI環境でのブラウザ起動タイムアウトを延長
+    timeout: 10, # レスポンスタイムアウト
     inspector: ENV.fetch('INSPECTOR', nil),
     headless: !ENV['HEADLESS'].in?(%w[n 0 no false])
   )
