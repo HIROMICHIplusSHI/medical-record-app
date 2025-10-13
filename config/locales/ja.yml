@@ -27,3 +27,12 @@ ja:
         standard_price: 標準価格
         category: カテゴリ
         memo: メモ
+      medical_record:
+        patient_id: 患者
+        facility_id: 施術場所
+        visit_date: 来院日
+        treatment_location: 施術部位
+        chief_complaint: 主訴
+        diagnosis: 診断
+        treatment_content: 施術内容
+        notes: メモ
