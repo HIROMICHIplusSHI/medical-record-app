@@ -184,13 +184,13 @@ RSpec.describe Patient, type: :model do
     let(:user) { create(:user) }
     let(:patient) { create(:patient, user: user) }
 
-    it 'nameが暗号化されている' do
+    it 'nameは暗号化されていない（検索性能のため平文）' do
       # データベースの値を直接確認
       raw_value = ActiveRecord::Base.connection.execute(
         "SELECT name FROM patients WHERE id = #{patient.id}"
       ).first['name']
 
-      expect(raw_value).not_to eq(patient.name)
+      expect(raw_value).to eq(patient.name)
     end
 
     it 'emailが暗号化されている' do

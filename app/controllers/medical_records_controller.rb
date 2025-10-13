@@ -3,11 +3,12 @@ class MedicalRecordsController < ApplicationController
   before_action :set_medical_record, only: %i[show edit update destroy remove_photo]
 
   def index
-    @medical_records = current_user.medical_records
-                                   .includes(:patient, :facility, :tags)
-                                   .recent
-    @medical_records = @medical_records.by_patient(params[:patient_id]) if params[:patient_id].present?
-    @medical_records = @medical_records.by_facility(params[:facility_id]) if params[:facility_id].present?
+    @q = current_user.medical_records
+                     .includes(:patient, :facility, :tags)
+                     .ransack(params[:q])
+    @medical_records = @q.result
+                         .page(params[:page])
+                         .per(20)
   end
 
   def show; end
