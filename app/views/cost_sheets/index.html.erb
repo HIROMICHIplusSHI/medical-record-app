@@ -1,0 +1,61 @@
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+  <div class="flex justify-between items-center mb-6">
+    <h1 class="text-3xl font-bold text-gray-900">コストシート管理</h1>
+    <%= link_to "新規作成", new_cost_sheet_path, class: "bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-lg shadow" %>
+  </div>
+
+  <% if @cost_sheets.any? %>
+    <div class="bg-white shadow-md rounded-lg overflow-hidden">
+      <table class="min-w-full divide-y divide-gray-200">
+        <thead class="bg-gray-50">
+          <tr>
+            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+              項目名
+            </th>
+            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+              カテゴリ
+            </th>
+            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+              標準価格
+            </th>
+            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+              メモ
+            </th>
+            <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+              操作
+            </th>
+          </tr>
+        </thead>
+        <tbody class="bg-white divide-y divide-gray-200">
+          <% @cost_sheets.each do |cost_sheet| %>
+            <tr>
+              <td class="px-6 py-4 whitespace-nowrap">
+                <div class="text-sm font-medium text-gray-900"><%= cost_sheet.item_name %></div>
+              </td>
+              <td class="px-6 py-4 whitespace-nowrap">
+                <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-blue-100 text-blue-800">
+                  <%= cost_sheet.category_name %>
+                </span>
+              </td>
+              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                ¥<%= number_with_delimiter(cost_sheet.standard_price) %>
+              </td>
+              <td class="px-6 py-4 text-sm text-gray-500">
+                <%= truncate(cost_sheet.memo, length: 50) %>
+              </td>
+              <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                <%= link_to "編集", edit_cost_sheet_path(cost_sheet), class: "text-blue-600 hover:text-blue-900 mr-3" %>
+                <%= button_to "削除", cost_sheet_path(cost_sheet), method: :delete, data: { turbo_confirm: "本当に削除しますか？" }, class: "text-red-600 hover:text-red-900" %>
+              </td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    </div>
+  <% else %>
+    <div class="bg-white shadow-md rounded-lg p-8 text-center">
+      <p class="text-gray-500 mb-4">コストシートがまだ登録されていません。</p>
+      <%= link_to "最初のコストシートを作成", new_cost_sheet_path, class: "text-blue-600 hover:text-blue-800 font-semibold" %>
+    </div>
+  <% end %>
+</div>

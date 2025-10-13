@@ -10,9 +10,22 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2025_10_12_120753) do
+ActiveRecord::Schema[7.1].define(version: 2025_10_12_234840) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
+
+  create_table "cost_sheets", force: :cascade do |t|
+    t.bigint "user_id", null: false
+    t.string "item_name", null: false
+    t.integer "standard_price", default: 0, null: false
+    t.string "category"
+    t.text "memo"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["category"], name: "index_cost_sheets_on_category"
+    t.index ["item_name"], name: "index_cost_sheets_on_item_name"
+    t.index ["user_id"], name: "index_cost_sheets_on_user_id"
+  end
 
   create_table "facilities", force: :cascade do |t|
     t.bigint "user_id", null: false
@@ -84,6 +97,7 @@ ActiveRecord::Schema[7.1].define(version: 2025_10_12_120753) do
     t.index ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true
   end
 
+  add_foreign_key "cost_sheets", "users"
   add_foreign_key "facilities", "users"
   add_foreign_key "patients", "users"
   add_foreign_key "questionnaires", "patients"
