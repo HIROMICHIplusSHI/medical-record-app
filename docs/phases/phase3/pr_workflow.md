@@ -112,7 +112,7 @@ Co-Authored-By: Claude <noreply@anthropic.com>"
 git push -u origin feature/p3-01-cost-sheet
 ```
 
-### PR作成
+### PR作成とAIコードレビュー
 
 **タイトル**: `Phase 3-01: コストシート管理機能実装`
 
@@ -160,6 +160,113 @@ PR #2: カルテ基本機能実装（コスト項目なし）
 
 🤖 Generated with Claude Code
 Co-Authored-By: Claude <noreply@anthropic.com>
+```
+
+### AIコードレビュー実施（Claude Code）
+
+PR作成後、Claude Codeを使ってコードレビューを実施します。
+
+#### 1. レビュー実行
+
+Claude Codeに以下のように依頼:
+
+```
+質問: 「自分で実装した機能をコードレビューしてください」
+```
+
+Claude Codeは`Task`ツールの`quality-engineer`サブエージェントを使用して以下を分析:
+- **Critical**: セキュリティ、認可、データ整合性の問題
+- **Minor**: コード品質、ベストプラクティス、保守性の改善点
+
+#### 2. レビュー結果をPRにコメント
+
+```bash
+# レビュー結果をPRにコメントとして投稿
+gh pr review <PR番号> --comment -b "$(cat <<'EOF'
+## AIコードレビュー結果
+
+### Critical Issues
+1. **認可テスト不足**
+   - 他ユーザーのリソースへのアクセス制御テストが必要
+   - edit, update, deleteアクションの認可テスト追加
+
+### Minor Issues
+1. カテゴリバリデーション追加推奨
+2. 非推奨ステータスコード更新（:unprocessable_content使用）
+
+### Good Points
+- ✅ テストカバレッジ充実
+- ✅ スコープ実装適切
+- ✅ バリデーション基本完備
+EOF
+)"
+```
+
+#### 3. Criticalな問題を修正
+
+```bash
+# 認可テストを追加
+# spec/requests/cost_sheets_spec.rb に追加
+describe '他のユーザーのリソースへのアクセス' do
+  let(:other_user) { create(:user) }
+  let(:other_cost_sheet) { create(:cost_sheet, user: other_user) }
+
+  it '他のユーザーのコストシートを編集できない' do
+    get edit_cost_sheet_path(other_cost_sheet)
+    expect(response).to have_http_status(:not_found)
+  end
+
+  it '他のユーザーのコストシートを更新できない' do
+    original_name = other_cost_sheet.item_name
+    patch cost_sheet_path(other_cost_sheet), params: { cost_sheet: { item_name: 'hacked' } }
+    expect(response).to have_http_status(:not_found)
+    expect(other_cost_sheet.reload.item_name).to eq(original_name)
+  end
+
+  it '他のユーザーのコストシートを削除できない' do
+    other_cost_sheet_id = other_cost_sheet.id
+    delete cost_sheet_path(other_cost_sheet)
+    expect(response).to have_http_status(:not_found)
+    expect(CostSheet.exists?(other_cost_sheet_id)).to be true
+  end
+end
+
+# Minorな問題も対応
+# app/models/cost_sheet.rb にバリデーション追加
+validates :category, inclusion: { in: CATEGORIES.keys, allow_blank: true }
+
+# app/controllers/cost_sheets_controller.rb のステータスコード更新
+render :new, status: :unprocessable_content  # was :unprocessable_entity
+render :edit, status: :unprocessable_content  # was :unprocessable_entity
+```
+
+#### 4. テスト実行・コミット
+
+```bash
+# 全テスト実行
+bundle exec rspec
+bundle exec rubocop -A
+
+# コミット
+git add .
+git commit -m "refactor: コードレビュー指摘事項の対応
+
+- 認可テスト追加（他ユーザーのリソースアクセス制御）
+- カテゴリバリデーション追加
+- ステータスコード更新（:unprocessable_content）
+
+🤖 Generated with Claude Code
+Co-Authored-By: Claude <noreply@anthropic.com>"
+
+git push
+```
+
+#### 5. PRマージ
+
+全てのCIチェックが成功したらマージ:
+
+```bash
+gh pr merge <PR番号> --squash
 ```
 
 ---
@@ -777,6 +884,13 @@ git push -u origin feature/p3-08-search-e2e
 - [ ] ブラウザでUI確認
 - [ ] 既存機能に影響なし（回帰テスト）
 
+### AIコードレビュー（必須）
+- [ ] Claude CodeでAIコードレビュー実施
+- [ ] レビュー結果をPRにコメント投稿
+- [ ] **Critical**な問題を全て修正
+- [ ] Minorな問題も可能な限り対応
+- [ ] 修正後のテストが全て成功
+
 ### ドキュメント
 - [ ] PR本文に実装内容・テスト結果記載
 - [ ] スクリーンショット添付（UI変更がある場合）
@@ -862,8 +976,46 @@ PR #8マージ後、以下を確認:
 
 ---
 
-**Document Version**: 1.0  
-**Last Updated**: 2025-10-13  
+## AIコードレビューワークフローについて
+
+### 目的
+
+個人開発プロジェクトですが、コード品質向上とセキュリティ確保のため、Claude Codeによる自動コードレビューを標準プロセスとして導入します。
+
+### メリット
+
+1. **セキュリティ**: 認可漏れ、SQLインジェクション等の重大な問題を早期発見
+2. **品質向上**: ベストプラクティス違反や保守性の問題を指摘
+3. **学習効果**: レビューコメントから実装パターンを学習
+4. **一貫性**: 全PRで同じ基準でレビュー実施
+
+### レビュー基準
+
+- **Critical（必須修正）**:
+  - セキュリティ脆弱性
+  - 認可・認証の不備
+  - データ整合性の問題
+  - 重大なバグ
+
+- **Minor（推奨修正）**:
+  - コード品質改善
+  - ベストプラクティス適用
+  - パフォーマンス最適化
+  - 保守性向上
+
+### 実施タイミング
+
+1. PR作成直後
+2. Criticalな問題を全て修正
+3. Minorな問題も可能な限り対応
+4. 修正後にCI成功確認
+5. PRマージ
+
+---
+
+**Document Version**: 1.1
+**Last Updated**: 2025-10-13
 **Status**: Ready for Implementation
+**Changelog**: AIコードレビューワークフロー追加
 
 このワークフローに従って、Phase 3を8つの小さなPRで段階的に実装してください！

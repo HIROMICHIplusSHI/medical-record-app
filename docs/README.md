@@ -1,7 +1,7 @@
 # ドキュメント索引
 
 **プロジェクト名**: フリーランス美容施術者向け電子カルテアプリ
-**最終更新**: 2025-10-12
+**最終更新**: 2025-10-13
 
 ---
 
@@ -25,6 +25,7 @@
 | 08 | [画面設計書](./08_screen_design.md) | 全画面のワイヤーフレームとUI仕様 | 22KB |
 | 09 | [ドキュメント自動化](./09_document_automation.md) | Git Hooks、CHANGELOG生成 | 8KB |
 | - | [セキュリティ仕様](./security.md) | 暗号化、電子署名、アクセス制御 | 12KB |
+| - | [AIコードレビューガイド](./ai_code_review_guide.md) | Claude Code自動レビュー手順 | 18KB |
 
 ### フェーズ別実装ガイド（phases/）
 
@@ -66,9 +67,22 @@ phases/
 - ✅ Active Record Encryption設定
 - ✅ ユーザーごとのデータ分離
 
-#### Phase 3: 改善・最適化（未作成）
+#### Phase 3: カルテ管理（実装中）
 
-Phase 2完了後に作成予定
+| ドキュメント | 説明 | ステータス |
+|-------------|------|----------|
+| [実装ガイド](./phases/phase3/implementation_guide.md) | TDD実装手順、コード例 | ✅ 完成 |
+| [PRワークフロー](./phases/phase3/pr_workflow.md) | 1機能1PR分割戦略 + AIレビュー | ✅ 完成 |
+
+**Phase 3の実装機能:**
+- 🔄 コストシート管理（PR #1実装中）
+- ⏳ カルテ基本機能
+- ⏳ コスト項目 + nested attributes
+- ⏳ 動的フォーム（cocoon）
+- ⏳ Stimulus自動計算
+- ⏳ 画像アップロード（Active Storage）
+- ⏳ タグ機能
+- ⏳ 検索強化 + E2Eテスト
 
 #### Phase 4: デプロイ・運用（未作成）
 
@@ -90,15 +104,16 @@ Phase 3完了後に作成予定
 5. [テスト戦略](./05_testing_strategy.md) - TDDの方針理解
 6. [Cloudflare R2セットアップ](./06_cloudflare_r2_setup.md) - 環境設定
 
-### 3. 実装（Phase 1）
+### 3. 実装（Phase 1-3）
 
 7. [詳細設計書](./07_detailed_design.md) - 実装仕様の確認
 8. [画面設計書](./08_screen_design.md) - UI仕様の確認
-9. [Phase 1実装ガイド](./phases/phase1/implementation_guide.md) - 実装手順に従う
+9. [Phase実装ガイド](./phases/) - 実装手順に従う
+10. [AIコードレビューガイド](./ai_code_review_guide.md) - PR作成後のレビュー実施
 
 ### 4. 保守
 
-10. [ドキュメント自動化](./09_document_automation.md) - ドキュメント更新ルールの理解
+11. [ドキュメント自動化](./09_document_automation.md) - ドキュメント更新ルールの理解
 
 ---
 
@@ -120,7 +135,13 @@ Phase 3完了後に作成予定
 - 画面設計書を更新（UI変更の場合）
 - ドキュメント自動化ガイドに従ってバージョン管理
 
-### レビュアー向け
+### レビュアー向け（AIレビュー含む）
+
+**AIコードレビュー時:**
+1. [AIコードレビューガイド](./ai_code_review_guide.md)に従ってClaude Codeでレビュー実施
+2. Critical問題を全て修正
+3. Minor問題も可能な限り対応
+4. レビュー結果をPRにコメント投稿
 
 **コードレビュー時:**
 1. 詳細設計書と実装の一致を確認
@@ -177,8 +198,11 @@ git commit -m "feat(facility): add revenue calculation method
 | 08_screen_design.md | 1.0 | 2025-10-12 | Phase 2実装開始時 |
 | 09_document_automation.md | 1.0 | 2025-10-12 | Phase 2実装開始時 |
 | security.md | 1.0 | 2025-10-12 | Phase 2実装開始時 |
+| ai_code_review_guide.md | 1.0 | 2025-10-13 | Phase 3完了時 |
 | phases/phase1/implementation_guide.md | 1.0 | 2025-10-12 | Phase 1完了 |
 | phases/phase2/implementation_guide.md | 1.0 | 2025-10-12 | Phase 2実装開始時 |
+| phases/phase3/implementation_guide.md | 1.0 | 2025-10-13 | Phase 3実装開始時 |
+| phases/phase3/pr_workflow.md | 1.1 | 2025-10-13 | Phase 3実装中 |
 
 ---
 
@@ -213,4 +237,4 @@ git checkout -b feature/phase1-setup
 
 ---
 
-**Last Updated**: 2025-10-12
+**Last Updated**: 2025-10-13
