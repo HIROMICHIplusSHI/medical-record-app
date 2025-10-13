@@ -46,9 +46,13 @@ class MedicalRecordsController < ApplicationController
   end
 
   def remove_photo
-    attachment = @medical_record.photos.attachments.find(params[:photo_id])
-    attachment.purge
-    redirect_to edit_medical_record_path(@medical_record), notice: '画像を削除しました。'
+    attachment = @medical_record.photos.attachments.find_by(id: params[:photo_id])
+    if attachment
+      attachment.purge
+      redirect_to edit_medical_record_path(@medical_record), notice: '画像を削除しました。'
+    else
+      redirect_to edit_medical_record_path(@medical_record), alert: '画像が見つかりません。'
+    end
   end
 
   private

@@ -9,19 +9,19 @@ export default class extends Controller {
   }
 
   connect() {
-    console.log("Image modal controller connected")
-    console.log("URLs:", this.urlsValue)
     this.updateNavigationButtons()
   }
 
   open(event) {
-    console.log("Opening modal, index:", event.currentTarget.dataset.index)
     const index = parseInt(event.currentTarget.dataset.index)
     this.currentIndexValue = index
     this.modalTarget.style.display = "flex"
-    console.log("Modal display set to flex")
     this.updateImage()
     this.updateNavigationButtons()
+
+    // Store previously focused element and set focus to modal
+    this.previouslyFocusedElement = document.activeElement
+    this.modalTarget.focus()
   }
 
   close(event) {
@@ -29,6 +29,11 @@ export default class extends Controller {
       event.stopPropagation()
     }
     this.modalTarget.style.display = "none"
+
+    // Restore focus to previously focused element
+    if (this.previouslyFocusedElement) {
+      this.previouslyFocusedElement.focus()
+    }
   }
 
   closeOnBackground(event) {

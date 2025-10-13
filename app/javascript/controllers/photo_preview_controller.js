@@ -8,15 +8,18 @@ export default class extends Controller {
   connect() {
     // 配列でファイルを保持するように変更
     this.selectedFilesArray = []
-    console.log('Photo preview controller connected')
+  }
+
+  disconnect() {
+    // Clean up any pending FileReader operations and memory
+    if (this.containerTarget) {
+      this.containerTarget.innerHTML = ''
+    }
+    this.selectedFilesArray = []
   }
 
   preview(event) {
     const files = Array.from(event.target.files)
-
-    console.log('=== Preview called ===')
-    console.log('New files:', files.length)
-    console.log('Existing files before add:', this.selectedFilesArray.length)
 
     // 既存のファイル数と新しいファイル数の合計をチェック
     const totalFiles = this.selectedFilesArray.length + files.length
@@ -42,17 +45,11 @@ export default class extends Controller {
       this.selectedFilesArray.push(file)
     })
 
-    // DataTransferを使ってinput要素を更新
-    this.updateInputFiles()
-
-    console.log('Total files after add:', this.selectedFilesArray.length)
-    console.log('Files list:', this.selectedFilesArray.map(f => f.name))
-
     // プレビューを全て再描画
     this.refreshPreviews()
 
-    // input要素をクリア（同じファイルを再選択可能にする）
-    event.target.value = ""
+    // DataTransferを使ってinput要素を更新（プレビュー後に実行）
+    this.updateInputFiles()
   }
 
   updateInputFiles() {
@@ -74,58 +71,16 @@ export default class extends Controller {
     })
   }
 
-  showPreview(file) {
-    const reader = new FileReader()
-
-    reader.onload = (e) => {
-      const index = this.selectedFiles.files.length - 1
-
-      const previewItem = document.createElement('div')
-      previewItem.className = 'relative group'
-      previewItem.dataset.index = index
-
-      previewItem.innerHTML = `
-        <img src="${e.target.result}" class="w-full h-40 object-cover rounded-lg shadow-sm">
-        <div class="absolute top-2 right-2">
-          <button type="button" data-action="click->photo-preview#remove" data-index="${index}" class="bg-red-600 hover:bg-red-700 text-white rounded-full p-2 opacity-0 group-hover:opacity-100 transition-opacity shadow-lg border-2 border-white">
-            <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="3">
-              <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
-            </svg>
-          </button>
-        </div>
-        <div class="absolute bottom-2 left-2 bg-black bg-opacity-50 text-white text-xs px-2 py-1 rounded">
-          ${file.name}
-        </div>
-      `
-
-      this.containerTarget.appendChild(previewItem)
-    }
-
-    reader.readAsDataURL(file)
-  }
-
   remove(event) {
     event.preventDefault()
     event.stopPropagation()
 
-    console.log('=== Remove called ===')
-    console.log('Event target:', event.currentTarget)
-    console.log('Dataset:', event.currentTarget.dataset)
-
     const indexToRemove = parseInt(event.currentTarget.dataset.index)
-
-    console.log('Removing index:', indexToRemove)
-    console.log('Files before removal:', this.selectedFilesArray.length)
-    console.log('Current files:', this.selectedFilesArray.map(f => f.name))
 
     // 配列から指定インデックスを削除
     if (indexToRemove >= 0 && indexToRemove < this.selectedFilesArray.length) {
-      console.log('Removing file:', this.selectedFilesArray[indexToRemove].name)
       this.selectedFilesArray.splice(indexToRemove, 1)
     }
-
-    console.log('Files after removal:', this.selectedFilesArray.length)
-    console.log('Remaining files:', this.selectedFilesArray.map(f => f.name))
 
     // input要素を更新
     this.updateInputFiles()
@@ -154,16 +109,19 @@ export default class extends Controller {
         </svg>
       `
 
+      // Create filename div safely with textContent to prevent XSS
+      const filenameDiv = document.createElement('div')
+      filenameDiv.className = 'absolute bottom-2 left-2 bg-black bg-opacity-50 text-white text-xs px-2 py-1 rounded'
+      filenameDiv.textContent = file.name
+
       previewItem.innerHTML = `
         <img src="${e.target.result}" class="w-full h-40 object-cover rounded-lg shadow-sm">
         <div class="absolute top-2 right-2"></div>
-        <div class="absolute bottom-2 left-2 bg-black bg-opacity-50 text-white text-xs px-2 py-1 rounded">
-          ${file.name}
-        </div>
       `
 
-      // Add the button to the container div
+      // Add the button and filename div to the container
       previewItem.querySelector('.absolute.top-2').appendChild(deleteButton)
+      previewItem.appendChild(filenameDiv)
       this.containerTarget.appendChild(previewItem)
     }
 
