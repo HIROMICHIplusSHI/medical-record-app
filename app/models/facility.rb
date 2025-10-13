@@ -1,8 +1,7 @@
 class Facility < ApplicationRecord
   belongs_to :user
-
-  # MedicalRecord/Invoiceモデル実装後に有効化
-  # has_many :medical_records, dependent: :restrict_with_error
+  has_many :medical_records, dependent: :restrict_with_error
+  # Invoiceモデル実装後に有効化
   # has_many :invoices, dependent: :restrict_with_error
 
   validates :name, presence: true, length: { maximum: 100 }

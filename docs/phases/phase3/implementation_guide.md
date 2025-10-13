@@ -2487,9 +2487,43 @@ Phase 3完了後は、Phase 4で以下を実装します:
 
 ---
 
-**Document Version**: 1.0  
-**Last Updated**: 2025-10-13  
-**Status**: Ready for Implementation
+## 11. 完了PR記録
+
+### PR #4: Phase 3-01 - コストシート管理機能
+- **マージ日**: 2025-10-13
+- **ブランチ**: `feature/p3-01-cost-sheet`
+- **実装内容**:
+  - CostSheetモデル・コントローラー・ビュー実装
+  - CRUD操作（一覧・詳細・新規作成・編集・削除）
+  - カテゴリ分類機能
+  - by_nameスコープによる名前順ソート
+  - 認可機能（current_userスコープ）
+  - 包括的なテスト（モデル14例、リクエスト16例）
+- **テスト結果**: 206 examples, 0 failures ✅
+- **レビュー**: AI Code Review完了 - Excellent評価
+- **URL**: https://github.com/HIROMICHIplusSHI/medical-record-app/pull/4
+
+### PR #5: Phase 3-02 - カルテ基本機能
+- **マージ日**: 2025-10-13（予定）
+- **ブランチ**: `feature/p3-02-medical-record-basic`
+- **実装内容**:
+  - MedicalRecordモデル・コントローラー・ビュー実装
+  - 基本CRUD操作（コスト項目・画像なし）
+  - 患者・施設との関連
+  - フィルタリング機能（患者別・施設別・日付範囲）
+  - iPad向け表示幅最適化（w-full）
+  - バリデーションエラーの完全日本語化
+  - 認可機能（current_userスコープ）
+  - 包括的なテスト（モデル16例、リクエスト22例）
+- **テスト結果**: 224 examples, 0 failures ✅
+- **レビュー**: AI Code Review完了 - Excellent (95%)評価
+- **URL**: https://github.com/HIROMICHIplusSHI/medical-record-app/pull/5
+
+---
+
+**Document Version**: 1.1
+**Last Updated**: 2025-10-13
+**Status**: In Progress (Week 1完了)
 
 このガイドに従って、段階的にPhase 3を実装してください。各ステップでテストを実行し、ブラウザで動作確認することを忘れずに!
 

@@ -8,6 +8,7 @@ Rails.application.routes.draw do
       resource :questionnaire, only: [:new, :create, :edit, :update, :destroy]
     end
     resources :cost_sheets
+    resources :medical_records
   end
 
   # Reveal health status on /up that returns 200 if the app boots with no exceptions, otherwise 500.

@@ -1,0 +1,68 @@
+<%= form_with(model: medical_record, class: "space-y-6") do |f| %>
+  <% if medical_record.errors.any? %>
+    <div class="rounded-md bg-red-50 p-4">
+      <div class="flex">
+        <div class="flex-shrink-0">
+          <svg class="h-5 w-5 text-red-400" viewBox="0 0 20 20" fill="currentColor">
+            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd" />
+          </svg>
+        </div>
+        <div class="ml-3">
+          <h3 class="text-sm font-medium text-red-800"><%= pluralize(medical_record.errors.count, "個") %>のエラーがあります</h3>
+          <ul class="mt-2 text-sm text-red-700 list-disc pl-5">
+            <% medical_record.errors.full_messages.each do |message| %>
+              <li><%= message %></li>
+            <% end %>
+          </ul>
+        </div>
+      </div>
+    </div>
+  <% end %>
+
+  <div class="grid grid-cols-1 gap-6 sm:grid-cols-2">
+    <div>
+      <%= f.label :patient_id, class: "block text-sm font-medium text-gray-700" %>
+      <%= f.collection_select :patient_id, @patients, :id, :name, { prompt: '患者を選択' }, class: "mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm rounded-md" %>
+    </div>
+
+    <div>
+      <%= f.label :facility_id, class: "block text-sm font-medium text-gray-700" %>
+      <%= f.collection_select :facility_id, @facilities, :id, :name, { prompt: '施術場所を選択' }, class: "mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm rounded-md" %>
+    </div>
+
+    <div>
+      <%= f.label :visit_date, class: "block text-sm font-medium text-gray-700" %>
+      <%= f.date_field :visit_date, class: "mt-1 focus:ring-blue-500 focus:border-blue-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md" %>
+    </div>
+
+    <div>
+      <%= f.label :treatment_location, class: "block text-sm font-medium text-gray-700" %>
+      <%= f.text_field :treatment_location, class: "mt-1 focus:ring-blue-500 focus:border-blue-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md", placeholder: "例: 顔全体" %>
+    </div>
+  </div>
+
+  <div>
+    <%= f.label :chief_complaint, class: "block text-sm font-medium text-gray-700" %>
+    <%= f.text_area :chief_complaint, rows: 3, class: "mt-1 focus:ring-blue-500 focus:border-blue-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md", placeholder: "患者の主な訴えを記入" %>
+  </div>
+
+  <div>
+    <%= f.label :diagnosis, class: "block text-sm font-medium text-gray-700" %>
+    <%= f.text_area :diagnosis, rows: 3, class: "mt-1 focus:ring-blue-500 focus:border-blue-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md", placeholder: "診断結果を記入" %>
+  </div>
+
+  <div>
+    <%= f.label :treatment_content, class: "block text-sm font-medium text-gray-700" %>
+    <%= f.text_area :treatment_content, rows: 4, class: "mt-1 focus:ring-blue-500 focus:border-blue-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md", placeholder: "施術内容を記入" %>
+  </div>
+
+  <div>
+    <%= f.label :notes, class: "block text-sm font-medium text-gray-700" %>
+    <%= f.text_area :notes, rows: 3, class: "mt-1 focus:ring-blue-500 focus:border-blue-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md", placeholder: "その他メモ（任意）" %>
+  </div>
+
+  <div class="flex justify-end space-x-3">
+    <%= link_to 'キャンセル', medical_records_path, class: "inline-flex justify-center py-2 px-4 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500" %>
+    <%= f.submit class: "inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500" %>
+  </div>
+<% end %>

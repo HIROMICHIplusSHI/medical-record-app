@@ -2,6 +2,7 @@ class Patient < ApplicationRecord
   # アソシエーション
   belongs_to :user
   has_one :questionnaire, dependent: :destroy
+  has_many :medical_records, dependent: :restrict_with_error
 
   # 暗号化
   encrypts :name

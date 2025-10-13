@@ -1,0 +1,71 @@
+class MedicalRecordsController < ApplicationController
+  before_action :authenticate_user!
+  before_action :set_medical_record, only: %i[show edit update destroy]
+
+  def index
+    @medical_records = current_user.medical_records
+                                   .includes(:patient, :facility)
+                                   .recent
+    @medical_records = @medical_records.by_patient(params[:patient_id]) if params[:patient_id].present?
+    @medical_records = @medical_records.by_facility(params[:facility_id]) if params[:facility_id].present?
+  end
+
+  def show; end
+
+  def new
+    @medical_record = current_user.medical_records.build
+    load_form_data
+  end
+
+  def create
+    @medical_record = current_user.medical_records.build(medical_record_params)
+    if @medical_record.save
+      redirect_to @medical_record, notice: 'カルテを作成しました。'
+    else
+      load_form_data
+      render :new, status: :unprocessable_content
+    end
+  end
+
+  def edit
+    load_form_data
+  end
+
+  def update
+    if @medical_record.update(medical_record_params)
+      redirect_to @medical_record, notice: 'カルテを更新しました。'
+    else
+      load_form_data
+      render :edit, status: :unprocessable_content
+    end
+  end
+
+  def destroy
+    @medical_record.destroy
+    redirect_to medical_records_path, notice: 'カルテを削除しました。'
+  end
+
+  private
+
+  def set_medical_record
+    @medical_record = current_user.medical_records.find(params[:id])
+  end
+
+  def medical_record_params
+    params.require(:medical_record).permit(
+      :patient_id,
+      :facility_id,
+      :visit_date,
+      :treatment_location,
+      :chief_complaint,
+      :diagnosis,
+      :treatment_content,
+      :notes
+    )
+  end
+
+  def load_form_data
+    @patients = current_user.patients.order(:name)
+    @facilities = current_user.facilities.by_name
+  end
+end
