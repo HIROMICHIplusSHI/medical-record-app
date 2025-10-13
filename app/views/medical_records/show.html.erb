@@ -53,17 +53,49 @@
 
     <!-- 施術写真セクション -->
     <% if @medical_record.photos.attached? %>
-      <div class="border-t border-gray-200">
+      <div class="border-t border-gray-200" data-controller="image-modal" data-image-modal-urls-value='<%= @medical_record.photos.map { |photo| url_for(photo) }.to_json.html_safe %>' data-action="keydown@window->image-modal#handleKeydown">
         <div class="px-4 py-5 sm:px-6">
           <h3 class="text-lg leading-6 font-medium text-gray-900">施術写真 (<%= @medical_record.photos.count %>枚)</h3>
         </div>
         <div class="px-4 pb-5 sm:px-6">
           <div class="grid grid-cols-2 md:grid-cols-3 gap-4">
-            <% @medical_record.photos.each do |photo| %>
+            <% @medical_record.photos.each_with_index do |photo, index| %>
               <div class="relative">
-                <%= image_tag photo, class: "w-full h-48 object-cover rounded-lg shadow-sm cursor-pointer hover:opacity-90 transition-opacity", onclick: "openImageModal(this.src)" %>
+                <%= image_tag photo, class: "w-full h-48 object-cover rounded-lg shadow-sm cursor-pointer hover:opacity-90 transition-opacity", data: { action: "click->image-modal#open", index: index } %>
               </div>
             <% end %>
+          </div>
+        </div>
+
+        <!-- 画像拡大モーダル（スワイプ対応） -->
+        <div data-image-modal-target="modal" style="display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; z-index: 9999; background-color: rgba(0, 0, 0, 0.70); align-items: center; justify-content: center;" data-action="click->image-modal#closeOnBackground">
+          <div class="relative w-full h-full flex items-center justify-center">
+            <!-- 閉じるボタン -->
+            <button data-action="click->image-modal#close" type="button" style="position: absolute; top: 1rem; right: 1rem; z-index: 10000; width: 3rem; height: 3rem; display: flex; align-items: center; justify-content: center; background-color: rgba(0, 0, 0, 0.6); color: white; border: none; border-radius: 9999px; font-size: 2rem; cursor: pointer; transition: background-color 0.2s;">&times;</button>
+
+            <!-- 画像カウンター -->
+            <div class="absolute top-4 left-1/2 transform -translate-x-1/2 z-50 text-white text-sm bg-black bg-opacity-50 px-4 py-2 rounded-full">
+              <span data-image-modal-target="currentIndex">1</span> / <span data-image-modal-target="totalImages">1</span>
+            </div>
+
+            <!-- 画像コンテナ -->
+            <div data-image-modal-target="container" class="relative w-full h-full flex items-center justify-center overflow-hidden touch-pan-y" data-action="touchstart->image-modal#touchStart touchend->image-modal#touchEnd">
+              <!-- 前へボタン（画像の左側） -->
+              <button data-image-modal-target="prevButton" data-action="click->image-modal#navigate" data-direction="-1" type="button" style="position: absolute; left: 1rem; z-index: 10000; width: 3rem; height: 3rem; display: flex; align-items: center; justify-content: center; background-color: rgba(0, 0, 0, 0.6); color: white; border: none; border-radius: 9999px; cursor: pointer; transition: background-color 0.2s;">
+                <svg style="width: 1.5rem; height: 1.5rem;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
+                </svg>
+              </button>
+
+              <img data-image-modal-target="image" src="" class="max-w-full max-h-full object-contain select-none">
+
+              <!-- 次へボタン（画像の右側） -->
+              <button data-image-modal-target="nextButton" data-action="click->image-modal#navigate" data-direction="1" type="button" style="position: absolute; right: 1rem; z-index: 10000; width: 3rem; height: 3rem; display: flex; align-items: center; justify-content: center; background-color: rgba(0, 0, 0, 0.6); color: white; border: none; border-radius: 9999px; cursor: pointer; transition: background-color 0.2s;">
+                <svg style="width: 1.5rem; height: 1.5rem;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+                </svg>
+              </button>
+            </div>
           </div>
         </div>
       </div>
@@ -112,21 +144,3 @@
   </div>
 </div>
 
-<!-- 画像拡大モーダル -->
-<div id="imageModal" class="fixed inset-0 bg-black bg-opacity-75 hidden z-50 flex items-center justify-center" onclick="closeImageModal()">
-  <div class="relative max-w-screen-lg max-h-screen p-4">
-    <img id="modalImage" src="" class="max-w-full max-h-full object-contain">
-    <button onclick="closeImageModal()" class="absolute top-8 right-8 text-white text-4xl hover:text-gray-300">&times;</button>
-  </div>
-</div>
-
-<script>
-function openImageModal(src) {
-  document.getElementById('imageModal').classList.remove('hidden');
-  document.getElementById('modalImage').src = src;
-}
-
-function closeImageModal() {
-  document.getElementById('imageModal').classList.add('hidden');
-}
-</script>

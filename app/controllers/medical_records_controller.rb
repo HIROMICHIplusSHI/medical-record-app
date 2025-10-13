@@ -46,8 +46,8 @@ class MedicalRecordsController < ApplicationController
   end
 
   def remove_photo
-    photo = @medical_record.photos.find(params[:photo_id])
-    photo.purge
+    attachment = @medical_record.photos.attachments.find(params[:photo_id])
+    attachment.purge
     redirect_to edit_medical_record_path(@medical_record), notice: '画像を削除しました。'
   end
 

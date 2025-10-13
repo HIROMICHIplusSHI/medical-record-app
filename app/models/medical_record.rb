@@ -34,18 +34,16 @@ class MedicalRecord < ApplicationRecord
   def photos_count_limit
     return unless photos.attached?
 
-    if photos.count > 5
-      errors.add(:photos, 'は最大5枚までアップロードできます')
-    end
+    return unless photos.count > 5
+
+    errors.add(:photos, 'は最大5枚までアップロードできます')
   end
 
   def photos_size_limit
     return unless photos.attached?
 
     photos.each do |photo|
-      if photo.byte_size > 10.megabytes
-        errors.add(:photos, "#{photo.filename}のサイズが10MBを超えています")
-      end
+      errors.add(:photos, "#{photo.filename}のサイズが10MBを超えています") if photo.byte_size > 10.megabytes
     end
   end
 end
