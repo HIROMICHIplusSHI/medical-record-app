@@ -2,7 +2,7 @@
 
 **作成日**: 2025-10-13
 **最終更新**: 2025-10-13
-**バージョン**: 1.4
+**バージョン**: 1.6
 
 ---
 
@@ -13,7 +13,8 @@
 3. [Phase 3-04: コストシート連携+UI改善（完了）](#3-phase-3-04-コストシート連携ui改善完了)
 4. [Phase 3-05: 画像アップロード機能（完了）](#4-phase-3-05-画像アップロード機能完了)
 5. [Phase 3-06: タグ機能（完了）](#5-phase-3-06-タグ機能完了)
-6. [次のタスク](#6-次のタスク)
+6. [Phase 3-07: Ransack検索機能（完了）](#6-phase-3-07-ransack検索機能完了)
+7. [次のタスク](#7-次のタスク)
 
 ---
 
@@ -27,7 +28,8 @@
 | #5 | カルテ基本機能 | ✅ マージ済み | 2025-10-13 |
 | #6 | カルテ+コスト項目+コストシート連携+Tom Select | ✅ マージ済み | 2025-10-13 |
 | #7 | 画像アップロード＋プレビュー＋モーダル表示 | ✅ マージ済み | 2025-10-13 |
-| #8 | タグ機能実装 | 🔄 レビュー中 | - |
+| #8 | タグ機能実装 | ✅ マージ済み | 2025-10-13 |
+| #9 | Ransack検索機能 | 🔄 レビュー中 | - |
 
 ### 実装済み機能
 
@@ -42,11 +44,12 @@
 - ✅ 画像プレビュー（複数選択対応、個別削除）
 - ✅ 画像モーダル表示（全画面、スワイプ対応、キーボードナビゲーション）
 - ✅ タグ機能（多対多関連、AJAX作成、使用中チェック）
+- ✅ Ransack検索機能（患者名、施設、タグ、日付範囲、主訴、ソート）
+- ✅ アコーディオン検索フォーム（Stimulus.js、URLパラメータ自動展開）
 
 ### 未実装機能
 
-- ⏳ 検索強化（Ransack）
-- ⏳ E2Eテスト拡充
+- ⏳ E2Eテスト拡充（機能固定後に実施）
 
 ---
 
@@ -978,9 +981,445 @@ git commit -m "refactor: レビュー指摘事項の対応
 
 ---
 
-## 6. 未実装機能と先延ばし課題
+## 6. Phase 3-07: Ransack検索機能（完了）
 
-### 6.1 Phase 3 残りの実装
+### 実装日
+2025-10-13
+
+### 実装内容
+
+**PR #9**: カルテの高度な検索機能（Ransack gem）
+
+#### 6.1 TDD実装アプローチ
+
+**Red Phase**: リクエストスペック作成
+```ruby
+# spec/requests/medical_records_spec.rb (305-459行)
+describe 'Ransack検索機能' do
+  # 9つのテストシナリオ
+  - 患者名の部分一致検索
+  - 施設での絞り込み
+  - 来院日範囲検索（開始日・終了日）
+  - タグでの絞り込み
+  - 主訴キーワード検索
+  - 複数条件の組み合わせ検索
+  - 来院日ソート（昇順・降順）
+  - ユーザー間のデータ隔離確認
+end
+```
+
+**Green Phase**: 実装して全テストパス
+- Ransack初期設定
+- コントローラー修正
+- ransackable_attributes設定
+- 検索UI実装
+
+**結果**: 9 examples, 0 failures
+
+#### 6.2 Ransack設定
+
+**Gemfile**: 既に導入済み（v4.0.0）
+
+**Initializer作成**:
+```ruby
+# config/initializers/ransack.rb
+Ransack.configure do |config|
+  # 将来のカスタム述語追加用
+end
+```
+
+**コントローラー修正**:
+```ruby
+# app/controllers/medical_records_controller.rb
+def index
+  @q = current_user.medical_records
+                   .includes(:patient, :facility, :tags)
+                   .ransack(params[:q])
+  @medical_records = @q.result
+                       .page(params[:page])
+                       .per(20)
+end
+```
+
+#### 6.3 ransackable_attributes設定
+
+**セキュリティ要件**: Ransack v4.0以降、検索可能な属性を明示的に許可リストに追加する必要がある。
+
+**MedicalRecordモデル**:
+```ruby
+# app/models/medical_record.rb
+def self.ransackable_attributes(_auth_object = nil)
+  %w[visit_date treatment_location chief_complaint diagnosis
+     treatment_content notes patient_id facility_id created_at updated_at]
+end
+
+def self.ransackable_associations(_auth_object = nil)
+  %w[patient facility tags]
+end
+```
+
+**Patientモデル**:
+```ruby
+# app/models/patient.rb
+def self.ransackable_attributes(_auth_object = nil)
+  %w[id name gender date_of_birth created_at updated_at]
+end
+
+def self.ransackable_associations(_auth_object = nil)
+  %w[user medical_records questionnaire]
+end
+```
+
+**Tagモデル**:
+```ruby
+# app/models/tag.rb
+def self.ransackable_attributes(_auth_object = nil)
+  %w[id name category color created_at updated_at]
+end
+
+def self.ransackable_associations(_auth_object = nil)
+  %w[user medical_records]
+end
+```
+
+#### 6.4 患者名暗号化の解除
+
+**課題**: Patient名は`encrypts :name`で暗号化されていたため、Ransackの部分一致検索（SQL LIKE）が機能しない。
+
+**ユーザー意思決定**:
+> 「患者名は暗号化しないほうがいいですかね？ユーザーの操作性が悪くなりそうですね」
+> → **「そうしましょう、患者名は解除します」**
+
+**トレードオフ分析**:
+- **暗号化維持**: 高いセキュリティ、検索不可
+- **暗号化解除**: 検索可能、実用性向上、個人情報リスク増
+
+**リスク評価**: 患者名単体では個人識別リスクは低く、検索性能とUXを優先する判断。
+
+**実装内容**:
+
+**マイグレーション作成**:
+```ruby
+# db/migrate/20251013090150_remove_encryption_from_patient_name.rb
+class RemoveEncryptionFromPatientName < ActiveRecord::Migration[7.1]
+  def up
+    add_index :patients, :name unless index_exists?(:patients, :name)
+  end
+
+  def down
+    remove_index :patients, :name if index_exists?(:patients, :name)
+  end
+end
+```
+
+**モデル修正**:
+```ruby
+# app/models/patient.rb (7-11行目)
+# 暗号化（患者名は検索性能のため暗号化しない）
+encrypts :phone
+encrypts :email, deterministic: true  # 検索可能な暗号化
+encrypts :address
+encrypts :emergency_contact
+```
+
+**ransackable_attributes更新**:
+```ruby
+def self.ransackable_attributes(_auth_object = nil)
+  %w[id name gender date_of_birth created_at updated_at]  # nameを追加
+end
+```
+
+**マイグレーション実行**:
+```bash
+rails db:migrate
+RAILS_ENV=test rails db:migrate
+```
+
+#### 6.5 検索フォームUI実装
+
+**Stimulus Controller作成**:
+```javascript
+// app/javascript/controllers/search_form_controller.js
+export default class extends Controller {
+  static targets = ["form", "toggleText"]
+
+  connect() {
+    // URLパラメータに検索条件がある場合は自動展開
+    const urlParams = new URLSearchParams(window.location.search)
+    if (urlParams.has('q')) {
+      this.show()
+    }
+  }
+
+  toggle() {
+    if (this.formTarget.classList.contains('hidden')) {
+      this.show()
+    } else {
+      this.hide()
+    }
+  }
+
+  show() {
+    this.formTarget.classList.remove('hidden')
+    this.toggleTextTarget.textContent = '閉じる'
+  }
+
+  hide() {
+    this.formTarget.classList.add('hidden')
+    this.toggleTextTarget.textContent = '展開'
+  }
+}
+```
+
+**アコーディオンフォーム**:
+```erb
+<!-- app/views/medical_records/index.html.erb (19-97行) -->
+<div class="bg-white shadow sm:rounded-lg mb-6" data-controller="search-form">
+  <div class="px-4 py-5 sm:p-6">
+    <div class="flex items-center justify-between mb-4">
+      <h3 class="text-lg font-medium text-gray-900">検索条件</h3>
+      <button type="button" data-action="click->search-form#toggle"
+              class="text-sm text-blue-600 hover:text-blue-800">
+        <span data-search-form-target="toggleText">展開</span>
+      </button>
+    </div>
+
+    <div data-search-form-target="form" class="hidden">
+      <%= search_form_for @q, url: medical_records_path, html: { method: :get } do |f| %>
+        <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          <!-- 患者名検索 -->
+          <div>
+            <%= f.label :patient_name_cont, '患者名' %>
+            <%= f.search_field :patient_name_cont, placeholder: '山田太郎' %>
+          </div>
+
+          <!-- 施設選択 -->
+          <div>
+            <%= f.label :facility_id_eq, '施設' %>
+            <%= f.select :facility_id_eq,
+                options_from_collection_for_select(current_user.facilities.by_name, :id, :name),
+                { include_blank: 'すべて' } %>
+          </div>
+
+          <!-- タグ選択 -->
+          <div>
+            <%= f.label :tags_id_eq, 'タグ' %>
+            <%= f.select :tags_id_eq,
+                options_from_collection_for_select(current_user.tags.by_name, :id, :name),
+                { include_blank: 'すべて' } %>
+          </div>
+
+          <!-- 来院日（開始） -->
+          <div>
+            <%= f.label :visit_date_gteq, '来院日（開始）' %>
+            <%= f.date_field :visit_date_gteq %>
+          </div>
+
+          <!-- 来院日（終了） -->
+          <div>
+            <%= f.label :visit_date_lteq, '来院日（終了）' %>
+            <%= f.date_field :visit_date_lteq %>
+          </div>
+
+          <!-- 主訴検索 -->
+          <div>
+            <%= f.label :chief_complaint_cont, '主訴' %>
+            <%= f.search_field :chief_complaint_cont, placeholder: 'しわ' %>
+          </div>
+        </div>
+
+        <!-- ソート順 -->
+        <div class="mt-4">
+          <%= f.label :s, '並び替え' %>
+          <%= f.select :s,
+              [
+                ['来院日（新しい順）', 'visit_date desc'],
+                ['来院日（古い順）', 'visit_date asc'],
+                ['患者名（昇順）', 'patient_name asc'],
+                ['患者名（降順）', 'patient_name desc']
+              ],
+              { selected: f.object.sorts.first&.to_s || 'visit_date desc' } %>
+        </div>
+
+        <!-- ボタン -->
+        <div class="flex items-center space-x-4">
+          <%= f.submit '検索' %>
+          <%= link_to 'クリア', medical_records_path %>
+        </div>
+      <% end %>
+    </div>
+  </div>
+</div>
+```
+
+**UX特徴**:
+- デフォルトで閉じた状態（UI簡潔）
+- URLに`q`パラメータがあれば自動展開（検索結果画面で便利）
+- 展開/閉じるボタンのテキスト切り替え
+
+#### 6.6 ページネーション統合
+
+**Kaminari統合**:
+```ruby
+# コントローラー
+@medical_records = @q.result.page(params[:page]).per(20)
+```
+
+**ビュー**:
+```erb
+<!-- ページネーション -->
+<div class="bg-white px-4 py-3 flex items-center justify-between border-t">
+  <div class="hidden sm:flex-1 sm:flex sm:items-center sm:justify-between">
+    <div>
+      <p class="text-sm text-gray-700">
+        全<span class="font-medium"><%= @medical_records.total_count %></span>件中
+        <span class="font-medium"><%= @medical_records.offset_value + 1 %></span>〜
+        <span class="font-medium"><%= [@medical_records.offset_value + @medical_records.length, @medical_records.total_count].min %></span>件を表示
+      </p>
+    </div>
+    <div>
+      <%= paginate @medical_records, window: 2, outer_window: 1 %>
+    </div>
+  </div>
+</div>
+```
+
+**エラー解決**: `theme: 'tailwind'`オプションでエラー発生 → 削除してデフォルトテーマ使用
+
+#### 6.7 テスト修正
+
+**患者名暗号化解除に伴うテスト修正**:
+```ruby
+# spec/models/patient_spec.rb (187-194行)
+it 'nameは暗号化されていない（検索性能のため平文）' do
+  # データベースの値を直接確認
+  raw_value = ActiveRecord::Base.connection.execute(
+    "SELECT name FROM patients WHERE id = #{patient.id}"
+  ).first['name']
+
+  expect(raw_value).to eq(patient.name)  # 平文として保存されている
+end
+```
+
+### 技術的課題と解決
+
+#### 課題1: Ransack Security - ransackable_attributes未設定
+
+**エラー**:
+```
+RuntimeError: Ransack needs MedicalRecord attributes explicitly allowlisted as searchable.
+```
+
+**原因**: Ransack v4.0以降、セキュリティ強化のため検索可能属性を明示的に許可する必要がある
+
+**解決策**: 全モデルに`ransackable_attributes`と`ransackable_associations`メソッドを追加
+
+#### 課題2: 患者名暗号化による検索不可
+
+**問題**: `encrypts :name`により、SQL LIKEクエリが機能しない
+
+**ユーザーフィードバック**: 「患者名は暗号化しないほうがいいですかね？ユーザーの操作性が悪くなりそうですね」
+
+**解決策**:
+1. `encrypts :name`を削除
+2. マイグレーションでインデックス追加（検索性能向上）
+3. ransackable_attributesに'name'を追加
+4. 関連テストを修正
+
+**セキュリティ考慮**:
+- 電話・メール・住所・緊急連絡先は引き続き暗号化
+- 患者名単体では個人識別リスク低
+- 将来的にデータベース暗号化で対応予定（Phase 4）
+
+#### 課題3: Kaminari テーマエラー
+
+**エラー**:
+```
+ActionView::Template::Error: Missing partial kaminari/tailwind/_paginator
+```
+
+**解決策**: `theme: 'tailwind'`オプションを削除、デフォルトテーマ使用
+
+### 成果
+
+- ✅ TDDアプローチでRansack検索実装（Red → Green）
+- ✅ 9つの検索シナリオすべてテストパス
+- ✅ ransackable_attributes設定完了（セキュリティ準拠）
+- ✅ 患者名検索を可能にするため暗号化解除（UX優先）
+- ✅ アコーディオン検索フォーム実装（Stimulus.js）
+- ✅ URLパラメータ自動展開機能
+- ✅ Kaminariページネーション統合（20件/ページ）
+- ✅ 複数条件・ソート機能完備
+- ✅ テストカバレッジ維持
+- ✅ Rubocop準拠
+
+### 検索機能仕様
+
+**検索条件**:
+- 患者名: 部分一致（`patient_name_cont`）
+- 施設: 完全一致（`facility_id_eq`）
+- タグ: 完全一致（`tags_id_eq`）
+- 来院日範囲: 開始日（`visit_date_gteq`）、終了日（`visit_date_lteq`）
+- 主訴: 部分一致（`chief_complaint_cont`）
+
+**ソート**:
+- 来院日（新しい順/古い順）
+- 患者名（昇順/降順）
+
+**表示**:
+- 20件/ページ
+- ページネーション（Kaminari）
+- 総件数・現在範囲表示
+
+### コミット
+
+```bash
+git commit -m "feat: Phase 3-07 Ransack検索機能実装
+
+## 実装内容
+
+### TDD実装（Red → Green）
+- Ransack検索のリクエストスペック9件作成（Red）
+- Ransack設定とコントローラー実装（Green）
+- 全テストパス: 9 examples, 0 failures
+
+### Ransack設定
+- config/initializers/ransack.rb作成
+- ransackable_attributes設定（MedicalRecord, Patient, Tag）
+- ransackable_associations設定（セキュリティ準拠）
+
+### 患者名暗号化解除
+- Patient名のencrypts削除（検索性能優先）
+- マイグレーションでインデックス追加
+- 電話・メール・住所は引き続き暗号化
+- 関連テスト修正
+
+### 検索フォームUI
+- アコーディオン形式の検索フォーム（Stimulus.js）
+- URLパラメータがあれば自動展開
+- 患者名、施設、タグ、日付範囲、主訴検索
+- ソート機能（来院日、患者名）
+
+### ページネーション
+- Kaminari統合（20件/ページ）
+- 総件数・現在範囲表示
+- モバイル・デスクトップ対応UI
+
+## テスト
+- Ransack検索: 9 examples, 0 failures
+- 患者暗号化テスト修正
+- 全テストパス確認
+
+🤖 Generated with [Claude Code](https://claude.com/claude-code)
+
+Co-Authored-By: Claude <noreply@anthropic.com>"
+```
+
+---
+
+## 7. 未実装機能と先延ばし課題
+
+### 7.1 Phase 3 残りの実装
 
 #### Phase 3中盤（機能実装優先）
 
@@ -988,7 +1427,7 @@ git commit -m "refactor: レビュー指摘事項の対応
 |--------|--------|---------|------|------|
 | ~~画像アップロード（Active Storage）~~ | 🔴 高 | 4h | カルテに施術写真を添付（最大5枚） | ✅ 完了（PR #7） |
 | ~~タグ機能~~ | 🟡 中 | 3h | Tag + MedicalRecordTag中間テーブル | ✅ 完了（PR #8） |
-| 検索強化（Ransack） | 🟡 中 | 3h | 複雑な条件での検索機能 | ⏳ 次回 |
+| ~~検索強化（Ransack）~~ | 🟡 中 | 3h | 複雑な条件での検索機能 | ✅ 完了（PR #9） |
 
 #### Phase 3後半（機能実装完了後）
 
@@ -1002,7 +1441,7 @@ git commit -m "refactor: レビュー指摘事項の対応
 - 仕様固定後に一気に書く方が効率的
 - CI実行時間の最適化も同時実施
 
-### 6.2 Important Issues（Phase 4持ち越し）
+### 7.2 Important Issues（Phase 4持ち越し）
 
 PR #6のコードレビューで発見された改善項目。現状動作しているが、保守性・品質向上のため将来対応が必要。
 
@@ -1072,7 +1511,7 @@ self.subtotal = unit_price * quantity
 **対応時期**: Phase 3後半（全機能実装後）
 **延期理由**: 仕様変更頻度が高く、機能固定後に一気に書く方が効率的
 
-### 6.3 設計書との整合性確認
+### 7.3 設計書との整合性確認
 
 #### ✅ 整合性OK
 - User, Facility, Patient, Questionnaire: Phase 2で実装完了
@@ -1083,7 +1522,7 @@ self.subtotal = unit_price * quantity
 - ~~**Tag, MedicalRecordTag**: タグ機能~~ → ✅ Phase 3-06で実装完了
 - **Invoice**: 請求書機能（Phase 4予定）
 - ~~**Active Storage設定**: 画像アップロード~~ → ✅ Phase 3-05で実装完了
-- **Ransack gem**: 高度な検索（Phase 3残り）
+- ~~**Ransack gem**: 高度な検索~~ → ✅ Phase 3-07で実装完了
 
 #### ℹ️ 設計書との差異
 - **MedicalRecord属性**: 設計書には`counseling_content`があるが、実装では以下に変更:
@@ -1095,36 +1534,34 @@ self.subtotal = unit_price * quantity
   - `notes` (メモ)
 - **理由**: より実用的なカルテ項目に変更
 
-### 6.4 次回セッション推奨
+### 7.4 次回セッション推奨
 
-#### Phase 3中盤の実装順序
+#### Phase 3機能実装完了 🎉
 
-**優先度1**: ~~画像アップロード機能（Active Storage）~~ → ✅ 完了（PR #7）
+すべての予定機能が実装完了しました：
 
-**優先度2**: ~~タグ機能~~ → ✅ 完了（PR #8）
+- ✅ **優先度1**: 画像アップロード機能（Active Storage） → 完了（PR #7）
+- ✅ **優先度2**: タグ機能 → 完了（PR #8）
+- ✅ **優先度3**: 検索強化（Ransack） → 完了（PR #9）
 
-**優先度3**: 検索強化（Ransack）（次回実装）
-- **理由**: タグ機能と組み合わせて高度な検索を実現
-- **工数**: 3-4h
-- **ブランチ**: `feature/p3-07-ransack-search`
-- **実装内容**:
-  - Ransack gem導入
-  - カルテ検索フォーム（患者名、タグ、日付範囲、施設）
-  - 検索結果のソート機能
-  - ページネーション統合
-
-#### Phase 3後半（全機能実装後）
+#### Phase 3後半（次回実装）
 
 **最終仕上げ**: System E2Eテスト拡充
 - **理由**: 仕様固定後に一気に書く（CI最適化含む）
 - **工数**: 6-8h
 - **ブランチ**: `feature/p3-08-e2e-tests`
+- **実装内容**:
+  - Capybara + Selenium/Cuprite でSystemテスト
+  - JavaScriptドライバーでの動作確認
+  - 全機能のE2Eテスト（画像アップロード、タグ作成、検索、コスト項目動的追加）
+  - エッジケースのテストケース追加
+  - CI実行時間の最適化
 
 **準備**:
 ```bash
-# 次回セッション開始時（検索機能から）
+# 次回セッション開始時（E2Eテストから）
 git checkout main && git pull
-git checkout -b feature/p3-07-ransack-search
+git checkout -b feature/p3-08-e2e-tests
 ```
 
 ---
@@ -1138,6 +1575,270 @@ git checkout -b feature/p3-07-ransack-search
 | 1.2 | 2025-10-13 | 未実装機能・Important Issues・設計書整合性を追加、E2E実装タイミング調整 |
 | 1.3 | 2025-10-13 | Phase 3-05（画像アップロード機能）完了記録、PR #7追加 |
 | 1.4 | 2025-10-13 | Phase 3-06（タグ機能）完了記録、PR #8追加、次回実装はRansack検索 |
+| 1.5 | 2025-10-13 | Phase 3-07（Ransack検索機能）完了記録、PR #9追加、Phase 3機能実装完了🎉 |
+
+---
+
+#### 6.8 既存データの復号化マイグレーション
+
+**課題**: 既存の患者データが暗号化されており、暗号化解除後も暗号化された状態で残る
+
+**ユーザーフィードバック**: 「今回の実装でカルテ一覧の患者の項目が壊れてますね。」
+
+**問題**: 患者名が暗号化JSON文字列として表示: `{"p":"2x3dqu1B+Ca/GIYNEZ+sfQ=="...}`
+
+**原因**: モデルから`encrypts :name`を削除したため、既存の暗号化データが復号化されずに表示される
+
+**解決策**:
+```ruby
+# db/migrate/20251013092001_decrypt_existing_patient_names.rb
+class DecryptExistingPatientNames < ActiveRecord::Migration[7.1]
+  def up
+    # 一時的にPatientモデルのコピーを作成し、暗号化を有効にして既存データを復号化
+    patient_class = Class.new(ApplicationRecord) do
+      self.table_name = 'patients'
+      encrypts :name
+    end
+
+    patient_class.find_each do |patient|
+      # 暗号化されたnameを読み取り（自動復号化される）
+      decrypted_name = patient.name
+
+      # 生のSQLで平文として保存
+      ActiveRecord::Base.connection.execute(
+        "UPDATE patients SET name = #{ActiveRecord::Base.connection.quote(decrypted_name)} WHERE id = #{patient.id}"
+      )
+    end
+  end
+
+  def down
+    # downは実装しない（暗号化に戻すことはできない）
+    raise ActiveRecord::IrreversibleMigration
+  end
+end
+```
+
+**技術的ポイント**:
+- 一時クラスで`encrypts :name`を有効化し、既存データを復号化
+- `find_each`によるバッチ処理（メモリ効率化）
+- `connection.quote`によるSQLインジェクション対策
+- 生SQLで平文として書き戻し
+
+**結果**: ブラウザで患者名が正しく表示されることを確認
+
+#### 6.9 Tom Select統合（検索フォーム）
+
+**追加実装**: 検索フォームのドロップダウンにTom Selectを適用
+
+**対象フィールド**:
+```erb
+<!-- 施設選択 -->
+<%= f.select :facility_id_eq, ...,
+    { class: '...', data: { controller: 'tom-select' } } %>
+
+<!-- タグ選択 -->
+<%= f.select :tags_id_eq, ...,
+    { class: '...', data: { controller: 'tom-select' } } %>
+
+<!-- ソート順選択 -->
+<%= f.select :s, ...,
+    { class: '...', data: { controller: 'tom-select' } } %>
+```
+
+**理由**: Phase 3-04で導入したTom Selectの利点（iPad/Safari対応、読みやすい文字サイズ）を検索フォームでも享受
+
+**確認**: ブラウザで`haspopup="listbox"`属性が付与されていることを確認
+
+#### 6.10 検索フォームUI改善
+
+**ユーザー要望**: 「検索機能なんですが、デフォルトで患者名検索を表示、アコーディオンで詳細検索　みたいにできますかね？」
+
+**変更前**: すべての検索条件がアコーディオン内
+
+**変更後**:
+- **常に表示**: 患者名検索フィールド + 検索ボタン + クリアボタン + 詳細検索ボタン
+- **アコーディオン内**: 施設、タグ、来院日範囲、主訴、ソート順
+
+**実装** (`app/views/medical_records/index.html.erb:19-97`):
+```erb
+<!-- 基本検索（常に表示） -->
+<div class="flex items-center gap-4">
+  <div class="flex-1">
+    <%= f.label :patient_name_cont, '患者名で検索' %>
+    <%= f.search_field :patient_name_cont, placeholder: '患者名を入力...' %>
+  </div>
+  <div class="flex items-end gap-2">
+    <%= f.submit '検索' %>
+    <%= link_to 'クリア', medical_records_path %>
+    <button type="button" data-action="click->search-form#toggle">
+      <span data-search-form-target="toggleText">詳細検索</span>
+    </button>
+  </div>
+</div>
+
+<!-- 詳細検索（アコーディオン） -->
+<div data-search-form-target="form" class="hidden">
+  <div class="border-t pt-4 mt-4">
+    <h4>詳細検索条件</h4>
+    <!-- 施設、タグ、日付範囲、主訴、ソート -->
+  </div>
+</div>
+```
+
+**UX改善**:
+- 最も使用頻度の高い患者名検索を常に表示
+- シンプルで直感的なUI
+- 詳細検索が必要な場合のみ展開
+
+#### 6.11 コードレビューと修正対応
+
+**レビュー実施**: エージェント（general-purpose）による包括的コードレビュー
+
+**総合評価**: ⭐⭐⭐⭐☆ (4/5)
+**判定**: **APPROVE - 改善提案あり**
+
+**レビュー結果サマリー**:
+
+##### ✅ 優れている点
+1. **コード品質**: Rubocopクリーン、一貫したスタイル
+2. **テストカバレッジ**: 9件の包括的テスト、全テストパス（308 examples）
+3. **セキュリティ対策**: Ransack v4.0+準拠、ユーザー分離確実、ransackable許可リスト
+4. **パフォーマンス**: Eager Loading（N+1対策）、インデックス追加
+5. **コミット分割**: 6つの論理的なコミット
+
+##### 🔧 優先度High - 修正完了
+1. **件数表示の修正** (`app/views/medical_records/index.html.erb:6`)
+   ```erb
+   <!-- Before -->
+   <%= @medical_records.count %>件のカルテ
+
+   <!-- After -->
+   全<%= @medical_records.total_count %>件のカルテ
+   ```
+   - **問題**: Kaminariページネーション後は`count`が現在ページの件数を返す
+   - **修正**: `total_count`で全体の件数を表示
+
+2. **ログフィルタリングの追加** (`config/initializers/filter_parameter_logging.rb`)
+   ```ruby
+   Rails.application.config.filter_parameters += [
+     :passw, :secret, :token, :_key, :crypt, :salt, :certificate, :otp, :ssn,
+     :name, :patient_name, :patient_name_cont  # 追加
+   ]
+   ```
+   - **目的**: 患者名がログに平文で記録されることを防止
+   - **セキュリティ**: ログファイル経由の情報漏洩リスク低減
+
+##### 📋 優先度Medium - 次回PR推奨
+3. **ページネーションテストの追加**
+   - 20件を超えるデータでのページング動作確認
+   - ページ番号の正常性確認
+   - 検索条件+ページネーションの組み合わせ
+
+4. **アクセシビリティ改善**
+   - 詳細検索ボタンに`aria-expanded`属性追加
+   - アコーディオンに`aria-hidden`属性追加
+   - Stimulus Controllerでaria属性を動的更新
+
+5. **マイグレーションのエラーハンドリング強化**
+   - 進捗ログの追加（100件ごと）
+   - 暗号化キーの存在確認
+   - 復号化失敗時のスキップ処理
+
+##### 🔮 優先度Low - 将来的検討
+6. データベース暗号化（TDE）の検討
+7. アクセスログ記録の強化
+8. セキュリティポリシードキュメントの更新
+
+##### 🔐 セキュリティリスク評価
+
+**リスクレベル**: **Medium（許容範囲内）**
+
+| リスク項目 | 影響度 | 発生確率 | リスクレベル | 緩和策 |
+|-----------|--------|---------|------------|--------|
+| 患者名平文化によるデータ漏洩 | High | Low | **Medium** | ログフィルタリング、TDE検討 |
+| Ransackパラメータインジェクション | Medium | Low | **Low** | 許可リスト設定済み |
+| SQLインジェクション | High | Very Low | **Low** | Active Record自動エスケープ |
+| ユーザー間データ漏洩 | Critical | Very Low | **Low** | current_userスコープ確認済み |
+
+**総合リスク評価**:
+- 患者名平文化は意図的なトレードオフ判断（検索性能 vs セキュリティ）
+- 他のセキュリティ対策は適切に実装
+- 追加対策（ログフィルタリング実施、TDE検討）で更にリスク低減
+
+### テスト結果
+
+**全テスト**: 308 examples, 0 failures, 11 pending
+**Rubocop**: 62 files inspected, no offenses detected
+
+**新規追加テスト**:
+- Ransack検索機能: 9 examples, 0 failures
+- 患者名平文化テスト修正: 1 example
+
+### 成果
+
+- ✅ TDDアプローチでRansack検索実装（Red → Green）
+- ✅ 9つの検索シナリオすべてテストパス
+- ✅ ransackable_attributes設定完了（セキュリティ準拠）
+- ✅ 患者名検索を可能にするため暗号化解除（UX優先）
+- ✅ 既存データの復号化マイグレーション実装
+- ✅ アコーディオン検索フォーム実装（Stimulus.js）
+- ✅ 検索UIを2段階に改善（基本検索常時表示 + 詳細検索アコーディオン）
+- ✅ Tom Select統合（3つのドロップダウン）
+- ✅ URLパラメータ自動展開機能
+- ✅ Kaminariページネーション統合（20件/ページ）
+- ✅ 複数条件・ソート機能完備
+- ✅ コードレビュー実施と優先度High修正完了
+- ✅ ログフィルタリング追加（セキュリティ強化）
+- ✅ テストカバレッジ維持
+- ✅ Rubocop準拠
+
+### 検索機能仕様
+
+**検索条件**:
+- 患者名: 部分一致（`patient_name_cont`）- **常に表示**
+- 施設: 完全一致（`facility_id_eq`）- アコーディオン内
+- タグ: 完全一致（`tags_id_eq`）- アコーディオン内
+- 来院日範囲: 開始日（`visit_date_gteq`）、終了日（`visit_date_lteq`）- アコーディオン内
+- 主訴: 部分一致（`chief_complaint_cont`）- アコーディオン内
+
+**ソート**:
+- 来院日（新しい順/古い順）- アコーディオン内
+- 患者名（昇順/降順）- アコーディオン内
+
+**表示**:
+- 20件/ページ
+- ページネーション（Kaminari）
+- 総件数・現在範囲表示
+
+### コミット
+
+**分割コミット（7コミット）**:
+
+1. `feat: Ransack設定とransackable属性の追加`
+2. `refactor: 患者名の暗号化を解除して検索可能に`
+3. `test: Ransack検索機能のテストを追加`
+4. `feat: カルテ一覧にRansack検索とページネーションを実装`
+5. `feat: 検索フォームアコーディオン用Stimulus Controllerを追加`
+6. `feat: カルテ一覧に高度な検索UIとページネーションを追加`
+7. `fix: レビュー指摘事項の修正`（件数表示、ログフィルタリング）
+
+**最終コミットメッセージ**:
+```bash
+git commit -m "fix: レビュー指摘事項の修正
+
+1. 件数表示を修正
+   - @medical_records.count → @medical_records.total_count
+   - ページネーション後の正しい総件数を表示
+
+2. ログフィルタリングを追加
+   - 患者名関連パラメータをfilter_parametersに追加
+   - :name, :patient_name, :patient_name_contをフィルタリング
+   - ログファイルへの患者名の平文記録を防止
+
+🤖 Generated with [Claude Code](https://claude.com/claude-code)
+
+Co-Authored-By: Claude <noreply@anthropic.com>"
+```
 
 ---
 
