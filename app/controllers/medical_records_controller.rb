@@ -60,7 +60,8 @@ class MedicalRecordsController < ApplicationController
       :chief_complaint,
       :diagnosis,
       :treatment_content,
-      :notes
+      :notes,
+      cost_items_attributes: %i[id item_name quantity unit_price _destroy]
     )
   end
 

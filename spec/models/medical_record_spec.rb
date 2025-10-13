@@ -5,6 +5,7 @@ RSpec.describe MedicalRecord, type: :model do
     it { is_expected.to belong_to(:patient) }
     it { is_expected.to belong_to(:facility) }
     it { is_expected.to belong_to(:user) }
+    it { is_expected.to have_many(:cost_items).dependent(:destroy) }
   end
 
   describe 'バリデーション' do
@@ -69,6 +70,79 @@ RSpec.describe MedicalRecord, type: :model do
       it '日付がnilの場合は全件取得' do
         expect(MedicalRecord.by_date_range(nil, nil).count).to eq(3)
       end
+    end
+  end
+
+  describe '#total_cost' do
+    let(:user) { create(:user) }
+    let(:patient) { create(:patient, user: user) }
+    let(:facility) { create(:facility, user: user) }
+    let(:medical_record) { create(:medical_record, user: user, patient: patient, facility: facility) }
+
+    it 'コスト項目がない場合は0を返す' do
+      expect(medical_record.total_cost).to eq(0)
+    end
+
+    it 'コスト項目の合計金額を正しく計算する' do
+      create(:cost_item, medical_record: medical_record, quantity: 2, unit_price: 30000)
+      create(:cost_item, medical_record: medical_record, quantity: 1, unit_price: 50000)
+      expect(medical_record.total_cost).to eq(110000)
+    end
+  end
+
+  describe 'nested attributes' do
+    let(:user) { create(:user) }
+    let(:patient) { create(:patient, user: user) }
+    let(:facility) { create(:facility, user: user) }
+
+    it 'コスト項目を含めてカルテを作成できる' do
+      medical_record = MedicalRecord.new(
+        user: user,
+        patient: patient,
+        facility: facility,
+        visit_date: Date.today,
+        treatment_location: '顔',
+        chief_complaint: 'しわ',
+        diagnosis: '老化',
+        treatment_content: 'ボトックス',
+        cost_items_attributes: [
+          { item_name: 'ボトックス注射', quantity: 1, unit_price: 50000 },
+          { item_name: 'ヒアルロン酸注射', quantity: 2, unit_price: 30000 }
+        ]
+      )
+
+      expect(medical_record.save).to be true
+      expect(medical_record.cost_items.count).to eq(2)
+      expect(medical_record.total_cost).to eq(110000)
+    end
+
+    it 'コスト項目を更新できる' do
+      medical_record = create(:medical_record, user: user, patient: patient, facility: facility)
+      cost_item = create(:cost_item, medical_record: medical_record, quantity: 1, unit_price: 50000)
+
+      medical_record.update(
+        cost_items_attributes: [
+          { id: cost_item.id, quantity: 3, unit_price: 40000 }
+        ]
+      )
+
+      cost_item.reload
+      expect(cost_item.quantity).to eq(3)
+      expect(cost_item.unit_price).to eq(40000)
+      expect(cost_item.total_price).to eq(120000)
+    end
+
+    it 'コスト項目を削除できる' do
+      medical_record = create(:medical_record, user: user, patient: patient, facility: facility)
+      cost_item = create(:cost_item, medical_record: medical_record)
+
+      expect do
+        medical_record.update(
+          cost_items_attributes: [
+            { id: cost_item.id, _destroy: '1' }
+          ]
+        )
+      end.to change(CostItem, :count).by(-1)
     end
   end
 end

@@ -1,4 +1,4 @@
-<%= form_with(model: medical_record, class: "space-y-6") do |f| %>
+<%= form_with(model: medical_record, class: "space-y-6", data: { controller: "cost-items" }) do |f| %>
   <% if medical_record.errors.any? %>
     <div class="rounded-md bg-red-50 p-4">
       <div class="flex">
@@ -59,6 +59,31 @@
   <div>
     <%= f.label :notes, class: "block text-sm font-medium text-gray-700" %>
     <%= f.text_area :notes, rows: 3, class: "mt-1 focus:ring-blue-500 focus:border-blue-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md", placeholder: "その他メモ（任意）" %>
+  </div>
+
+  <!-- コスト項目セクション -->
+  <div class="border-t border-gray-200 pt-6">
+    <div class="flex items-center justify-between mb-4">
+      <h3 class="text-lg font-medium text-gray-900">コスト項目</h3>
+      <button type="button" id="add-cost-item" class="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+        <svg class="h-4 w-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+        </svg>
+        項目を追加
+      </button>
+    </div>
+
+    <div id="cost-items-container" class="space-y-3">
+      <%= f.fields_for :cost_items do |cost_item_form| %>
+        <%= render 'cost_item_fields', f: cost_item_form %>
+      <% end %>
+    </div>
+
+    <template id="cost-item-template">
+      <%= f.fields_for :cost_items, CostItem.new, child_index: 'NEW_RECORD' do |cost_item_form| %>
+        <%= render 'cost_item_fields', f: cost_item_form %>
+      <% end %>
+    </template>
   </div>
 
   <div class="flex justify-end space-x-3">
