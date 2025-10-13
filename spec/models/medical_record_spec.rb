@@ -174,11 +174,12 @@ RSpec.describe MedicalRecord, type: :model do
 
     it 'コスト項目を更新できる' do
       medical_record = create(:medical_record, user: user, patient: patient, facility: facility)
-      cost_item = create(:cost_item, medical_record: medical_record, quantity: 1, unit_price: 50_000)
+      cost_item = create(:cost_item, medical_record: medical_record, item_name: 'テスト項目', quantity: 1, unit_price: 50_000)
+      medical_record.reload
 
       medical_record.update(
         cost_items_attributes: [
-          { id: cost_item.id, quantity: 3, unit_price: 40_000 },
+          { id: cost_item.id, item_name: 'テスト項目', quantity: 3, unit_price: 40_000 },
         ]
       )
 
@@ -190,7 +191,8 @@ RSpec.describe MedicalRecord, type: :model do
 
     it 'コスト項目を削除できる' do
       medical_record = create(:medical_record, user: user, patient: patient, facility: facility)
-      cost_item = create(:cost_item, medical_record: medical_record)
+      cost_item = create(:cost_item, medical_record: medical_record, item_name: 'テスト項目', quantity: 1, unit_price: 10_000)
+      medical_record.reload
 
       expect do
         medical_record.update(

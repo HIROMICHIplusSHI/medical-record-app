@@ -7,6 +7,9 @@ ja:
     formats:
       long: "%Y年%m月%d日"
       short: "%Y/%m/%d"
+  activemodel:
+    errors:
+      format: "%{attribute}%{message}"
   activerecord:
     errors:
       messages:
@@ -48,6 +51,7 @@ ja:
       facility: 施設
       medical_record: カルテ
       cost_sheet: コスト項目
+      cost_item: コスト項目
     attributes:
       patient:
         name: 氏名
@@ -83,3 +87,12 @@ ja:
         diagnosis: 診断
         treatment_content: 施術内容
         notes: メモ
+      cost_item:
+        cost_sheet: コスト項目
+        cost_sheet_id: コスト項目
+        medical_record: カルテ
+        medical_record_id: カルテ
+        item_name: 項目名
+        quantity: 数量
+        unit_price: 単価
+        total_price: 合計金額

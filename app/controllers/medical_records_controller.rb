@@ -4,7 +4,7 @@ class MedicalRecordsController < ApplicationController
 
   def index
     @medical_records = current_user.medical_records
-                                   .includes(:patient, :facility)
+                                   .includes(:patient, :facility, :tags)
                                    .recent
     @medical_records = @medical_records.by_patient(params[:patient_id]) if params[:patient_id].present?
     @medical_records = @medical_records.by_facility(params[:facility_id]) if params[:facility_id].present?
@@ -59,7 +59,7 @@ class MedicalRecordsController < ApplicationController
 
   def set_medical_record
     @medical_record = current_user.medical_records
-                                  .includes(:cost_items)
+                                  .includes(:cost_items, :tags)
                                   .find(params[:id])
   end
 
@@ -74,6 +74,7 @@ class MedicalRecordsController < ApplicationController
       :treatment_content,
       :notes,
       photos: [],
+      tag_ids: [],
       cost_items_attributes: %i[id cost_sheet_id item_name quantity unit_price _destroy]
     )
   end
@@ -82,5 +83,6 @@ class MedicalRecordsController < ApplicationController
     @patients = current_user.patients.order(:name)
     @facilities = current_user.facilities.by_name
     @cost_sheets = current_user.cost_sheets.by_name
+    @tags = current_user.tags.by_name
   end
 end

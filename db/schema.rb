@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2025_10_13_045743) do
+ActiveRecord::Schema[7.1].define(version: 2025_10_13_062732) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -82,6 +82,16 @@ ActiveRecord::Schema[7.1].define(version: 2025_10_13_045743) do
     t.index ["user_id"], name: "index_facilities_on_user_id"
   end
 
+  create_table "medical_record_tags", force: :cascade do |t|
+    t.bigint "medical_record_id", null: false
+    t.bigint "tag_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["medical_record_id", "tag_id"], name: "index_medical_record_tags_on_medical_record_id_and_tag_id", unique: true
+    t.index ["medical_record_id"], name: "index_medical_record_tags_on_medical_record_id"
+    t.index ["tag_id"], name: "index_medical_record_tags_on_tag_id"
+  end
+
   create_table "medical_records", force: :cascade do |t|
     t.bigint "patient_id", null: false
     t.bigint "facility_id", null: false
@@ -142,6 +152,17 @@ ActiveRecord::Schema[7.1].define(version: 2025_10_13_045743) do
     t.index ["patient_id"], name: "index_questionnaires_on_patient_id", unique: true
   end
 
+  create_table "tags", force: :cascade do |t|
+    t.bigint "user_id", null: false
+    t.string "name", null: false
+    t.string "category"
+    t.string "color", default: "#3B82F6"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["user_id", "name"], name: "index_tags_on_user_id_and_name", unique: true
+    t.index ["user_id"], name: "index_tags_on_user_id"
+  end
+
   create_table "users", force: :cascade do |t|
     t.string "email", default: "", null: false
     t.string "encrypted_password", default: "", null: false
@@ -164,9 +185,12 @@ ActiveRecord::Schema[7.1].define(version: 2025_10_13_045743) do
   add_foreign_key "cost_items", "medical_records"
   add_foreign_key "cost_sheets", "users"
   add_foreign_key "facilities", "users"
+  add_foreign_key "medical_record_tags", "medical_records"
+  add_foreign_key "medical_record_tags", "tags"
   add_foreign_key "medical_records", "facilities"
   add_foreign_key "medical_records", "patients"
   add_foreign_key "medical_records", "users"
   add_foreign_key "patients", "users"
   add_foreign_key "questionnaires", "patients"
+  add_foreign_key "tags", "users"
 end

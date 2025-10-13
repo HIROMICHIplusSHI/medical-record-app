@@ -1,4 +1,4 @@
-<%= form_with(model: medical_record, class: "space-y-6", data: { controller: "cost-items" }) do |f| %>
+<%= form_with(model: medical_record, local: true, class: "space-y-6", data: { controller: "cost-items" }) do |f| %>
   <% if medical_record.errors.any? %>
     <div class="rounded-md bg-red-50 p-4">
       <div class="flex">
@@ -61,6 +61,72 @@
     <%= f.text_area :notes, rows: 3, class: "mt-1 focus:ring-blue-500 focus:border-blue-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md", placeholder: "その他メモ（任意）" %>
   </div>
 
+  <!-- タグ選択セクション -->
+  <div data-controller="tag-accordion">
+    <div class="flex justify-between items-center mb-2">
+      <%= f.label :tag_ids, "タグ", class: "block text-sm font-medium text-gray-700" %>
+      <button type="button" data-action="click->tag-accordion#toggle" class="text-sm text-blue-600 hover:text-blue-800 underline">
+        + タグを作成
+      </button>
+    </div>
+
+    <!-- アコーディオン形式のタグ作成フォーム -->
+    <div data-tag-accordion-target="form" class="hidden mb-4 p-4 border border-gray-300 rounded-md bg-gray-50">
+      <h4 class="text-sm font-medium text-gray-900 mb-3">新しいタグを作成</h4>
+      <div class="space-y-3">
+        <div>
+          <label class="block text-xs font-medium text-gray-700 mb-1">タグ名 *</label>
+          <input type="text" data-tag-accordion-target="nameInput" maxlength="50"
+                 class="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-sm"
+                 placeholder="例：施術部位、症状">
+        </div>
+        <div>
+          <label class="block text-xs font-medium text-gray-700 mb-1">カテゴリ</label>
+          <input type="text" data-tag-accordion-target="categoryInput"
+                 class="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-sm"
+                 placeholder="例：施術、診断、症状">
+        </div>
+        <div>
+          <label class="block text-xs font-medium text-gray-700 mb-1">色</label>
+          <div class="flex items-center space-x-2">
+            <input type="color" data-tag-accordion-target="colorInput" value="#3B82F6"
+                   class="h-8 w-16 rounded border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+            <span class="text-xs text-gray-600">タグの表示色</span>
+          </div>
+        </div>
+        <div class="flex justify-end space-x-2 pt-2">
+          <button type="button" data-action="click->tag-accordion#cancel"
+                  class="px-3 py-1.5 text-sm bg-gray-300 hover:bg-gray-400 text-gray-800 font-medium rounded">
+            キャンセル
+          </button>
+          <button type="button" data-action="click->tag-accordion#submit"
+                  class="px-3 py-1.5 text-sm bg-blue-500 hover:bg-blue-700 text-white font-medium rounded">
+            保存
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <%= hidden_field_tag 'medical_record[tag_ids][]', '' %>
+    <div data-tag-accordion-target="tagList" class="flex flex-wrap gap-2">
+      <% if @tags.present? %>
+        <% @tags.each do |tag| %>
+          <label class="inline-flex items-center cursor-pointer">
+            <%= check_box_tag 'medical_record[tag_ids][]', tag.id, medical_record.tag_ids.include?(tag.id), id: "medical_record_tag_#{tag.id}", class: "sr-only peer" %>
+            <span class="px-3 py-2 rounded-full text-sm font-medium border-2 transition-all peer-checked:border-opacity-100 peer-checked:ring-2 peer-checked:ring-offset-1 border-opacity-30"
+                  style="border-color: <%= tag.color %>; background-color: <%= tag.color %>15; color: <%= tag.color %>; --tw-ring-color: <%= tag.color %>;">
+              <%= tag.name %>
+            </span>
+          </label>
+        <% end %>
+      <% else %>
+        <p class="text-sm text-gray-500">
+          まだタグが登録されていません。
+        </p>
+      <% end %>
+    </div>
+  </div>
+
   <!-- 画像アップロードセクション -->
   <div class="border-t border-gray-200 pt-6" data-controller="photo-preview" data-photo-preview-max-files-value="5">
     <div class="mb-4">
@@ -84,7 +150,7 @@
             <div class="relative group">
               <%= image_tag attachment, class: "w-full h-40 object-cover rounded-lg shadow-sm" %>
               <div class="absolute top-2 right-2">
-                <%= button_to remove_photo_medical_record_path(medical_record, photo_id: attachment.id), method: :delete, form: { onsubmit: "return confirm('この画像を削除しますか？');" }, class: "bg-red-600 hover:bg-red-700 text-white rounded-full p-2 opacity-0 group-hover:opacity-100 transition-opacity shadow-lg border-2 border-white" do %>
+                <%= link_to remove_photo_medical_record_path(medical_record, photo_id: attachment.id), method: :delete, data: { turbo_method: :delete, turbo_confirm: 'この画像を削除しますか？' }, class: "bg-red-600 hover:bg-red-700 text-white rounded-full p-2 opacity-0 group-hover:opacity-100 transition-opacity shadow-lg border-2 border-white inline-block" do %>
                   <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="3">
                     <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
                   </svg>
@@ -124,6 +190,6 @@
 
   <div class="flex justify-end space-x-3">
     <%= link_to 'キャンセル', medical_records_path, class: "inline-flex justify-center py-2 px-4 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500" %>
-    <%= f.submit class: "inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500" %>
+    <%= f.submit "更新する", class: "inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500" %>
   </div>
 <% end %>

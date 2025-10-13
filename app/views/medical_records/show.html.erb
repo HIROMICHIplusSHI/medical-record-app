@@ -48,6 +48,20 @@
             <dd class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2 whitespace-pre-wrap"><%= @medical_record.notes %></dd>
           </div>
         <% end %>
+        <% if @medical_record.tags.any? %>
+          <div class="py-4 sm:py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
+            <dt class="text-sm font-medium text-gray-500">タグ</dt>
+            <dd class="mt-1 sm:mt-0 sm:col-span-2">
+              <div class="flex flex-wrap gap-2">
+                <% @medical_record.tags.each do |tag| %>
+                  <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium" style="background-color: <%= tag.color %>20; color: <%= tag.color %>;">
+                    <%= tag.name %>
+                  </span>
+                <% end %>
+              </div>
+            </dd>
+          </div>
+        <% end %>
       </dl>
     </div>
 
