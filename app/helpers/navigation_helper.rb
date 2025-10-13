@@ -1,0 +1,33 @@
+module NavigationHelper
+  def link_to_nav_item(text, path, disabled: false)
+    css_class = if disabled
+                  'px-3 py-2 rounded-md text-sm font-medium text-gray-300 cursor-not-allowed'
+                elsif current_page?(path)
+                  'px-3 py-2 rounded-md text-sm font-medium bg-blue-700'
+                else
+                  'px-3 py-2 rounded-md text-sm font-medium hover:bg-blue-700'
+                end
+
+    if disabled
+      content_tag(:span, text, class: css_class)
+    else
+      link_to text, path, class: css_class, 'aria-current': (current_page?(path) ? 'page' : nil)
+    end
+  end
+
+  def link_to_mobile_nav_item(text, path, disabled: false)
+    css_class = if disabled
+                  'block px-3 py-2 rounded-md text-base font-medium text-gray-300 cursor-not-allowed'
+                elsif current_page?(path)
+                  'block px-3 py-2 rounded-md text-base font-medium bg-blue-700'
+                else
+                  'block px-3 py-2 rounded-md text-base font-medium hover:bg-blue-700'
+                end
+
+    if disabled
+      content_tag(:span, text, class: css_class)
+    else
+      link_to text, path, class: css_class, 'aria-current': (current_page?(path) ? 'page' : nil)
+    end
+  end
+end
