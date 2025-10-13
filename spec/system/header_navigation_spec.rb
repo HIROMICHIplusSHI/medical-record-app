@@ -20,11 +20,13 @@ RSpec.describe 'Header Navigation', type: :system do
       visit root_path
 
       within('header') do
-        expect(page).to have_link('ダッシュボード', href: root_path)
+        # 無効化されたアイテムはspanとして表示される
+        expect(page).to have_css('span.cursor-not-allowed', text: 'ダッシュボード')
         expect(page).to have_link('カルテ', href: medical_records_path)
         expect(page).to have_link('患者', href: patients_path)
         expect(page).to have_link('施術場所', href: facilities_path)
         expect(page).to have_link('コストシート', href: cost_sheets_path)
+        expect(page).to have_css('span.cursor-not-allowed', text: '請求書')
       end
     end
 
@@ -89,11 +91,11 @@ RSpec.describe 'Header Navigation', type: :system do
       visit root_path
 
       within('header') do
-        # ドロップダウンメニューは最初は非表示
-        expect(page).not_to have_link('ログアウト', visible: :all)
+        # ドロップダウンメニューは最初は非表示（hiddenクラスで制御）
+        expect(page).to have_css('[data-dropdown-target="menu"].hidden', visible: :all)
 
         # ユーザー名（またはアイコン）をクリック
-        find('[data-controller="dropdown"]').click
+        find('[data-controller="dropdown"] button').click
 
         # メニューが表示される
         expect(page).to have_link('ログアウト', visible: :visible)
@@ -104,13 +106,15 @@ RSpec.describe 'Header Navigation', type: :system do
       visit root_path
 
       within('header') do
-        find('[data-controller="dropdown"]').click
+        find('[data-controller="dropdown"] button').click
         click_link 'ログアウト'
       end
 
       # ログインページにリダイレクトされる
       expect(page).to have_current_path(new_user_session_path)
-      expect(page).to have_content('ログアウトしました')
+      # ログインフォームが表示されることで、ログアウト成功を確認
+      expect(page).to have_selector('input[type="email"]')
+      expect(page).to have_selector('input[type="password"]')
     end
   end
 
@@ -125,7 +129,7 @@ RSpec.describe 'Header Navigation', type: :system do
         visit root_path
 
         within('header') do
-          expect(page).to have_css('button[data-action*="toggle"]', visible: :visible)
+          expect(page).to have_css('button[data-action="click->header#toggleMobileMenu"]', visible: :visible)
         end
       end
 
@@ -141,7 +145,7 @@ RSpec.describe 'Header Navigation', type: :system do
 
         within('header') do
           # ハンバーガーアイコンをクリック
-          find('button[data-action*="toggle"]').click
+          find('button[data-action="click->header#toggleMobileMenu"]').click
 
           # メニューが表示される
           expect(page).to have_link('カルテ', visible: :visible)
@@ -160,7 +164,7 @@ RSpec.describe 'Header Navigation', type: :system do
         visit root_path
 
         within('header') do
-          expect(page).not_to have_css('button[data-action*="toggle"]', visible: :visible)
+          expect(page).not_to have_css('button[data-action="click->header#toggleMobileMenu"]', visible: :visible)
         end
       end
 
@@ -190,7 +194,7 @@ RSpec.describe 'Header Navigation', type: :system do
       visit root_path
 
       within('header') do
-        find('[data-controller="dropdown"]').click
+        find('[data-controller="dropdown"] button').click
         # Turboを使用している場合、data-turbo-method属性を確認
         expect(page).to have_css('a[href*="sign_out"][data-turbo-method="delete"]')
       end
