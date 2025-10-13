@@ -90,6 +90,62 @@ RSpec.describe MedicalRecord, type: :model do
     end
   end
 
+  describe '画像アタッチメント' do
+    let(:user) { create(:user) }
+    let(:patient) { create(:patient, user: user) }
+    let(:facility) { create(:facility, user: user) }
+    let(:medical_record) { create(:medical_record, user: user, patient: patient, facility: facility) }
+
+    it '画像を添付できる' do
+      medical_record.photos.attach(
+        io: File.open(Rails.root.join('spec/fixtures/files/sample_image.jpg')),
+        filename: 'sample_image.jpg',
+        content_type: 'image/jpeg'
+      )
+      expect(medical_record.photos).to be_attached
+      expect(medical_record.photos.count).to eq(1)
+    end
+
+    it '複数の画像を添付できる' do
+      3.times do |i|
+        medical_record.photos.attach(
+          io: File.open(Rails.root.join('spec/fixtures/files/sample_image.jpg')),
+          filename: "image_#{i}.jpg",
+          content_type: 'image/jpeg'
+        )
+      end
+      expect(medical_record.photos.count).to eq(3)
+    end
+
+    it '6枚以上の画像は添付できない' do
+      6.times do |i|
+        medical_record.photos.attach(
+          io: File.open(Rails.root.join('spec/fixtures/files/sample_image.jpg')),
+          filename: "image_#{i}.jpg",
+          content_type: 'image/jpeg'
+        )
+      end
+      expect(medical_record).not_to be_valid
+      expect(medical_record.errors[:photos]).to include('は最大5枚までアップロードできます')
+    end
+
+    it '10MBを超える画像は添付できない' do
+      # ActiveStorage::Blobを直接作成してサイズを設定
+      blob = ActiveStorage::Blob.create_and_upload!(
+        io: StringIO.new('a' * 100), # 小さいダミーデータ
+        filename: 'large_image.jpg',
+        content_type: 'image/jpeg'
+      )
+      # byte_sizeを11MBに設定（DBレベルで変更）
+      blob.update_column(:byte_size, 11.megabytes)
+
+      medical_record.photos.attach(blob)
+
+      expect(medical_record).not_to be_valid
+      expect(medical_record.errors[:photos]).to include('large_image.jpgのサイズが10MBを超えています')
+    end
+  end
+
   describe 'nested attributes' do
     let(:user) { create(:user) }
     let(:patient) { create(:patient, user: user) }
