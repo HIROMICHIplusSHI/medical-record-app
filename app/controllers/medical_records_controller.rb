@@ -1,6 +1,6 @@
 class MedicalRecordsController < ApplicationController
   before_action :authenticate_user!
-  before_action :set_medical_record, only: %i[show edit update destroy]
+  before_action :set_medical_record, only: %i[show edit update destroy remove_photo]
 
   def index
     @medical_records = current_user.medical_records
@@ -45,6 +45,12 @@ class MedicalRecordsController < ApplicationController
     redirect_to medical_records_path, notice: 'カルテを削除しました。'
   end
 
+  def remove_photo
+    photo = @medical_record.photos.find(params[:photo_id])
+    photo.purge
+    redirect_to edit_medical_record_path(@medical_record), notice: '画像を削除しました。'
+  end
+
   private
 
   def set_medical_record
@@ -63,6 +69,7 @@ class MedicalRecordsController < ApplicationController
       :diagnosis,
       :treatment_content,
       :notes,
+      photos: [],
       cost_items_attributes: %i[id cost_sheet_id item_name quantity unit_price _destroy]
     )
   end

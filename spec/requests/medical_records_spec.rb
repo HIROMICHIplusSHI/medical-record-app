@@ -184,6 +184,63 @@ RSpec.describe 'MedicalRecords', type: :request do
     end
   end
 
+  describe '画像アップロード' do
+    let(:valid_params) do
+      {
+        patient_id: patient.id,
+        facility_id: facility.id,
+        visit_date: Date.today,
+        treatment_location: '顔全体',
+        chief_complaint: 'しわが気になる',
+        diagnosis: '加齢による皮膚の弾力低下',
+        treatment_content: 'ボトックス注射を実施',
+      }
+    end
+
+    it 'カルテ作成時に画像をアップロードできる' do
+      expect do
+        post medical_records_path, params: {
+          medical_record: valid_params.merge(
+            photos: [
+              fixture_file_upload('spec/fixtures/files/sample_image.jpg', 'image/jpeg'),
+            ]
+          ),
+        }
+      end.to change(MedicalRecord, :count).by(1)
+
+      medical_record = MedicalRecord.last
+      expect(medical_record.photos).to be_attached
+      expect(medical_record.photos.count).to eq(1)
+    end
+
+    it 'カルテ更新時に画像を追加できる' do
+      patch medical_record_path(medical_record), params: {
+        medical_record: {
+          photos: [
+            fixture_file_upload('spec/fixtures/files/sample_image.jpg', 'image/jpeg'),
+          ],
+        },
+      }
+
+      medical_record.reload
+      expect(medical_record.photos).to be_attached
+      expect(medical_record.photos.count).to eq(1)
+    end
+
+    it '6枚以上の画像はアップロードできない' do
+      post medical_records_path, params: {
+        medical_record: valid_params.merge(
+          photos: 6.times.map do
+            fixture_file_upload('spec/fixtures/files/sample_image.jpg', 'image/jpeg')
+          end
+        ),
+      }
+
+      expect(response).to have_http_status(:unprocessable_content)
+      expect(response.body).to include('は最大5枚までアップロードできます')
+    end
+  end
+
   describe 'DELETE /medical_records/:id' do
     it 'カルテが削除される' do
       record_to_delete = create(:medical_record, user: user, patient: patient, facility: facility)

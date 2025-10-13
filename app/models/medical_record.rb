@@ -3,6 +3,7 @@ class MedicalRecord < ApplicationRecord
   belongs_to :facility
   belongs_to :user
   has_many :cost_items, dependent: :destroy
+  has_many_attached :photos
 
   accepts_nested_attributes_for :cost_items, allow_destroy: true, reject_if: :all_blank
 
@@ -17,6 +18,8 @@ class MedicalRecord < ApplicationRecord
   validates :chief_complaint, presence: true
   validates :diagnosis, presence: true
   validates :treatment_content, presence: true
+  validate :photos_count_limit
+  validate :photos_size_limit
 
   # スコープ
   scope :recent, -> { order(visit_date: :desc, created_at: :desc) }
@@ -25,4 +28,24 @@ class MedicalRecord < ApplicationRecord
   }
   scope :by_patient, ->(patient_id) { where(patient_id: patient_id) if patient_id.present? }
   scope :by_facility, ->(facility_id) { where(facility_id: facility_id) if facility_id.present? }
+
+  private
+
+  def photos_count_limit
+    return unless photos.attached?
+
+    if photos.count > 5
+      errors.add(:photos, 'は最大5枚までアップロードできます')
+    end
+  end
+
+  def photos_size_limit
+    return unless photos.attached?
+
+    photos.each do |photo|
+      if photo.byte_size > 10.megabytes
+        errors.add(:photos, "#{photo.filename}のサイズが10MBを超えています")
+      end
+    end
+  end
 end
