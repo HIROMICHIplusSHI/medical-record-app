@@ -12,6 +12,7 @@ class CostSheet < ApplicationRecord
   # バリデーション
   validates :item_name, presence: true, length: { maximum: 100 }
   validates :standard_price, presence: true, numericality: { greater_than_or_equal_to: 0 }
+  validates :category, inclusion: { in: CATEGORIES.keys, allow_blank: true }
 
   # スコープ
   scope :by_name, -> { order(:item_name) }

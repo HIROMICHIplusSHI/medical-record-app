@@ -85,7 +85,7 @@ RSpec.describe 'CostSheets', type: :request do
 
       it 'newテンプレートが再表示される' do
         post cost_sheets_path, params: invalid_params
-        expect(response).to have_http_status(:unprocessable_entity)
+        expect(response).to have_http_status(:unprocessable_content)
       end
     end
   end
@@ -130,7 +130,7 @@ RSpec.describe 'CostSheets', type: :request do
 
       it 'editテンプレートが再表示される' do
         patch cost_sheet_path(cost_sheet), params: invalid_params
-        expect(response).to have_http_status(:unprocessable_entity)
+        expect(response).to have_http_status(:unprocessable_content)
       end
     end
   end
@@ -146,6 +146,30 @@ RSpec.describe 'CostSheets', type: :request do
     it '一覧ページにリダイレクトされる' do
       delete cost_sheet_path(cost_sheet)
       expect(response).to redirect_to(cost_sheets_path)
+    end
+  end
+
+  describe '他のユーザーのリソースへのアクセス' do
+    let(:other_user) { create(:user) }
+    let(:other_cost_sheet) { create(:cost_sheet, user: other_user) }
+
+    it '他のユーザーのコストシートを編集できない' do
+      get edit_cost_sheet_path(other_cost_sheet)
+      expect(response).to have_http_status(:not_found)
+    end
+
+    it '他のユーザーのコストシートを更新できない' do
+      original_name = other_cost_sheet.item_name
+      patch cost_sheet_path(other_cost_sheet), params: { cost_sheet: { item_name: 'hacked' } }
+      expect(response).to have_http_status(:not_found)
+      expect(other_cost_sheet.reload.item_name).to eq(original_name)
+    end
+
+    it '他のユーザーのコストシートを削除できない' do
+      other_cost_sheet_id = other_cost_sheet.id
+      delete cost_sheet_path(other_cost_sheet)
+      expect(response).to have_http_status(:not_found)
+      expect(CostSheet.exists?(other_cost_sheet_id)).to be true
     end
   end
 

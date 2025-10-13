@@ -12,6 +12,7 @@ RSpec.describe CostSheet, type: :model do
     it { is_expected.to validate_length_of(:item_name).is_at_most(100) }
     it { is_expected.to validate_presence_of(:standard_price) }
     it { is_expected.to validate_numericality_of(:standard_price).is_greater_than_or_equal_to(0) }
+    it { is_expected.to validate_inclusion_of(:category).in_array(CostSheet::CATEGORIES.keys).allow_blank }
   end
 
   describe 'CATEGORIES定数' do

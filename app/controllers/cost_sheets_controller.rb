@@ -15,7 +15,7 @@ class CostSheetsController < ApplicationController
     if @cost_sheet.save
       redirect_to cost_sheets_path, notice: 'コストシートを作成しました。'
     else
-      render :new, status: :unprocessable_entity
+      render :new, status: :unprocessable_content
     end
   end
 
@@ -25,7 +25,7 @@ class CostSheetsController < ApplicationController
     if @cost_sheet.update(cost_sheet_params)
       redirect_to cost_sheets_path, notice: 'コストシートを更新しました。'
     else
-      render :edit, status: :unprocessable_entity
+      render :edit, status: :unprocessable_content
     end
   end
 
