@@ -4,9 +4,7 @@ module QuestionnairesHelper
     return '' if field_value.blank?
 
     # 既に配列の場合
-    if field_value.is_a?(Array)
-      return field_value.map { |v| translate_value(v) }.join("\n")
-    end
+    return field_value.map { |v| translate_value(v) }.join("\n") if field_value.is_a?(Array)
 
     # JSON文字列の場合
     begin
@@ -86,7 +84,7 @@ module QuestionnairesHelper
       'current_wound' => '現在、顔に傷や湿疹がある',
       'herpes_prone' => 'ヘルペスができやすい',
       'sunburned' => '日焼けしている',
-      'none' => '該当なし'
+      'none' => '該当なし',
     }
 
     translations[value] || value
