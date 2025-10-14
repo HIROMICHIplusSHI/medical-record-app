@@ -3,12 +3,13 @@ class QuestionnairesController < ApplicationController
   before_action :set_patient
   before_action :set_questionnaire, only: %i[edit update destroy]
 
-  # フィーチャーフラグ: Phase 3（カルテ連携）で有効化予定
-  USE_CHECKBOX_UI = false
+  # フィーチャーフラグ: Phase 4-02で有効化
+  USE_CHECKBOX_UI = true
 
   def new
     @questionnaire = @patient.build_questionnaire
     @use_checkbox_ui = USE_CHECKBOX_UI
+    initialize_empty_arrays if @use_checkbox_ui
   end
 
   def create
@@ -30,6 +31,7 @@ class QuestionnairesController < ApplicationController
   def edit
     redirect_to new_patient_questionnaire_path(@patient), alert: '問診票が見つかりません。' unless @questionnaire
     @use_checkbox_ui = USE_CHECKBOX_UI
+    prepare_questionnaire_data if @questionnaire && @use_checkbox_ui
   end
 
   def update
@@ -82,5 +84,44 @@ class QuestionnairesController < ApplicationController
       :skin_conditions,
       :other_concerns
     )
+  end
+
+  def initialize_empty_arrays
+    # 新規作成時は空配列で初期化
+    @medical_conditions_array = []
+    @allergies_array = []
+    @current_medications_array = []
+    @past_surgeries_array = []
+    @pregnancy_info_array = []
+    @desired_treatments_array = []
+    @past_treatments_array = []
+    @skin_conditions_array = []
+  end
+
+  def prepare_questionnaire_data
+    # JSONデータを配列に変換してインスタンス変数に格納
+    @medical_conditions_array = parse_json_field(@questionnaire.medical_conditions)
+    @allergies_array = parse_json_field(@questionnaire.allergies)
+    @current_medications_array = parse_json_field(@questionnaire.current_medications)
+    @past_surgeries_array = parse_json_field(@questionnaire.past_surgeries)
+    @pregnancy_info_array = parse_json_field(@questionnaire.pregnancy_info)
+    @desired_treatments_array = parse_json_field(@questionnaire.desired_treatments)
+    @past_treatments_array = parse_json_field(@questionnaire.past_treatments)
+    @skin_conditions_array = parse_json_field(@questionnaire.skin_conditions)
+  end
+
+  def parse_json_field(field_value)
+    return [] if field_value.blank?
+
+    # 既に配列の場合
+    return field_value if field_value.is_a?(Array)
+
+    # JSON文字列の場合
+    begin
+      parsed = JSON.parse(field_value)
+      parsed.is_a?(Array) ? parsed : []
+    rescue JSON::ParserError
+      []
+    end
   end
 end
