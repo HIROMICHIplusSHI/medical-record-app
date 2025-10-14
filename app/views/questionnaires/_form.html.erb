@@ -1,4 +1,4 @@
-<%= form_with(model: questionnaire, url: patient_questionnaire_path(patient), local: true, class: "space-y-8", data: { controller: "questionnaire" }) do |form| %>
+<%= form_with(model: questionnaire, url: patient_questionnaire_path(patient), local: true, class: "space-y-8", data: { controller: "questionnaire", action: "submit->questionnaire#handleSubmit" }) do |form| %>
   <% if questionnaire.errors.any? %>
     <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded">
       <h2 class="font-bold mb-2"><%= pluralize(questionnaire.errors.count, "件") %>のエラーがあります：</h2>
@@ -91,3 +91,90 @@
     <%= form.submit "保存", class: "bg-blue-500 hover:bg-blue-700 text-white font-bold py-3 px-6 rounded text-lg" %>
   </div>
 <% end %>
+
+<script>
+  (function() {
+    console.log('Questionnaire form script loaded');
+
+    // フォームを取得
+    const form = document.querySelector('form[data-controller="questionnaire"]');
+    if (!form) {
+      console.error('Form not found');
+      return;
+    }
+
+    // フォーム送信イベントをリッスン
+    form.addEventListener('submit', function(event) {
+      console.log('Form submitting - processing checkboxes');
+
+      // 既往歴・治療中の病気
+      const medicalConditions = Array.from(form.querySelectorAll('input[name="medical_conditions[]"]:checked')).map(cb => cb.value);
+      document.getElementById('medical_conditions_json').value = JSON.stringify(medicalConditions);
+      console.log('Medical conditions:', medicalConditions);
+
+      // アレルギー
+      const allergies = Array.from(form.querySelectorAll('input[name="allergies[]"]:checked')).map(cb => cb.value);
+      const drugAllergyDetail = document.getElementById('drug_allergy_detail_text');
+      if (drugAllergyDetail && drugAllergyDetail.value.trim()) {
+        allergies.push(`薬物: ${drugAllergyDetail.value.trim()}`);
+      }
+      const foodAllergyDetail = document.getElementById('food_allergy_detail_text');
+      if (foodAllergyDetail && foodAllergyDetail.value.trim()) {
+        allergies.push(`食物: ${foodAllergyDetail.value.trim()}`);
+      }
+      const otherAllergyDetail = document.getElementById('other_allergy_detail_text');
+      if (otherAllergyDetail && otherAllergyDetail.value.trim()) {
+        allergies.push(`その他: ${otherAllergyDetail.value.trim()}`);
+      }
+      document.getElementById('allergies_json').value = JSON.stringify(allergies);
+      console.log('Allergies:', allergies);
+
+      // 服薬中の薬
+      const medications = Array.from(form.querySelectorAll('input[name="medications[]"]:checked')).map(cb => cb.value);
+      const supplementDetail = document.getElementById('supplement_detail_text');
+      if (supplementDetail && supplementDetail.value.trim()) {
+        medications.push(`サプリメント: ${supplementDetail.value.trim()}`);
+      }
+      const otherMedicationDetail = document.getElementById('other_medication_detail_text');
+      if (otherMedicationDetail && otherMedicationDetail.value.trim()) {
+        medications.push(`その他: ${otherMedicationDetail.value.trim()}`);
+      }
+      document.getElementById('current_medications_json').value = JSON.stringify(medications);
+      console.log('Medications:', medications);
+
+      // 手術歴
+      const surgeryDetail = document.getElementById('surgery_details');
+      const surgeries = surgeryDetail && surgeryDetail.value.trim() ? [surgeryDetail.value.trim()] : [];
+      document.getElementById('past_surgeries_json').value = JSON.stringify(surgeries);
+      console.log('Surgeries:', surgeries);
+
+      // 妊娠・授乳状況
+      const pregnancy = Array.from(form.querySelectorAll('input[name="pregnancy_status[]"]:checked')).map(cb => cb.value);
+      document.getElementById('pregnancy_info_json').value = JSON.stringify(pregnancy);
+      console.log('Pregnancy:', pregnancy);
+
+      // 希望施術部位
+      const desiredTreatments = Array.from(form.querySelectorAll('input[name="desired_treatments[]"]:checked')).map(cb => cb.value);
+      document.getElementById('desired_treatments_json').value = JSON.stringify(desiredTreatments);
+      console.log('Desired treatments:', desiredTreatments);
+
+      // 過去のアートメイク経験
+      const pastTreatments = Array.from(form.querySelectorAll('input[name="past_treatment_parts[]"]:checked')).map(cb => cb.value);
+      const otherTreatmentDetail = document.getElementById('other_treatment_detail_text');
+      if (otherTreatmentDetail && otherTreatmentDetail.value.trim()) {
+        pastTreatments.push(`その他: ${otherTreatmentDetail.value.trim()}`);
+      }
+      document.getElementById('past_treatments_json').value = JSON.stringify(pastTreatments);
+      console.log('Past treatments:', pastTreatments);
+
+      // 肌の状態
+      const skinConditions = Array.from(form.querySelectorAll('input[name="skin_conditions[]"]:checked')).map(cb => cb.value);
+      document.getElementById('skin_conditions_json').value = JSON.stringify(skinConditions);
+      console.log('Skin conditions:', skinConditions);
+
+      console.log('All checkbox data processed successfully');
+    });
+
+    console.log('Form submit handler attached');
+  })();
+</script>
