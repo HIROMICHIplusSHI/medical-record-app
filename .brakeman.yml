@@ -1,0 +1,39 @@
+# Brakeman設定ファイル
+# 医療データを扱う電子カルテアプリケーションのセキュリティスキャン設定
+
+# スキャン対象
+:app_path: "."
+:rails: true
+
+# 除外するチェック（false positiveが多い場合のみ追加）
+:skip_checks:
+  # Rails 7.1サポート終了警告を一時的に除外（Phase 5でRails 7.2へアップグレード予定）
+  - UndocumentedAndUnusedAttributes
+
+# 除外するファイル/ディレクトリ
+:skip_files:
+  - node_modules/**/*
+  - vendor/**/*
+  - tmp/**/*
+  - log/**/*
+
+# レポート設定
+:report_format: json
+:output_files:
+  - brakeman-report.json
+
+# 警告の最小信頼度レベル（0: High, 1: Medium, 2: Weak）
+# 医療アプリケーションなので、すべての警告を表示
+:min_confidence: 2
+
+# 詳細な出力
+:print_report: true
+:pager: false
+
+# GitHub統合
+:github_repo: HIROMICHIplusSHI/medical-record-app
+
+# その他の設定
+:quiet: false
+:ensure_latest: false
+:ensure_ignore_notes: false

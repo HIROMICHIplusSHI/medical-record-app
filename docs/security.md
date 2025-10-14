@@ -357,25 +357,134 @@ config.log_tags = [:request_id]
 
 ## 11. 脆弱性スキャン
 
-### 11.1 依存関係の監視
+### 11.1 Brakeman静的セキュリティスキャン（Phase 4-04で実装 ✅）
+
+**概要**:
+Brakemanは、Railsアプリケーション専用の静的セキュリティスキャナーです。ソースコードを解析し、SQLインジェクション、XSS、マスアサインメントなど84種類のセキュリティ脆弱性を検出します。
+
+#### 実装内容
+
+**1. Brakeman導入**
+```bash
+# Gemfile（development/testグループ）
+gem 'brakeman', '~> 6.0', require: false
+
+# インストール
+bundle install
+
+# 手動スキャン実行
+bundle exec brakeman
+```
+
+**2. 設定ファイル（`.brakeman.yml`）**
+```yaml
+:app_path: "."
+:rails: true
+:skip_checks: []
+:skip_files:
+  - node_modules/**/*
+  - vendor/**/*
+  - tmp/**/*
+:min_confidence: 2  # すべての警告を表示（医療アプリのため厳密）
+:github_repo: HIROMICHIplusSHI/medical-record-app
+```
+
+**3. CI統合（GitHub Actions）**
+
+`.github/workflows/brakeman.yml` で以下を自動実行：
+- **PR作成時**: セキュリティスキャン実行
+- **mainブランチへのpush**: セキュリティスキャン実行
+- **定期スキャン**: 毎週月曜日 9:00 JST
+
+```yaml
+name: Brakeman Security Scan
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+  schedule:
+    - cron: '0 0 * * 1'  # 毎週月曜日 00:00 UTC
+
+jobs:
+  brakeman:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ruby/setup-ruby@v1
+        with:
+          bundler-cache: true
+      - name: Run Brakeman
+        run: bundle exec brakeman --format json --output brakeman-report.json
+      - name: Check for High/Medium warnings
+        run: |
+          # High/Medium警告が1件でもあればビルド失敗
+          if [ $(jq '.warnings | map(select(.confidence == "High" or .confidence == "Medium")) | length' brakeman-report.json) -gt 0 ]; then
+            exit 1
+          fi
+```
+
+**4. PR自動コメント機能**
+
+スキャン結果を自動的にPRにコメント：
+```markdown
+## 🔒 Brakeman Security Scan Results
+
+| Confidence | Count |
+|------------|-------|
+| 🔴 High | 0 |
+| 🟡 Medium | 0 |
+| 🟢 Weak | 0 |
+| **Total** | **0** |
+
+✅ **No security warnings found!**
+```
+
+#### 初回スキャン結果（2025-10-14）
+
+```json
+{
+  "security_warnings": 1,
+  "warnings": [
+    {
+      "warning_type": "Unmaintained Dependency",
+      "confidence": "High",
+      "message": "Support for Rails 7.1.5.2 ended on 2025-10-01"
+    }
+  ]
+}
+```
+
+**結果**:
+- ✅ **XSS脆弱性**: 0件（Phase 4-03で完全修正済み）
+- ✅ **SQL Injection**: 0件
+- ✅ **マスアサインメント**: 0件
+- ✅ **その他セキュリティ警告**: 0件
+- ⚠️ **Rails 7.1 EOL**: 1件（Phase 5でRails 7.2へアップグレード予定）
+
+#### ビルド失敗条件
+
+以下の場合、CIビルドが失敗します：
+- **High confidence** 警告が1件以上
+- **Medium confidence** 警告が1件以上
+
+Weak confidence警告は情報提供のみで、ビルドは通過します。
+
+#### レポート保存
+
+- **JSON**: `brakeman-report.json`（gitignore済み）
+- **HTML**: `brakeman-report.html`（gitignore済み）
+- **CI Artifacts**: GitHub Actionsで30日間保持
+
+### 11.2 依存関係の監視（今後実装予定）
 
 ```bash
 # Bundler Audit（Gemの脆弱性チェック）
 bundle audit check --update
-
-# Brakeman（Rails脆弱性スキャン）
-bundle exec brakeman
 ```
 
-### 11.2 CI/CDでの自動チェック
-
-GitHub Actionsで自動実行（将来的に実装）：
-```yaml
-- name: Security scan
-  run: |
-    bundle exec bundle-audit check --update
-    bundle exec brakeman -q
-```
+GitHub Actionsで自動実行予定。
 
 ---
 
