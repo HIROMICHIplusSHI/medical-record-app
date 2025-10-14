@@ -1,7 +1,7 @@
 class QuestionnairesController < ApplicationController
   before_action :authenticate_user!
   before_action :set_patient
-  before_action :set_questionnaire, only: %i[edit update destroy]
+  before_action :set_questionnaire, only: %i[show edit update destroy]
 
   # フィーチャーフラグ: Phase 4-02で有効化
   USE_CHECKBOX_UI = true
@@ -33,6 +33,10 @@ class QuestionnairesController < ApplicationController
     else
       render :new, status: :unprocessable_entity
     end
+  end
+
+  def show
+    redirect_to new_patient_questionnaire_path(@patient), alert: '問診票が見つかりません。' unless @questionnaire
   end
 
   def edit

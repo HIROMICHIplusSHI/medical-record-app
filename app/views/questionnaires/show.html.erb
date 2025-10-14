@@ -1,0 +1,167 @@
+<div class="container mx-auto px-4 py-8">
+  <div class="max-w-4xl mx-auto">
+    <div class="flex justify-between items-center mb-6">
+      <h1 class="text-3xl font-bold text-gray-900">問診票</h1>
+      <div class="space-x-2">
+        <%= link_to "編集", edit_patient_questionnaire_path(@patient), class: "bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded" %>
+        <%= link_to "患者詳細に戻る", patient_path(@patient), class: "bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded" %>
+      </div>
+    </div>
+
+    <%# セクション1: 基本情報 %>
+    <div class="bg-white shadow-md rounded-lg p-6 mb-6">
+      <h2 class="text-2xl font-bold text-gray-900 mb-4 pb-2 border-b-2 border-blue-500">基本情報</h2>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div>
+          <dt class="text-sm font-medium text-gray-500">氏名</dt>
+          <dd class="mt-1 text-lg text-gray-900"><%= @questionnaire.full_name %></dd>
+        </div>
+
+        <% if @questionnaire.full_name_kana.present? %>
+          <div>
+            <dt class="text-sm font-medium text-gray-500">フリガナ</dt>
+            <dd class="mt-1 text-lg text-gray-900"><%= @questionnaire.full_name_kana %></dd>
+          </div>
+        <% end %>
+
+        <% if @questionnaire.birth_date.present? %>
+          <div>
+            <dt class="text-sm font-medium text-gray-500">生年月日</dt>
+            <dd class="mt-1 text-lg text-gray-900"><%= @questionnaire.birth_date %></dd>
+          </div>
+        <% end %>
+
+        <% if @questionnaire.gender.present? %>
+          <div>
+            <dt class="text-sm font-medium text-gray-500">性別</dt>
+            <dd class="mt-1 text-lg text-gray-900">
+              <%= case @questionnaire.gender
+                  when 'male' then '男性'
+                  when 'female' then '女性'
+                  when 'other' then 'その他'
+                  when 'prefer_not_to_say' then '回答しない'
+                  else @questionnaire.gender
+                  end %>
+            </dd>
+          </div>
+        <% end %>
+
+        <div>
+          <dt class="text-sm font-medium text-gray-500">電話番号</dt>
+          <dd class="mt-1 text-lg text-gray-900"><%= @questionnaire.phone %></dd>
+        </div>
+
+        <% if @questionnaire.email.present? %>
+          <div>
+            <dt class="text-sm font-medium text-gray-500">メールアドレス</dt>
+            <dd class="mt-1 text-lg text-gray-900"><%= @questionnaire.email %></dd>
+          </div>
+        <% end %>
+
+        <% if @questionnaire.postal_code.present? %>
+          <div>
+            <dt class="text-sm font-medium text-gray-500">郵便番号</dt>
+            <dd class="mt-1 text-lg text-gray-900"><%= @questionnaire.postal_code %></dd>
+          </div>
+        <% end %>
+
+        <% if @questionnaire.address.present? %>
+          <div class="md:col-span-2">
+            <dt class="text-sm font-medium text-gray-500">住所</dt>
+            <dd class="mt-1 text-lg text-gray-900"><%= @questionnaire.address %></dd>
+          </div>
+        <% end %>
+
+        <% if @questionnaire.emergency_contact.present? %>
+          <div class="md:col-span-2">
+            <dt class="text-sm font-medium text-gray-500">緊急連絡先</dt>
+            <dd class="mt-1 text-lg text-gray-900"><%= @questionnaire.emergency_contact %></dd>
+          </div>
+        <% end %>
+      </div>
+    </div>
+
+    <%# セクション2: 医療情報 %>
+    <div class="bg-white shadow-md rounded-lg p-6 mb-6">
+      <h2 class="text-2xl font-bold text-gray-900 mb-4 pb-2 border-b-2 border-green-500">医療情報</h2>
+
+      <div class="space-y-4">
+        <% if @questionnaire.medical_conditions.present? %>
+          <div>
+            <dt class="text-sm font-medium text-gray-500">既往歴・治療中の病気</dt>
+            <dd class="mt-1 text-lg text-gray-900 whitespace-pre-wrap"><%= format_json_field(@questionnaire.medical_conditions) %></dd>
+          </div>
+        <% end %>
+
+        <% if @questionnaire.allergies.present? %>
+          <div>
+            <dt class="text-sm font-medium text-gray-500">アレルギー</dt>
+            <dd class="mt-1 text-lg text-gray-900 whitespace-pre-wrap"><%= format_json_field(@questionnaire.allergies) %></dd>
+          </div>
+        <% end %>
+
+        <% if @questionnaire.current_medications.present? %>
+          <div>
+            <dt class="text-sm font-medium text-gray-500">服薬中の薬</dt>
+            <dd class="mt-1 text-lg text-gray-900 whitespace-pre-wrap"><%= format_json_field(@questionnaire.current_medications) %></dd>
+          </div>
+        <% end %>
+
+        <% if @questionnaire.past_surgeries.present? %>
+          <div>
+            <dt class="text-sm font-medium text-gray-500">手術歴</dt>
+            <dd class="mt-1 text-lg text-gray-900 whitespace-pre-wrap"><%= format_json_field(@questionnaire.past_surgeries) %></dd>
+          </div>
+        <% end %>
+
+        <% if @questionnaire.pregnancy_info.present? %>
+          <div>
+            <dt class="text-sm font-medium text-gray-500">妊娠・授乳状況</dt>
+            <dd class="mt-1 text-lg text-gray-900 whitespace-pre-wrap"><%= format_json_field(@questionnaire.pregnancy_info) %></dd>
+          </div>
+        <% end %>
+      </div>
+    </div>
+
+    <%# セクション3: 施術情報 %>
+    <div class="bg-white shadow-md rounded-lg p-6 mb-6">
+      <h2 class="text-2xl font-bold text-gray-900 mb-4 pb-2 border-b-2 border-purple-500">施術情報</h2>
+
+      <div class="space-y-4">
+        <% if @questionnaire.desired_treatments.present? %>
+          <div>
+            <dt class="text-sm font-medium text-gray-500">希望施術部位</dt>
+            <dd class="mt-1 text-lg text-gray-900 whitespace-pre-wrap"><%= format_json_field(@questionnaire.desired_treatments) %></dd>
+          </div>
+        <% end %>
+
+        <% if @questionnaire.past_treatments.present? %>
+          <div>
+            <dt class="text-sm font-medium text-gray-500">過去のアートメイク経験</dt>
+            <dd class="mt-1 text-lg text-gray-900 whitespace-pre-wrap"><%= format_json_field(@questionnaire.past_treatments) %></dd>
+          </div>
+        <% end %>
+
+        <% if @questionnaire.skin_conditions.present? %>
+          <div>
+            <dt class="text-sm font-medium text-gray-500">肌の状態</dt>
+            <dd class="mt-1 text-lg text-gray-900 whitespace-pre-wrap"><%= format_json_field(@questionnaire.skin_conditions) %></dd>
+          </div>
+        <% end %>
+
+        <% if @questionnaire.other_concerns.present? %>
+          <div>
+            <dt class="text-sm font-medium text-gray-500">その他の気になること</dt>
+            <dd class="mt-1 text-lg text-gray-900 whitespace-pre-wrap"><%= @questionnaire.other_concerns %></dd>
+          </div>
+        <% end %>
+      </div>
+    </div>
+
+    <div class="flex justify-between">
+      <%= link_to "患者詳細に戻る", patient_path(@patient), class: "bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded" %>
+      <%= link_to "編集", edit_patient_questionnaire_path(@patient), class: "bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded" %>
+    </div>
+  </div>
+</div>

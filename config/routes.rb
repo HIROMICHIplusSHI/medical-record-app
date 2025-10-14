@@ -5,7 +5,7 @@ Rails.application.routes.draw do
   authenticate :user do
     resources :facilities
     resources :patients do
-      resource :questionnaire, only: [:new, :create, :edit, :update, :destroy]
+      resource :questionnaire, only: [:new, :create, :show, :edit, :update, :destroy]
     end
     resources :cost_sheets
     resources :tags

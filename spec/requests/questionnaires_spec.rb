@@ -224,6 +224,38 @@ RSpec.describe 'Questionnaires', type: :request do
     end
   end
 
+  describe 'GET /patients/:patient_id/questionnaire' do
+    let!(:questionnaire) { create(:questionnaire, patient: patient) }
+
+    context '認証済みユーザーの場合' do
+      it '問診票詳細画面が表示される' do
+        get patient_questionnaire_path(patient)
+        expect(response).to have_http_status(:success)
+      end
+
+      it '問診票の基本情報が表示される' do
+        get patient_questionnaire_path(patient)
+        expect(response.body).to include(questionnaire.full_name)
+        expect(response.body).to include(questionnaire.phone)
+      end
+
+      it '他のユーザーの患者の問診票は表示できない' do
+        create(:questionnaire, patient: other_patient)
+        get patient_questionnaire_path(other_patient)
+        expect(response).to redirect_to(patients_path)
+      end
+    end
+
+    context '問診票が存在しない場合' do
+      before { questionnaire.destroy }
+
+      it '問診票作成ページにリダイレクトされる' do
+        get patient_questionnaire_path(patient)
+        expect(response).to redirect_to(new_patient_questionnaire_path(patient))
+      end
+    end
+  end
+
   describe 'DELETE /patients/:patient_id/questionnaire' do
     let!(:questionnaire) { create(:questionnaire, patient: patient) }
 
