@@ -15,20 +15,20 @@
       <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div>
           <dt class="text-sm font-medium text-gray-500">氏名</dt>
-          <dd class="mt-1 text-lg text-gray-900"><%= @questionnaire.full_name %></dd>
+          <dd class="mt-1 text-lg text-gray-900"><%= h(@questionnaire.full_name) %></dd>
         </div>
 
         <% if @questionnaire.full_name_kana.present? %>
           <div>
             <dt class="text-sm font-medium text-gray-500">フリガナ</dt>
-            <dd class="mt-1 text-lg text-gray-900"><%= @questionnaire.full_name_kana %></dd>
+            <dd class="mt-1 text-lg text-gray-900"><%= h(@questionnaire.full_name_kana) %></dd>
           </div>
         <% end %>
 
         <% if @questionnaire.birth_date.present? %>
           <div>
             <dt class="text-sm font-medium text-gray-500">生年月日</dt>
-            <dd class="mt-1 text-lg text-gray-900"><%= @questionnaire.birth_date %></dd>
+            <dd class="mt-1 text-lg text-gray-900"><%= h(@questionnaire.birth_date) %></dd>
           </div>
         <% end %>
 
@@ -49,34 +49,34 @@
 
         <div>
           <dt class="text-sm font-medium text-gray-500">電話番号</dt>
-          <dd class="mt-1 text-lg text-gray-900"><%= @questionnaire.phone %></dd>
+          <dd class="mt-1 text-lg text-gray-900"><%= h(@questionnaire.phone) %></dd>
         </div>
 
         <% if @questionnaire.email.present? %>
           <div>
             <dt class="text-sm font-medium text-gray-500">メールアドレス</dt>
-            <dd class="mt-1 text-lg text-gray-900"><%= @questionnaire.email %></dd>
+            <dd class="mt-1 text-lg text-gray-900"><%= h(@questionnaire.email) %></dd>
           </div>
         <% end %>
 
         <% if @questionnaire.postal_code.present? %>
           <div>
             <dt class="text-sm font-medium text-gray-500">郵便番号</dt>
-            <dd class="mt-1 text-lg text-gray-900"><%= @questionnaire.postal_code %></dd>
+            <dd class="mt-1 text-lg text-gray-900"><%= h(@questionnaire.postal_code) %></dd>
           </div>
         <% end %>
 
         <% if @questionnaire.address.present? %>
           <div class="md:col-span-2">
             <dt class="text-sm font-medium text-gray-500">住所</dt>
-            <dd class="mt-1 text-lg text-gray-900"><%= @questionnaire.address %></dd>
+            <dd class="mt-1 text-lg text-gray-900"><%= h(@questionnaire.address) %></dd>
           </div>
         <% end %>
 
         <% if @questionnaire.emergency_contact.present? %>
           <div class="md:col-span-2">
             <dt class="text-sm font-medium text-gray-500">緊急連絡先</dt>
-            <dd class="mt-1 text-lg text-gray-900"><%= @questionnaire.emergency_contact %></dd>
+            <dd class="mt-1 text-lg text-gray-900"><%= h(@questionnaire.emergency_contact) %></dd>
           </div>
         <% end %>
       </div>
@@ -153,7 +153,7 @@
         <% if @questionnaire.other_concerns.present? %>
           <div>
             <dt class="text-sm font-medium text-gray-500">その他の気になること</dt>
-            <dd class="mt-1 text-lg text-gray-900 whitespace-pre-wrap"><%= @questionnaire.other_concerns %></dd>
+            <dd class="mt-1 text-lg text-gray-900 whitespace-pre-wrap"><%= h(@questionnaire.other_concerns) %></dd>
           </div>
         <% end %>
       </div>

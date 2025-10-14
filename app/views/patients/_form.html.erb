@@ -21,18 +21,18 @@
     <div class="bg-gray-100 rounded p-4 space-y-4">
       <div>
         <dt class="text-sm font-medium text-gray-500">氏名</dt>
-        <dd class="mt-1 text-lg text-gray-900"><%= patient.questionnaire.full_name %></dd>
+        <dd class="mt-1 text-lg text-gray-900"><%= h(patient.questionnaire.full_name) %></dd>
       </div>
 
       <% if patient.questionnaire.birth_date.present? %>
         <div>
           <dt class="text-sm font-medium text-gray-500">生年月日</dt>
           <dd class="mt-1 text-lg text-gray-900">
-            <%= begin
+            <%= h(begin
                   Date.parse(patient.questionnaire.birth_date.to_s).strftime('%Y年%m月%d日')
                 rescue
                   patient.questionnaire.birth_date
-                end %>
+                end) %>
           </dd>
         </div>
       <% end %>
@@ -41,20 +41,20 @@
         <div>
           <dt class="text-sm font-medium text-gray-500">性別</dt>
           <dd class="mt-1 text-lg text-gray-900">
-            <%= case patient.questionnaire.gender
+            <%= h(case patient.questionnaire.gender
                 when 'male' then '男性'
                 when 'female' then '女性'
                 when 'other' then 'その他'
                 when 'prefer_not_to_say' then '回答しない'
                 else patient.questionnaire.gender
-                end %>
+                end) %>
           </dd>
         </div>
       <% end %>
 
       <div>
         <dt class="text-sm font-medium text-gray-500">電話番号</dt>
-        <dd class="mt-1 text-lg text-gray-900"><%= patient.questionnaire.phone %></dd>
+        <dd class="mt-1 text-lg text-gray-900"><%= h(patient.questionnaire.phone) %></dd>
       </div>
     </div>
   <% else %>

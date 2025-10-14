@@ -23,13 +23,13 @@
       <dl class="grid grid-cols-1 gap-6">
         <div>
           <dt class="text-sm font-medium text-gray-500">氏名</dt>
-          <dd class="mt-1 text-lg text-gray-900"><%= questionnaire.full_name %></dd>
+          <dd class="mt-1 text-lg text-gray-900"><%= h(questionnaire.full_name) %></dd>
         </div>
 
         <% if questionnaire.full_name_kana.present? %>
           <div>
             <dt class="text-sm font-medium text-gray-500">フリガナ</dt>
-            <dd class="mt-1 text-lg text-gray-900"><%= questionnaire.full_name_kana %></dd>
+            <dd class="mt-1 text-lg text-gray-900"><%= h(questionnaire.full_name_kana) %></dd>
           </div>
         <% end %>
 
@@ -63,29 +63,29 @@
 
         <div>
           <dt class="text-sm font-medium text-gray-500">電話番号</dt>
-          <dd class="mt-1 text-lg text-gray-900"><%= questionnaire.phone %></dd>
+          <dd class="mt-1 text-lg text-gray-900"><%= h(questionnaire.phone) %></dd>
         </div>
 
         <div>
           <dt class="text-sm font-medium text-gray-500">メールアドレス</dt>
-          <dd class="mt-1 text-lg text-gray-900"><%= questionnaire.email || "未登録" %></dd>
+          <dd class="mt-1 text-lg text-gray-900"><%= h(questionnaire.email || "未登録") %></dd>
         </div>
 
         <% if questionnaire.postal_code.present? %>
           <div>
             <dt class="text-sm font-medium text-gray-500">郵便番号</dt>
-            <dd class="mt-1 text-lg text-gray-900"><%= questionnaire.postal_code %></dd>
+            <dd class="mt-1 text-lg text-gray-900"><%= h(questionnaire.postal_code) %></dd>
           </div>
         <% end %>
 
         <div>
           <dt class="text-sm font-medium text-gray-500">住所</dt>
-          <dd class="mt-1 text-lg text-gray-900"><%= questionnaire.address || "未登録" %></dd>
+          <dd class="mt-1 text-lg text-gray-900"><%= h(questionnaire.address || "未登録") %></dd>
         </div>
 
         <div>
           <dt class="text-sm font-medium text-gray-500">緊急連絡先</dt>
-          <dd class="mt-1 text-lg text-gray-900"><%= questionnaire.emergency_contact || "未登録" %></dd>
+          <dd class="mt-1 text-lg text-gray-900"><%= h(questionnaire.emergency_contact || "未登録") %></dd>
         </div>
       </dl>
     <% else %>
@@ -93,37 +93,37 @@
       <dl class="grid grid-cols-1 gap-6">
         <div>
           <dt class="text-sm font-medium text-gray-500">氏名</dt>
-          <dd class="mt-1 text-lg text-gray-900"><%= @patient.name %></dd>
+          <dd class="mt-1 text-lg text-gray-900"><%= h(@patient.name) %></dd>
         </div>
 
         <div>
           <dt class="text-sm font-medium text-gray-500">生年月日</dt>
-          <dd class="mt-1 text-lg text-gray-900"><%= @patient.date_of_birth&.strftime('%Y年%m月%d日') || "未登録" %></dd>
+          <dd class="mt-1 text-lg text-gray-900"><%= h(@patient.date_of_birth&.strftime('%Y年%m月%d日') || "未登録") %></dd>
         </div>
 
         <div>
           <dt class="text-sm font-medium text-gray-500">性別</dt>
-          <dd class="mt-1 text-lg text-gray-900"><%= t("activerecord.attributes.patient.genders.#{@patient.gender}") %></dd>
+          <dd class="mt-1 text-lg text-gray-900"><%= h(t("activerecord.attributes.patient.genders.#{@patient.gender}")) %></dd>
         </div>
 
         <div>
           <dt class="text-sm font-medium text-gray-500">電話番号</dt>
-          <dd class="mt-1 text-lg text-gray-900"><%= @patient.phone || "未登録" %></dd>
+          <dd class="mt-1 text-lg text-gray-900"><%= h(@patient.phone || "未登録") %></dd>
         </div>
 
         <div>
           <dt class="text-sm font-medium text-gray-500">メールアドレス</dt>
-          <dd class="mt-1 text-lg text-gray-900"><%= @patient.email || "未登録" %></dd>
+          <dd class="mt-1 text-lg text-gray-900"><%= h(@patient.email || "未登録") %></dd>
         </div>
 
         <div>
           <dt class="text-sm font-medium text-gray-500">住所</dt>
-          <dd class="mt-1 text-lg text-gray-900"><%= @patient.address || "未登録" %></dd>
+          <dd class="mt-1 text-lg text-gray-900"><%= h(@patient.address || "未登録") %></dd>
         </div>
 
         <div>
           <dt class="text-sm font-medium text-gray-500">緊急連絡先</dt>
-          <dd class="mt-1 text-lg text-gray-900"><%= @patient.emergency_contact || "未登録" %></dd>
+          <dd class="mt-1 text-lg text-gray-900"><%= h(@patient.emergency_contact || "未登録") %></dd>
         </div>
       </dl>
     <% end %>
