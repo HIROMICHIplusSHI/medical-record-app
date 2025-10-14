@@ -7,7 +7,13 @@ class QuestionnairesController < ApplicationController
   USE_CHECKBOX_UI = true
 
   def new
-    @questionnaire = @patient.build_questionnaire
+    # 予約時に入力された患者情報を事前入力（編集可能）
+    @questionnaire = @patient.build_questionnaire(
+      full_name: @patient.name,
+      birth_date: @patient.date_of_birth,
+      gender: @patient.gender,
+      phone: @patient.phone
+    )
     @use_checkbox_ui = USE_CHECKBOX_UI
     initialize_empty_arrays if @use_checkbox_ui
   end
@@ -22,6 +28,7 @@ class QuestionnairesController < ApplicationController
     @questionnaire = @patient.build_questionnaire(questionnaire_params)
 
     if @questionnaire.save
+      sync_to_patient
       redirect_to @patient, notice: '問診票が正常に登録されました。'
     else
       render :new, status: :unprocessable_entity
@@ -36,6 +43,7 @@ class QuestionnairesController < ApplicationController
 
   def update
     if @questionnaire.update(questionnaire_params)
+      sync_to_patient
       redirect_to @patient, notice: '問診票が正常に更新されました。'
     else
       render :edit, status: :unprocessable_entity
@@ -123,5 +131,16 @@ class QuestionnairesController < ApplicationController
     rescue JSON::ParserError
       []
     end
+  end
+
+  # 問診票の基本情報を患者レコードに同期
+  def sync_to_patient
+    @patient.update_columns(
+      name: @questionnaire.full_name,
+      date_of_birth: @questionnaire.birth_date,
+      gender: @questionnaire.gender,
+      phone: @questionnaire.phone,
+      updated_at: Time.current
+    )
   end
 end
