@@ -87,6 +87,22 @@ RSpec.describe 'Questionnaires', type: :request do
         expect(patient.gender).to eq('male')
         expect(patient.phone).to eq('080-1111-2222')
       end
+
+      it '問診票の基本情報が一部nilでも同期時にエラーにならない' do
+        minimal_attributes = {
+          full_name: '最小 太郎',
+          phone: '080-5555-6666',
+          medical_conditions: 'なし',
+          allergies: 'なし',
+        }
+        expect do
+          post patient_questionnaire_path(patient), params: { questionnaire: minimal_attributes }
+        end.to change(Questionnaire, :count).by(1)
+
+        patient.reload
+        expect(patient.name).to eq('最小 太郎')
+        expect(patient.phone).to eq('080-5555-6666')
+      end
     end
 
     context '他のユーザーの患者の場合' do

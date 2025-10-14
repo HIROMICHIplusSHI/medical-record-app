@@ -134,13 +134,14 @@ class QuestionnairesController < ApplicationController
   end
 
   # 問診票の基本情報を患者レコードに同期
+  # nilの値は同期しない（予約時の情報を保持）
   def sync_to_patient
-    @patient.update_columns(
-      name: @questionnaire.full_name,
-      date_of_birth: @questionnaire.birth_date,
-      gender: @questionnaire.gender,
-      phone: @questionnaire.phone,
-      updated_at: Time.current
-    )
+    sync_attributes = { updated_at: Time.current }
+    sync_attributes[:name] = @questionnaire.full_name if @questionnaire.full_name.present?
+    sync_attributes[:date_of_birth] = @questionnaire.birth_date if @questionnaire.birth_date.present?
+    sync_attributes[:gender] = @questionnaire.gender if @questionnaire.gender.present?
+    sync_attributes[:phone] = @questionnaire.phone if @questionnaire.phone.present?
+
+    @patient.update_columns(sync_attributes)
   end
 end
