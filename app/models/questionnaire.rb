@@ -28,7 +28,9 @@ class Questionnaire < ApplicationRecord
 
   # バリデーション
   validates :patient, uniqueness: { message: 'はすでに問診票が存在します' }
-  validates :full_name, :full_name_kana, :birth_date, :gender, :phone, presence: true
+  # 基本情報：full_nameとphoneのみ必須（予約時の最小情報）
+  # full_name_kana, birth_date, genderは任意（来院時に記入）
+  validates :full_name, :phone, presence: true
 
   # JSONフィールドのアクセサー
   # medical_conditions: { has_conditions: bool, conditions: [], other_condition: string }

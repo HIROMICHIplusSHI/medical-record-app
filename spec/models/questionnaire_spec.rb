@@ -27,24 +27,6 @@ RSpec.describe Questionnaire, type: :model do
       expect(questionnaire.errors[:full_name]).to be_present
     end
 
-    it 'full_name_kanaが必須' do
-      questionnaire = build(:questionnaire, full_name_kana: nil)
-      expect(questionnaire).not_to be_valid
-      expect(questionnaire.errors[:full_name_kana]).to be_present
-    end
-
-    it 'birth_dateが必須' do
-      questionnaire = build(:questionnaire, birth_date: nil)
-      expect(questionnaire).not_to be_valid
-      expect(questionnaire.errors[:birth_date]).to be_present
-    end
-
-    it 'genderが必須' do
-      questionnaire = build(:questionnaire, gender: nil)
-      expect(questionnaire).not_to be_valid
-      expect(questionnaire.errors[:gender]).to be_present
-    end
-
     it 'phoneが必須' do
       questionnaire = build(:questionnaire, phone: nil)
       expect(questionnaire).not_to be_valid

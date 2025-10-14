@@ -42,7 +42,7 @@ class PatientsController < ApplicationController
   private
 
   def set_patient
-    @patient = current_user.patients.find_by(id: params[:id])
+    @patient = current_user.patients.includes(:questionnaire).find_by(id: params[:id])
 
     return if @patient
 
