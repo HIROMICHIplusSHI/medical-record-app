@@ -10,72 +10,72 @@
 
       <div class="flex space-x-6 mb-4">
         <label class="inline-flex items-center cursor-pointer">
-          <%= radio_button_tag "has_medical_conditions", "true", false,
+          <%= radio_button_tag "has_medical_conditions", "true", @medical_conditions_array.any?,
               class: "form-radio h-6 w-6 text-green-600",
               data: { action: "questionnaire#toggleMedicalConditions" } %>
           <span class="ml-3 text-lg font-medium">あり</span>
         </label>
         <label class="inline-flex items-center cursor-pointer">
-          <%= radio_button_tag "has_medical_conditions", "false", true,
+          <%= radio_button_tag "has_medical_conditions", "false", @medical_conditions_array.empty?,
               class: "form-radio h-6 w-6 text-green-600",
               data: { action: "questionnaire#toggleMedicalConditions" } %>
           <span class="ml-3 text-lg font-medium">なし</span>
         </label>
       </div>
 
-      <div class="hidden mt-6 p-4 bg-gray-50 rounded-lg" data-questionnaire-target="medicalConditionsDetail">
+      <div class="<%= @medical_conditions_array.any? ? '' : 'hidden' %> mt-6 p-4 bg-gray-50 rounded-lg" data-questionnaire-target="medicalConditionsDetail">
         <p class="text-sm font-medium text-gray-700 mb-3">該当するものをすべて選択してください：</p>
         <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
           <label class="flex items-center p-3 bg-white rounded border border-gray-200 hover:bg-gray-50 cursor-pointer">
-            <%= check_box_tag "medical_conditions[]", "hypertension", false, class: "form-checkbox h-5 w-5 text-green-600" %>
+            <%= check_box_tag "medical_conditions[]", "hypertension", @medical_conditions_array.include?("hypertension"), class: "form-checkbox h-5 w-5 text-green-600" %>
             <span class="ml-3 text-base">高血圧</span>
           </label>
           <label class="flex items-center p-3 bg-white rounded border border-gray-200 hover:bg-gray-50 cursor-pointer">
-            <%= check_box_tag "medical_conditions[]", "diabetes", false, class: "form-checkbox h-5 w-5 text-green-600" %>
+            <%= check_box_tag "medical_conditions[]", "diabetes", @medical_conditions_array.include?("diabetes"), class: "form-checkbox h-5 w-5 text-green-600" %>
             <span class="ml-3 text-base">糖尿病</span>
           </label>
           <label class="flex items-center p-3 bg-white rounded border border-gray-200 hover:bg-gray-50 cursor-pointer">
-            <%= check_box_tag "medical_conditions[]", "dyslipidemia", false, class: "form-checkbox h-5 w-5 text-green-600" %>
+            <%= check_box_tag "medical_conditions[]", "dyslipidemia", @medical_conditions_array.include?("dyslipidemia"), class: "form-checkbox h-5 w-5 text-green-600" %>
             <span class="ml-3 text-base">脂質異常症（高脂血症）</span>
           </label>
           <label class="flex items-center p-3 bg-white rounded border border-gray-200 hover:bg-gray-50 cursor-pointer">
-            <%= check_box_tag "medical_conditions[]", "liver_disease", false, class: "form-checkbox h-5 w-5 text-green-600" %>
+            <%= check_box_tag "medical_conditions[]", "liver_disease", @medical_conditions_array.include?("liver_disease"), class: "form-checkbox h-5 w-5 text-green-600" %>
             <span class="ml-3 text-base">肝機能障害</span>
           </label>
           <label class="flex items-center p-3 bg-white rounded border border-gray-200 hover:bg-gray-50 cursor-pointer">
-            <%= check_box_tag "medical_conditions[]", "kidney_disease", false, class: "form-checkbox h-5 w-5 text-green-600" %>
+            <%= check_box_tag "medical_conditions[]", "kidney_disease", @medical_conditions_array.include?("kidney_disease"), class: "form-checkbox h-5 w-5 text-green-600" %>
             <span class="ml-3 text-base">腎機能障害</span>
           </label>
           <label class="flex items-center p-3 bg-white rounded border border-gray-200 hover:bg-gray-50 cursor-pointer">
-            <%= check_box_tag "medical_conditions[]", "heart_disease", false, class: "form-checkbox h-5 w-5 text-green-600" %>
+            <%= check_box_tag "medical_conditions[]", "heart_disease", @medical_conditions_array.include?("heart_disease"), class: "form-checkbox h-5 w-5 text-green-600" %>
             <span class="ml-3 text-base">心疾患（不整脈、心筋梗塞など）</span>
           </label>
           <label class="flex items-center p-3 bg-white rounded border border-gray-200 hover:bg-gray-50 cursor-pointer">
-            <%= check_box_tag "medical_conditions[]", "cerebrovascular_disease", false, class: "form-checkbox h-5 w-5 text-green-600" %>
+            <%= check_box_tag "medical_conditions[]", "cerebrovascular_disease", @medical_conditions_array.include?("cerebrovascular_disease"), class: "form-checkbox h-5 w-5 text-green-600" %>
             <span class="ml-3 text-base">脳血管疾患（脳梗塞、脳出血など）</span>
           </label>
           <label class="flex items-center p-3 bg-white rounded border border-gray-200 hover:bg-gray-50 cursor-pointer">
-            <%= check_box_tag "medical_conditions[]", "thyroid_disease", false, class: "form-checkbox h-5 w-5 text-green-600" %>
+            <%= check_box_tag "medical_conditions[]", "thyroid_disease", @medical_conditions_array.include?("thyroid_disease"), class: "form-checkbox h-5 w-5 text-green-600" %>
             <span class="ml-3 text-base">甲状腺疾患</span>
           </label>
           <label class="flex items-center p-3 bg-white rounded border border-gray-200 hover:bg-gray-50 cursor-pointer">
-            <%= check_box_tag "medical_conditions[]", "respiratory_disease", false, class: "form-checkbox h-5 w-5 text-green-600" %>
+            <%= check_box_tag "medical_conditions[]", "respiratory_disease", @medical_conditions_array.include?("respiratory_disease"), class: "form-checkbox h-5 w-5 text-green-600" %>
             <span class="ml-3 text-base">喘息・呼吸器疾患</span>
           </label>
           <label class="flex items-center p-3 bg-white rounded border border-gray-200 hover:bg-gray-50 cursor-pointer">
-            <%= check_box_tag "medical_conditions[]", "epilepsy", false, class: "form-checkbox h-5 w-5 text-green-600" %>
+            <%= check_box_tag "medical_conditions[]", "epilepsy", @medical_conditions_array.include?("epilepsy"), class: "form-checkbox h-5 w-5 text-green-600" %>
             <span class="ml-3 text-base">てんかん</span>
           </label>
           <label class="flex items-center p-3 bg-white rounded border border-gray-200 hover:bg-gray-50 cursor-pointer">
-            <%= check_box_tag "medical_conditions[]", "blood_disease", false, class: "form-checkbox h-5 w-5 text-green-600" %>
+            <%= check_box_tag "medical_conditions[]", "blood_disease", @medical_conditions_array.include?("blood_disease"), class: "form-checkbox h-5 w-5 text-green-600" %>
             <span class="ml-3 text-base">血液の病気（貧血、白血病など）</span>
           </label>
           <label class="flex items-center p-3 bg-white rounded border border-gray-200 hover:bg-gray-50 cursor-pointer">
-            <%= check_box_tag "medical_conditions[]", "cancer", false, class: "form-checkbox h-5 w-5 text-green-600" %>
+            <%= check_box_tag "medical_conditions[]", "cancer", @medical_conditions_array.include?("cancer"), class: "form-checkbox h-5 w-5 text-green-600" %>
             <span class="ml-3 text-base">がん（現在治療中または過去の既往）</span>
           </label>
           <label class="flex items-center p-3 bg-white rounded border border-gray-200 hover:bg-gray-50 cursor-pointer">
-            <%= check_box_tag "medical_conditions[]", "autoimmune_disease", false, class: "form-checkbox h-5 w-5 text-green-600" %>
+            <%= check_box_tag "medical_conditions[]", "autoimmune_disease", @medical_conditions_array.include?("autoimmune_disease"), class: "form-checkbox h-5 w-5 text-green-600" %>
             <span class="ml-3 text-base">自己免疫疾患（関節リウマチ、膠原病など）</span>
           </label>
         </div>
@@ -105,24 +105,24 @@
 
       <div class="flex space-x-6 mb-4">
         <label class="inline-flex items-center cursor-pointer">
-          <%= radio_button_tag "has_allergies", "true", false,
+          <%= radio_button_tag "has_allergies", "true", @allergies_array.any?,
               class: "form-radio h-6 w-6 text-green-600",
               data: { action: "questionnaire#toggleAllergies" } %>
           <span class="ml-3 text-lg font-medium">あり</span>
         </label>
         <label class="inline-flex items-center cursor-pointer">
-          <%= radio_button_tag "has_allergies", "false", true,
+          <%= radio_button_tag "has_allergies", "false", @allergies_array.empty?,
               class: "form-radio h-6 w-6 text-green-600",
               data: { action: "questionnaire#toggleAllergies" } %>
           <span class="ml-3 text-lg font-medium">なし</span>
         </label>
       </div>
 
-      <div class="hidden mt-6 p-4 bg-gray-50 rounded-lg" data-questionnaire-target="allergiesDetail">
+      <div class="<%= @allergies_array.any? ? '' : 'hidden' %> mt-6 p-4 bg-gray-50 rounded-lg" data-questionnaire-target="allergiesDetail">
         <p class="text-sm font-medium text-gray-700 mb-3">該当するものをすべて選択してください：</p>
         <div class="space-y-3">
           <label class="flex items-start p-3 bg-white rounded border border-gray-200 hover:bg-gray-50 cursor-pointer">
-            <%= check_box_tag "allergies[]", "drug_allergy", false,
+            <%= check_box_tag "allergies[]", "drug_allergy", @allergies_array.include?("drug_allergy"),
                 class: "form-checkbox h-5 w-5 text-green-600 mt-1",
                 data: { action: "questionnaire#toggleDrugAllergyDetail" } %>
             <span class="ml-3 text-base">薬物アレルギー</span>
@@ -134,17 +134,17 @@
           </div>
 
           <label class="flex items-center p-3 bg-white rounded border border-gray-200 hover:bg-gray-50 cursor-pointer">
-            <%= check_box_tag "allergies[]", "metal_allergy", false, class: "form-checkbox h-5 w-5 text-green-600" %>
+            <%= check_box_tag "allergies[]", "metal_allergy", @allergies_array.include?("metal_allergy"), class: "form-checkbox h-5 w-5 text-green-600" %>
             <span class="ml-3 text-base">金属アレルギー</span>
           </label>
 
           <label class="flex items-center p-3 bg-white rounded border border-gray-200 hover:bg-gray-50 cursor-pointer">
-            <%= check_box_tag "allergies[]", "latex_allergy", false, class: "form-checkbox h-5 w-5 text-green-600" %>
+            <%= check_box_tag "allergies[]", "latex_allergy", @allergies_array.include?("latex_allergy"), class: "form-checkbox h-5 w-5 text-green-600" %>
             <span class="ml-3 text-base">ラテックスアレルギー</span>
           </label>
 
           <label class="flex items-start p-3 bg-white rounded border border-gray-200 hover:bg-gray-50 cursor-pointer">
-            <%= check_box_tag "allergies[]", "food_allergy", false,
+            <%= check_box_tag "allergies[]", "food_allergy", @allergies_array.include?("food_allergy"),
                 class: "form-checkbox h-5 w-5 text-green-600 mt-1",
                 data: { action: "questionnaire#toggleFoodAllergyDetail" } %>
             <span class="ml-3 text-base">食物アレルギー</span>
@@ -156,12 +156,12 @@
           </div>
 
           <label class="flex items-center p-3 bg-white rounded border border-gray-200 hover:bg-gray-50 cursor-pointer">
-            <%= check_box_tag "allergies[]", "hay_fever", false, class: "form-checkbox h-5 w-5 text-green-600" %>
+            <%= check_box_tag "allergies[]", "hay_fever", @allergies_array.include?("hay_fever"), class: "form-checkbox h-5 w-5 text-green-600" %>
             <span class="ml-3 text-base">花粉症</span>
           </label>
 
           <label class="flex items-center p-3 bg-white rounded border border-gray-200 hover:bg-gray-50 cursor-pointer">
-            <%= check_box_tag "allergies[]", "atopic_dermatitis", false, class: "form-checkbox h-5 w-5 text-green-600" %>
+            <%= check_box_tag "allergies[]", "atopic_dermatitis", @allergies_array.include?("atopic_dermatitis"), class: "form-checkbox h-5 w-5 text-green-600" %>
             <span class="ml-3 text-base">アトピー性皮膚炎</span>
           </label>
 
@@ -189,64 +189,64 @@
 
       <div class="flex space-x-6 mb-4">
         <label class="inline-flex items-center cursor-pointer">
-          <%= radio_button_tag "has_medications", "true", false,
+          <%= radio_button_tag "has_medications", "true", @current_medications_array.any?,
               class: "form-radio h-6 w-6 text-green-600",
               data: { action: "questionnaire#toggleMedications" } %>
           <span class="ml-3 text-lg font-medium">あり</span>
         </label>
         <label class="inline-flex items-center cursor-pointer">
-          <%= radio_button_tag "has_medications", "false", true,
+          <%= radio_button_tag "has_medications", "false", @current_medications_array.empty?,
               class: "form-radio h-6 w-6 text-green-600",
               data: { action: "questionnaire#toggleMedications" } %>
           <span class="ml-3 text-lg font-medium">なし</span>
         </label>
       </div>
 
-      <div class="hidden mt-6 p-4 bg-gray-50 rounded-lg" data-questionnaire-target="medicationsDetail">
+      <div class="<%= @current_medications_array.any? ? '' : 'hidden' %> mt-6 p-4 bg-gray-50 rounded-lg" data-questionnaire-target="medicationsDetail">
         <p class="text-sm font-medium text-gray-700 mb-3">該当するものをすべて選択してください：</p>
         <div class="space-y-3">
           <label class="flex items-center p-3 bg-white rounded border border-gray-200 hover:bg-gray-50 cursor-pointer">
-            <%= check_box_tag "medications[]", "blood_pressure", false, class: "form-checkbox h-5 w-5 text-green-600" %>
+            <%= check_box_tag "medications[]", "blood_pressure", @current_medications_array.include?("blood_pressure"), class: "form-checkbox h-5 w-5 text-green-600" %>
             <span class="ml-3 text-base">血圧の薬</span>
           </label>
 
           <label class="flex items-center p-3 bg-white rounded border border-gray-200 hover:bg-gray-50 cursor-pointer">
-            <%= check_box_tag "medications[]", "diabetes_medication", false, class: "form-checkbox h-5 w-5 text-green-600" %>
+            <%= check_box_tag "medications[]", "diabetes_medication", @current_medications_array.include?("diabetes_medication"), class: "form-checkbox h-5 w-5 text-green-600" %>
             <span class="ml-3 text-base">糖尿病の薬（インスリン含む）</span>
           </label>
 
           <label class="flex items-center p-3 bg-white rounded border border-gray-200 hover:bg-gray-50 cursor-pointer">
-            <%= check_box_tag "medications[]", "anticoagulant", false, class: "form-checkbox h-5 w-5 text-green-600" %>
+            <%= check_box_tag "medications[]", "anticoagulant", @current_medications_array.include?("anticoagulant"), class: "form-checkbox h-5 w-5 text-green-600" %>
             <span class="ml-3 text-base">血液をサラサラにする薬（抗凝固薬・抗血小板薬）</span>
           </label>
 
           <label class="flex items-center p-3 bg-white rounded border border-gray-200 hover:bg-gray-50 cursor-pointer">
-            <%= check_box_tag "medications[]", "steroid", false, class: "form-checkbox h-5 w-5 text-green-600" %>
+            <%= check_box_tag "medications[]", "steroid", @current_medications_array.include?("steroid"), class: "form-checkbox h-5 w-5 text-green-600" %>
             <span class="ml-3 text-base">ステロイド</span>
           </label>
 
           <label class="flex items-center p-3 bg-white rounded border border-gray-200 hover:bg-gray-50 cursor-pointer">
-            <%= check_box_tag "medications[]", "immunosuppressant", false, class: "form-checkbox h-5 w-5 text-green-600" %>
+            <%= check_box_tag "medications[]", "immunosuppressant", @current_medications_array.include?("immunosuppressant"), class: "form-checkbox h-5 w-5 text-green-600" %>
             <span class="ml-3 text-base">免疫抑制剤</span>
           </label>
 
           <label class="flex items-center p-3 bg-white rounded border border-gray-200 hover:bg-gray-50 cursor-pointer">
-            <%= check_box_tag "medications[]", "hormone", false, class: "form-checkbox h-5 w-5 text-green-600" %>
+            <%= check_box_tag "medications[]", "hormone", @current_medications_array.include?("hormone"), class: "form-checkbox h-5 w-5 text-green-600" %>
             <span class="ml-3 text-base">ホルモン剤</span>
           </label>
 
           <label class="flex items-center p-3 bg-white rounded border border-gray-200 hover:bg-gray-50 cursor-pointer">
-            <%= check_box_tag "medications[]", "psychiatric_medication", false, class: "form-checkbox h-5 w-5 text-green-600" %>
+            <%= check_box_tag "medications[]", "psychiatric_medication", @current_medications_array.include?("psychiatric_medication"), class: "form-checkbox h-5 w-5 text-green-600" %>
             <span class="ml-3 text-base">精神科・心療内科の薬</span>
           </label>
 
           <label class="flex items-center p-3 bg-white rounded border border-gray-200 hover:bg-gray-50 cursor-pointer">
-            <%= check_box_tag "medications[]", "painkiller", false, class: "form-checkbox h-5 w-5 text-green-600" %>
+            <%= check_box_tag "medications[]", "painkiller", @current_medications_array.include?("painkiller"), class: "form-checkbox h-5 w-5 text-green-600" %>
             <span class="ml-3 text-base">痛み止め・鎮痛剤（常用）</span>
           </label>
 
           <label class="flex items-start p-3 bg-white rounded border border-gray-200 hover:bg-gray-50 cursor-pointer">
-            <%= check_box_tag "medications[]", "supplement", false,
+            <%= check_box_tag "medications[]", "supplement", @current_medications_array.include?("supplement"),
                 class: "form-checkbox h-5 w-5 text-green-600 mt-1",
                 data: { action: "questionnaire#toggleSupplementDetail" } %>
             <span class="ml-3 text-base">サプリメント</span>
@@ -281,20 +281,20 @@
 
       <div class="flex space-x-6 mb-4">
         <label class="inline-flex items-center cursor-pointer">
-          <%= radio_button_tag "has_surgeries", "true", false,
+          <%= radio_button_tag "has_surgeries", "true", @past_surgeries_array.any?,
               class: "form-radio h-6 w-6 text-green-600",
               data: { action: "questionnaire#toggleSurgeries" } %>
           <span class="ml-3 text-lg font-medium">あり</span>
         </label>
         <label class="inline-flex items-center cursor-pointer">
-          <%= radio_button_tag "has_surgeries", "false", true,
+          <%= radio_button_tag "has_surgeries", "false", @past_surgeries_array.empty?,
               class: "form-radio h-6 w-6 text-green-600",
               data: { action: "questionnaire#toggleSurgeries" } %>
           <span class="ml-3 text-lg font-medium">なし</span>
         </label>
       </div>
 
-      <div class="hidden mt-6 p-4 bg-gray-50 rounded-lg" data-questionnaire-target="surgeriesDetail">
+      <div class="<%= @past_surgeries_array.any? ? '' : 'hidden' %> mt-6 p-4 bg-gray-50 rounded-lg" data-questionnaire-target="surgeriesDetail">
         <label class="block text-sm font-medium text-gray-700 mb-2">手術内容と時期を教えてください：</label>
         <%= text_area_tag "surgery_details", "", rows: 3,
             class: "block w-full rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring-green-500 text-base p-3",
@@ -311,17 +311,17 @@
 
       <div class="space-y-3">
         <label class="flex items-center p-3 bg-white rounded border border-gray-200 hover:bg-gray-50 cursor-pointer">
-          <%= check_box_tag "pregnancy_status[]", "pregnant", false, class: "form-checkbox h-5 w-5 text-pink-600" %>
+          <%= check_box_tag "pregnancy_status[]", "pregnant", @pregnancy_info_array.include?("pregnant"), class: "form-checkbox h-5 w-5 text-pink-600" %>
           <span class="ml-3 text-base">現在妊娠中である</span>
         </label>
 
         <label class="flex items-center p-3 bg-white rounded border border-gray-200 hover:bg-gray-50 cursor-pointer">
-          <%= check_box_tag "pregnancy_status[]", "breastfeeding", false, class: "form-checkbox h-5 w-5 text-pink-600" %>
+          <%= check_box_tag "pregnancy_status[]", "breastfeeding", @pregnancy_info_array.include?("breastfeeding"), class: "form-checkbox h-5 w-5 text-pink-600" %>
           <span class="ml-3 text-base">現在授乳中である</span>
         </label>
 
         <label class="flex items-center p-3 bg-white rounded border border-gray-200 hover:bg-gray-50 cursor-pointer">
-          <%= check_box_tag "pregnancy_status[]", "possible_pregnancy", false, class: "form-checkbox h-5 w-5 text-pink-600" %>
+          <%= check_box_tag "pregnancy_status[]", "possible_pregnancy", @pregnancy_info_array.include?("possible_pregnancy"), class: "form-checkbox h-5 w-5 text-pink-600" %>
           <span class="ml-3 text-base">妊娠の可能性がある</span>
         </label>
       </div>
@@ -343,32 +343,32 @@
 
       <div class="space-y-3">
         <label class="flex items-center p-3 bg-white rounded border border-gray-200 hover:bg-gray-50 cursor-pointer">
-          <%= check_box_tag "desired_treatments[]", "eyebrow", false, class: "form-checkbox h-5 w-5 text-purple-600" %>
+          <%= check_box_tag "desired_treatments[]", "eyebrow", @desired_treatments_array.include?("eyebrow"), class: "form-checkbox h-5 w-5 text-purple-600" %>
           <span class="ml-3 text-base">眉毛アートメイク</span>
         </label>
 
         <label class="flex items-center p-3 bg-white rounded border border-gray-200 hover:bg-gray-50 cursor-pointer">
-          <%= check_box_tag "desired_treatments[]", "eyeliner_upper", false, class: "form-checkbox h-5 w-5 text-purple-600" %>
+          <%= check_box_tag "desired_treatments[]", "eyeliner_upper", @desired_treatments_array.include?("eyeliner_upper"), class: "form-checkbox h-5 w-5 text-purple-600" %>
           <span class="ml-3 text-base">アイラインアートメイク（上）</span>
         </label>
 
         <label class="flex items-center p-3 bg-white rounded border border-gray-200 hover:bg-gray-50 cursor-pointer">
-          <%= check_box_tag "desired_treatments[]", "eyeliner_lower", false, class: "form-checkbox h-5 w-5 text-purple-600" %>
+          <%= check_box_tag "desired_treatments[]", "eyeliner_lower", @desired_treatments_array.include?("eyeliner_lower"), class: "form-checkbox h-5 w-5 text-purple-600" %>
           <span class="ml-3 text-base">アイラインアートメイク（下）</span>
         </label>
 
         <label class="flex items-center p-3 bg-white rounded border border-gray-200 hover:bg-gray-50 cursor-pointer">
-          <%= check_box_tag "desired_treatments[]", "lip", false, class: "form-checkbox h-5 w-5 text-purple-600" %>
+          <%= check_box_tag "desired_treatments[]", "lip", @desired_treatments_array.include?("lip"), class: "form-checkbox h-5 w-5 text-purple-600" %>
           <span class="ml-3 text-base">リップアートメイク</span>
         </label>
 
         <label class="flex items-center p-3 bg-white rounded border border-gray-200 hover:bg-gray-50 cursor-pointer">
-          <%= check_box_tag "desired_treatments[]", "hairline", false, class: "form-checkbox h-5 w-5 text-purple-600" %>
+          <%= check_box_tag "desired_treatments[]", "hairline", @desired_treatments_array.include?("hairline"), class: "form-checkbox h-5 w-5 text-purple-600" %>
           <span class="ml-3 text-base">ヘアラインアートメイク</span>
         </label>
 
         <label class="flex items-center p-3 bg-white rounded border border-gray-200 hover:bg-gray-50 cursor-pointer">
-          <%= check_box_tag "desired_treatments[]", "mole", false, class: "form-checkbox h-5 w-5 text-purple-600" %>
+          <%= check_box_tag "desired_treatments[]", "mole", @desired_treatments_array.include?("mole"), class: "form-checkbox h-5 w-5 text-purple-600" %>
           <span class="ml-3 text-base">ホクロ</span>
         </label>
 
@@ -395,20 +395,20 @@
 
       <div class="flex space-x-6 mb-4">
         <label class="inline-flex items-center cursor-pointer">
-          <%= radio_button_tag "has_past_treatments", "true", false,
+          <%= radio_button_tag "has_past_treatments", "true", @past_treatments_array.any?,
               class: "form-radio h-6 w-6 text-purple-600",
               data: { action: "questionnaire#togglePastTreatments" } %>
           <span class="ml-3 text-lg font-medium">ある</span>
         </label>
         <label class="inline-flex items-center cursor-pointer">
-          <%= radio_button_tag "has_past_treatments", "false", true,
+          <%= radio_button_tag "has_past_treatments", "false", @past_treatments_array.empty?,
               class: "form-radio h-6 w-6 text-purple-600",
               data: { action: "questionnaire#togglePastTreatments" } %>
           <span class="ml-3 text-lg font-medium">ない</span>
         </label>
       </div>
 
-      <div class="hidden mt-6 p-4 bg-gray-50 rounded-lg" data-questionnaire-target="pastTreatmentsDetail">
+      <div class="<%= @past_treatments_array.any? ? '' : 'hidden' %> mt-6 p-4 bg-gray-50 rounded-lg" data-questionnaire-target="pastTreatmentsDetail">
         <p class="text-sm font-medium text-gray-700 mb-3">詳細を教えてください：</p>
 
         <div class="space-y-4">
@@ -416,19 +416,19 @@
             <label class="block text-sm font-medium text-gray-700 mb-2">施術部位（複数選択可）：</label>
             <div class="flex flex-wrap gap-3">
               <label class="inline-flex items-center">
-                <%= check_box_tag "past_treatment_parts[]", "eyebrow", false, class: "form-checkbox h-4 w-4 text-purple-600" %>
+                <%= check_box_tag "past_treatment_parts[]", "eyebrow", @past_treatments_array.include?("eyebrow"), class: "form-checkbox h-4 w-4 text-purple-600" %>
                 <span class="ml-2 text-sm">眉</span>
               </label>
               <label class="inline-flex items-center">
-                <%= check_box_tag "past_treatment_parts[]", "eyeliner", false, class: "form-checkbox h-4 w-4 text-purple-600" %>
+                <%= check_box_tag "past_treatment_parts[]", "eyeliner", @past_treatments_array.include?("eyeliner"), class: "form-checkbox h-4 w-4 text-purple-600" %>
                 <span class="ml-2 text-sm">アイライン</span>
               </label>
               <label class="inline-flex items-center">
-                <%= check_box_tag "past_treatment_parts[]", "lip", false, class: "form-checkbox h-4 w-4 text-purple-600" %>
+                <%= check_box_tag "past_treatment_parts[]", "lip", @past_treatments_array.include?("lip"), class: "form-checkbox h-4 w-4 text-purple-600" %>
                 <span class="ml-2 text-sm">リップ</span>
               </label>
               <label class="inline-flex items-center">
-                <%= check_box_tag "past_treatment_parts[]", "other", false, class: "form-checkbox h-4 w-4 text-purple-600" %>
+                <%= check_box_tag "past_treatment_parts[]", "other", @past_treatments_array.include?("other"), class: "form-checkbox h-4 w-4 text-purple-600" %>
                 <span class="ml-2 text-sm">その他</span>
               </label>
             </div>
@@ -477,32 +477,32 @@
 
       <div class="space-y-3">
         <label class="flex items-center p-3 bg-white rounded border border-gray-200 hover:bg-gray-50 cursor-pointer">
-          <%= check_box_tag "skin_conditions[]", "keloid", false, class: "form-checkbox h-5 w-5 text-purple-600" %>
+          <%= check_box_tag "skin_conditions[]", "keloid", @skin_conditions_array.include?("keloid"), class: "form-checkbox h-5 w-5 text-purple-600" %>
           <span class="ml-3 text-base">ケロイド体質</span>
         </label>
 
         <label class="flex items-center p-3 bg-white rounded border border-gray-200 hover:bg-gray-50 cursor-pointer">
-          <%= check_box_tag "skin_conditions[]", "sensitive_skin", false, class: "form-checkbox h-5 w-5 text-purple-600" %>
+          <%= check_box_tag "skin_conditions[]", "sensitive_skin", @skin_conditions_array.include?("sensitive_skin"), class: "form-checkbox h-5 w-5 text-purple-600" %>
           <span class="ml-3 text-base">肌が弱い・敏感肌</span>
         </label>
 
         <label class="flex items-center p-3 bg-white rounded border border-gray-200 hover:bg-gray-50 cursor-pointer">
-          <%= check_box_tag "skin_conditions[]", "current_wound", false, class: "form-checkbox h-5 w-5 text-purple-600" %>
+          <%= check_box_tag "skin_conditions[]", "current_wound", @skin_conditions_array.include?("current_wound"), class: "form-checkbox h-5 w-5 text-purple-600" %>
           <span class="ml-3 text-base">現在、顔に傷や湿疹がある</span>
         </label>
 
         <label class="flex items-center p-3 bg-white rounded border border-gray-200 hover:bg-gray-50 cursor-pointer">
-          <%= check_box_tag "skin_conditions[]", "herpes_prone", false, class: "form-checkbox h-5 w-5 text-purple-600" %>
+          <%= check_box_tag "skin_conditions[]", "herpes_prone", @skin_conditions_array.include?("herpes_prone"), class: "form-checkbox h-5 w-5 text-purple-600" %>
           <span class="ml-3 text-base">ヘルペスができやすい</span>
         </label>
 
         <label class="flex items-center p-3 bg-white rounded border border-gray-200 hover:bg-gray-50 cursor-pointer">
-          <%= check_box_tag "skin_conditions[]", "sunburned", false, class: "form-checkbox h-5 w-5 text-purple-600" %>
+          <%= check_box_tag "skin_conditions[]", "sunburned", @skin_conditions_array.include?("sunburned"), class: "form-checkbox h-5 w-5 text-purple-600" %>
           <span class="ml-3 text-base">日焼けしている</span>
         </label>
 
         <label class="flex items-center p-3 bg-white rounded border border-gray-200 hover:bg-gray-50 cursor-pointer">
-          <%= check_box_tag "skin_conditions[]", "none", false, class: "form-checkbox h-5 w-5 text-purple-600" %>
+          <%= check_box_tag "skin_conditions[]", "none", @skin_conditions_array.include?("none"), class: "form-checkbox h-5 w-5 text-purple-600" %>
           <span class="ml-3 text-base">該当なし</span>
         </label>
       </div>
