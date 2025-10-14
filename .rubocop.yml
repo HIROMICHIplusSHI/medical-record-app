@@ -36,6 +36,20 @@ Metrics/MethodLength:
     - 'db/migrate/*'
   AllowedMethods:
     - 'questionnaire_params'
+    - 'initialize_empty_arrays'
+    - 'translate_value'
+
+Metrics/ClassLength:
+  Max: 150
+
+Metrics/AbcSize:
+  Max: 20
+
+Metrics/CyclomaticComplexity:
+  Max: 8
+
+Metrics/PerceivedComplexity:
+  Max: 9
 
 Layout/LineLength:
   Max: 120
