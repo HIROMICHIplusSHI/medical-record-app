@@ -100,29 +100,36 @@
     if (!form) return;
 
     form.addEventListener('submit', function(event) {
+      event.preventDefault(); // フォーム送信を一時停止
+
       // ヘルパー関数: 隠しフィールドに安全に値を設定
       const setHiddenField = (fieldId, value) => {
         const field = document.getElementById(fieldId);
         if (field) {
-          field.value = typeof value === 'string' ? value : JSON.stringify(value);
+          const jsonValue = typeof value === 'string' ? value : JSON.stringify(value);
+          field.value = jsonValue;
         }
       };
 
       // 既往歴・治療中の病気
       const medicalConditions = Array.from(form.querySelectorAll('input[name="medical_conditions[]"]:checked')).map(cb => cb.value);
+      const otherConditionDetail = document.querySelector('input[name="other_medical_condition"]');
+      if (otherConditionDetail && otherConditionDetail.value.trim()) {
+        medicalConditions.push(`その他: ${otherConditionDetail.value.trim()}`);
+      }
       setHiddenField('medical_conditions_json', medicalConditions);
 
       // アレルギー
       const allergies = Array.from(form.querySelectorAll('input[name="allergies[]"]:checked')).map(cb => cb.value);
-      const drugAllergyDetail = document.getElementById('drug_allergy_detail_text');
+      const drugAllergyDetail = document.querySelector('input[name="drug_allergy_detail"]');
       if (drugAllergyDetail && drugAllergyDetail.value.trim()) {
         allergies.push(`薬物: ${drugAllergyDetail.value.trim()}`);
       }
-      const foodAllergyDetail = document.getElementById('food_allergy_detail_text');
+      const foodAllergyDetail = document.querySelector('input[name="food_allergy_detail"]');
       if (foodAllergyDetail && foodAllergyDetail.value.trim()) {
         allergies.push(`食物: ${foodAllergyDetail.value.trim()}`);
       }
-      const otherAllergyDetail = document.getElementById('other_allergy_detail_text');
+      const otherAllergyDetail = document.querySelector('input[name="other_allergy"]');
       if (otherAllergyDetail && otherAllergyDetail.value.trim()) {
         allergies.push(`その他: ${otherAllergyDetail.value.trim()}`);
       }
@@ -130,11 +137,11 @@
 
       // 服薬中の薬
       const medications = Array.from(form.querySelectorAll('input[name="medications[]"]:checked')).map(cb => cb.value);
-      const supplementDetail = document.getElementById('supplement_detail_text');
+      const supplementDetail = document.querySelector('input[name="supplement_detail"]');
       if (supplementDetail && supplementDetail.value.trim()) {
         medications.push(`サプリメント: ${supplementDetail.value.trim()}`);
       }
-      const otherMedicationDetail = document.getElementById('other_medication_detail_text');
+      const otherMedicationDetail = document.querySelector('input[name="other_medication"]');
       if (otherMedicationDetail && otherMedicationDetail.value.trim()) {
         medications.push(`その他: ${otherMedicationDetail.value.trim()}`);
       }
@@ -151,19 +158,44 @@
 
       // 希望施術部位
       const desiredTreatments = Array.from(form.querySelectorAll('input[name="desired_treatments[]"]:checked')).map(cb => cb.value);
+      const otherTreatmentDetail = document.querySelector('input[name="other_treatment"]');
+      if (otherTreatmentDetail && otherTreatmentDetail.value.trim()) {
+        desiredTreatments.push(`その他: ${otherTreatmentDetail.value.trim()}`);
+      }
       setHiddenField('desired_treatments_json', desiredTreatments);
 
       // 過去のアートメイク経験
       const pastTreatments = Array.from(form.querySelectorAll('input[name="past_treatment_parts[]"]:checked')).map(cb => cb.value);
-      const otherTreatmentDetail = document.getElementById('other_treatment_detail_text');
-      if (otherTreatmentDetail && otherTreatmentDetail.value.trim()) {
-        pastTreatments.push(`その他: ${otherTreatmentDetail.value.trim()}`);
+
+      // 施術時期
+      const pastTreatmentDate = document.querySelector('input[name="past_treatment_date"]');
+      if (pastTreatmentDate && pastTreatmentDate.value.trim()) {
+        pastTreatments.push(`施術時期: ${pastTreatmentDate.value.trim()}`);
       }
+
+      // 施術場所
+      const pastTreatmentLocation = document.querySelector('input[name="past_treatment_location"]');
+      if (pastTreatmentLocation && pastTreatmentLocation.value.trim()) {
+        pastTreatments.push(`施術場所: ${pastTreatmentLocation.value.trim()}`);
+      }
+
+      // トラブルの有無
+      const hadTrouble = document.querySelector('input[name="had_trouble"]:checked');
+      const troubleDetail = document.querySelector('input[name="trouble_detail"]');
+      if (hadTrouble && hadTrouble.value === 'true' && troubleDetail && troubleDetail.value.trim()) {
+        pastTreatments.push(`トラブル: ${troubleDetail.value.trim()}`);
+      } else if (hadTrouble && hadTrouble.value === 'false') {
+        pastTreatments.push('トラブル: なし');
+      }
+
       setHiddenField('past_treatments_json', pastTreatments);
 
       // 肌の状態
       const skinConditions = Array.from(form.querySelectorAll('input[name="skin_conditions[]"]:checked')).map(cb => cb.value);
       setHiddenField('skin_conditions_json', skinConditions);
+
+      // すべてのJavaScript処理が完了したら、フォームを送信
+      event.target.submit();
     });
   })();
 </script>

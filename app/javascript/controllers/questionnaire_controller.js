@@ -99,8 +99,22 @@ export default class extends Controller {
   // フォーム送信前にチェックボックスデータをJSON形式に変換
   // 注: インラインJavaScriptでも同様の処理を実装（Stimulusロード失敗時のフォールバック）
   handleSubmit(event) {
+    event.preventDefault(); // フォーム送信を一時停止
+
     // 既往歴・治療中の病気
-    this.aggregateCheckboxData("medical_conditions[]", "medical_conditions_json")
+    const medicalConditions = []
+    const medicalCheckboxes = this.element.querySelectorAll('input[name="medical_conditions[]"]:checked')
+    medicalCheckboxes.forEach(checkbox => {
+      medicalConditions.push(checkbox.value)
+    })
+
+    // 既往歴の「その他」詳細
+    const otherConditionDetail = this.element.querySelector('input[name="other_medical_condition"]')
+    if (otherConditionDetail && otherConditionDetail.value.trim()) {
+      medicalConditions.push(`その他: ${otherConditionDetail.value.trim()}`)
+    }
+
+    this.setHiddenFieldValue("medical_conditions_json", medicalConditions)
 
     // アレルギー
     const allergies = []
@@ -110,15 +124,15 @@ export default class extends Controller {
     })
 
     // アレルギー詳細テキスト入力を追加
-    const drugAllergyDetail = document.getElementById("drug_allergy_detail_text")
+    const drugAllergyDetail = this.element.querySelector('input[name="drug_allergy_detail"]')
     if (drugAllergyDetail && drugAllergyDetail.value.trim()) {
       allergies.push(`薬物: ${drugAllergyDetail.value.trim()}`)
     }
-    const foodAllergyDetail = document.getElementById("food_allergy_detail_text")
+    const foodAllergyDetail = this.element.querySelector('input[name="food_allergy_detail"]')
     if (foodAllergyDetail && foodAllergyDetail.value.trim()) {
       allergies.push(`食物: ${foodAllergyDetail.value.trim()}`)
     }
-    const otherAllergyDetail = document.getElementById("other_allergy_detail_text")
+    const otherAllergyDetail = this.element.querySelector('input[name="other_allergy"]')
     if (otherAllergyDetail && otherAllergyDetail.value.trim()) {
       allergies.push(`その他: ${otherAllergyDetail.value.trim()}`)
     }
@@ -133,11 +147,11 @@ export default class extends Controller {
     })
 
     // 服薬詳細テキスト入力を追加
-    const supplementDetail = document.getElementById("supplement_detail_text")
+    const supplementDetail = this.element.querySelector('input[name="supplement_detail"]')
     if (supplementDetail && supplementDetail.value.trim()) {
       medications.push(`サプリメント: ${supplementDetail.value.trim()}`)
     }
-    const otherMedicationDetail = document.getElementById("other_medication_detail_text")
+    const otherMedicationDetail = this.element.querySelector('input[name="other_medication"]')
     if (otherMedicationDetail && otherMedicationDetail.value.trim()) {
       medications.push(`その他: ${otherMedicationDetail.value.trim()}`)
     }
@@ -146,7 +160,7 @@ export default class extends Controller {
 
     // 手術歴
     const surgeries = []
-    const surgeryDetail = document.getElementById("surgery_detail_text")
+    const surgeryDetail = this.element.querySelector('textarea[name="surgery_details"]')
     if (surgeryDetail && surgeryDetail.value.trim()) {
       surgeries.push(surgeryDetail.value.trim())
     }
@@ -161,7 +175,19 @@ export default class extends Controller {
     this.setHiddenFieldValue("pregnancy_info_json", pregnancy)
 
     // 希望施術部位
-    this.aggregateCheckboxData("desired_treatments[]", "desired_treatments_json")
+    const desiredTreatments = []
+    const desiredCheckboxes = this.element.querySelectorAll('input[name="desired_treatments[]"]:checked')
+    desiredCheckboxes.forEach(checkbox => {
+      desiredTreatments.push(checkbox.value)
+    })
+
+    // 希望施術の「その他」詳細
+    const otherTreatmentDesired = this.element.querySelector('input[name="other_treatment"]')
+    if (otherTreatmentDesired && otherTreatmentDesired.value.trim()) {
+      desiredTreatments.push(`その他: ${otherTreatmentDesired.value.trim()}`)
+    }
+
+    this.setHiddenFieldValue("desired_treatments_json", desiredTreatments)
 
     // 過去のアートメイク経験
     const pastTreatments = []
@@ -170,10 +196,25 @@ export default class extends Controller {
       pastTreatments.push(checkbox.value)
     })
 
-    // 過去施術詳細テキスト入力を追加
-    const otherTreatmentDetail = document.getElementById("other_treatment_detail_text")
-    if (otherTreatmentDetail && otherTreatmentDetail.value.trim()) {
-      pastTreatments.push(`その他: ${otherTreatmentDetail.value.trim()}`)
+    // 施術時期
+    const pastTreatmentDate = this.element.querySelector('input[name="past_treatment_date"]')
+    if (pastTreatmentDate && pastTreatmentDate.value.trim()) {
+      pastTreatments.push(`施術時期: ${pastTreatmentDate.value.trim()}`)
+    }
+
+    // 施術場所
+    const pastTreatmentLocation = this.element.querySelector('input[name="past_treatment_location"]')
+    if (pastTreatmentLocation && pastTreatmentLocation.value.trim()) {
+      pastTreatments.push(`施術場所: ${pastTreatmentLocation.value.trim()}`)
+    }
+
+    // トラブルの有無
+    const hadTrouble = this.element.querySelector('input[name="had_trouble"]:checked')
+    const troubleDetail = this.element.querySelector('input[name="trouble_detail"]')
+    if (hadTrouble && hadTrouble.value === 'true' && troubleDetail && troubleDetail.value.trim()) {
+      pastTreatments.push(`トラブル: ${troubleDetail.value.trim()}`)
+    } else if (hadTrouble && hadTrouble.value === 'false') {
+      pastTreatments.push('トラブル: なし')
     }
 
     this.setHiddenFieldValue("past_treatments_json", pastTreatments)
@@ -181,14 +222,8 @@ export default class extends Controller {
     // 肌の状態
     this.aggregateCheckboxData("skin_conditions[]", "skin_conditions_json")
 
-    // その他の気になること
-    const otherConcerns = document.getElementById("other_concerns_text")
-    if (otherConcerns) {
-      const concernsHidden = document.getElementById("other_concerns_json")
-      if (concernsHidden) {
-        concernsHidden.value = otherConcerns.value.trim()
-      }
-    }
+    // すべてのJavaScript処理が完了したら、フォームを送信
+    event.target.submit()
   }
 
   // チェックボックス配列を集約してJSON形式に変換
