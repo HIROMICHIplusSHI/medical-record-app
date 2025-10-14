@@ -41,3 +41,7 @@
 /config/credentials/development.key
 
 /config/credentials/test.key
+
+# Brakeman security scan reports
+brakeman-report.json
+brakeman-report.html

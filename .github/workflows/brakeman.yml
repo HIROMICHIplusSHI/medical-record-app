@@ -1,0 +1,124 @@
+name: Brakeman Security Scan
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+  schedule:
+    # 毎週月曜日 9:00 JST (00:00 UTC) に定期スキャン
+    - cron: '0 0 * * 1'
+
+permissions:
+  contents: read
+  security-events: write
+  pull-requests: write
+
+jobs:
+  brakeman:
+    name: Brakeman Static Security Scan
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: 3.2.9
+          bundler-cache: true
+
+      - name: Run Brakeman scan
+        run: |
+          bundle exec brakeman \
+            --format json \
+            --output brakeman-report.json \
+            --no-exit-on-warn \
+            --no-exit-on-error
+
+      - name: Parse Brakeman results
+        id: brakeman
+        run: |
+          # 警告数を取得
+          TOTAL=$(jq '.warnings | length' brakeman-report.json)
+          HIGH=$(jq '.warnings | map(select(.confidence == "High")) | length' brakeman-report.json)
+          MEDIUM=$(jq '.warnings | map(select(.confidence == "Medium")) | length' brakeman-report.json)
+          WEAK=$(jq '.warnings | map(select(.confidence == "Weak")) | length' brakeman-report.json)
+
+          echo "total=$TOTAL" >> $GITHUB_OUTPUT
+          echo "high=$HIGH" >> $GITHUB_OUTPUT
+          echo "medium=$MEDIUM" >> $GITHUB_OUTPUT
+          echo "weak=$WEAK" >> $GITHUB_OUTPUT
+
+          # サマリーを作成
+          echo "## 🔒 Brakeman Security Scan Results" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "| Confidence | Count |" >> $GITHUB_STEP_SUMMARY
+          echo "|------------|-------|" >> $GITHUB_STEP_SUMMARY
+          echo "| 🔴 High | $HIGH |" >> $GITHUB_STEP_SUMMARY
+          echo "| 🟡 Medium | $MEDIUM |" >> $GITHUB_STEP_SUMMARY
+          echo "| 🟢 Weak | $WEAK |" >> $GITHUB_STEP_SUMMARY
+          echo "| **Total** | **$TOTAL** |" >> $GITHUB_STEP_SUMMARY
+
+      - name: Comment PR with results
+        if: github.event_name == 'pull_request'
+        uses: actions/github-script@v7
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const fs = require('fs');
+            const report = JSON.parse(fs.readFileSync('brakeman-report.json', 'utf8'));
+
+            const total = report.warnings.length;
+            const high = report.warnings.filter(w => w.confidence === 'High').length;
+            const medium = report.warnings.filter(w => w.confidence === 'Medium').length;
+            const weak = report.warnings.filter(w => w.confidence === 'Weak').length;
+
+            let body = '## 🔒 Brakeman Security Scan Results\n\n';
+            body += '| Confidence | Count |\n';
+            body += '|------------|-------|\n';
+            body += `| 🔴 High | ${high} |\n`;
+            body += `| 🟡 Medium | ${medium} |\n`;
+            body += `| 🟢 Weak | ${weak} |\n`;
+            body += `| **Total** | **${total}** |\n\n`;
+
+            if (total > 0) {
+              body += '### ⚠️ Warnings\n\n';
+              report.warnings.forEach(w => {
+                const emoji = w.confidence === 'High' ? '🔴' : w.confidence === 'Medium' ? '🟡' : '🟢';
+                body += `${emoji} **${w.warning_type}** (${w.confidence})\n`;
+                body += `- File: \`${w.file}:${w.line}\`\n`;
+                body += `- Message: ${w.message}\n\n`;
+              });
+            } else {
+              body += '✅ **No security warnings found!**\n';
+            }
+
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: body
+            });
+
+      - name: Check for High/Medium confidence warnings
+        run: |
+          HIGH=${{ steps.brakeman.outputs.high }}
+          MEDIUM=${{ steps.brakeman.outputs.medium }}
+
+          if [ "$HIGH" -gt 0 ] || [ "$MEDIUM" -gt 0 ]; then
+            echo "❌ Found $HIGH High and $MEDIUM Medium confidence warnings"
+            echo "Please review and fix security issues before merging"
+            exit 1
+          else
+            echo "✅ No High or Medium confidence warnings found"
+          fi
+
+      - name: Upload Brakeman report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: brakeman-report
+          path: brakeman-report.json
+          retention-days: 30

@@ -412,7 +412,116 @@ end
 
 ---
 
-## Phase 4-04: マイアカウント画面（予定）
+## Phase 4-04: Brakeman静的セキュリティ分析導入
+
+### ステータス
+🔄 **実装中** - ドキュメント整備中
+
+### PR情報
+- **PR番号**: TBD
+- **ブランチ**: `feature/p4-04-brakeman-security`
+- **作成日**: 2025-10-14
+- **担当**: Claude Code + ユーザー
+
+### 背景
+
+Phase 4-03で3回のセキュリティレビューを経て、複数のXSS脆弱性が発見されました。医療データを扱う電子カルテアプリケーションでは、セキュリティが最優先事項です。**Brakeman**（静的セキュリティスキャナー）を導入し、継続的なセキュリティ監視体制を構築します。
+
+**Phase 4-03で発見された問題**:
+1. XSS脆弱性（JSON fields）
+2. XSS脆弱性（基本情報28フィールド）
+3. XSS脆弱性（条件分岐3箇所）
+4. Validation bypass（`update_columns` 使用）
+5. N+1 query問題
+
+### 実装内容
+
+#### 実装範囲
+- [ ] **Brakeman導入**
+  - [ ] Gemfile追加（development/testグループ）
+  - [ ] `.brakeman.yml` 設定ファイル作成
+  - [ ] 除外設定（false positive対策）
+- [ ] **初回スキャン実施**
+  - [ ] 既存コードの全体スキャン
+  - [ ] 検出された問題の分類（High/Medium/Low）
+  - [ ] 修正優先度の決定
+- [ ] **CI統合（GitHub Actions）**
+  - [ ] `.github/workflows/brakeman.yml` 作成
+  - [ ] PR作成時に自動スキャン
+  - [ ] High/Critical警告でビルド失敗
+  - [ ] スキャン結果をPRコメントに表示
+- [ ] **ドキュメント整備**
+  - [ ] `docs/security.md` 更新
+  - [ ] Brakeman運用ガイド追加
+  - [ ] セキュリティポリシー明記
+- [ ] **継続的監視体制**
+  - [ ] ベースライン設定
+  - [ ] 定期スキャンスケジュール
+  - [ ] アラート通知設定
+
+#### 技術仕様
+
+**Brakeman設定** (`.brakeman.yml`):
+```yaml
+:skip_checks:
+  - Redirect  # 必要に応じて除外
+:report_format: json
+:minimum_confidence: 2  # High以上のみ
+:output_files:
+  - brakeman-report.json
+```
+
+**GitHub Actions** (`.github/workflows/brakeman.yml`):
+```yaml
+name: Brakeman Security Scan
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+
+jobs:
+  brakeman:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ruby/setup-ruby@v1
+        with:
+          bundler-cache: true
+      - name: Run Brakeman
+        run: bundle exec brakeman --no-exit-on-warn --format json --output brakeman-report.json
+      - name: Check for High/Critical warnings
+        run: |
+          if [ $(jq '.warnings | map(select(.confidence == "High" or .confidence == "Medium")) | length' brakeman-report.json) -gt 0 ]; then
+            echo "High/Medium confidence warnings found!"
+            exit 1
+          fi
+```
+
+**想定される検出項目**:
+- Cross-Site Scripting (XSS)
+- SQL Injection
+- Mass Assignment
+- Unvalidated Redirects
+- Command Injection
+- File Access
+- CSRF（Rails標準で保護済みだが確認）
+
+#### 見積もり
+- 実装時間: 1-2時間
+- 優先度: 🔴 最高（セキュリティ基盤）
+
+#### 実装メモ
+
+**2025-10-14 (夕方)**:
+- ブランチ `feature/p4-04-brakeman-security` 作成
+- Phase 4-04ドキュメント追加（本セクション）
+- 次: Brakeman導入と初回スキャン
+
+---
+
+## Phase 4-05: マイアカウント画面（予定）
 
 ### ステータス
 ⏳ **未着手**
@@ -429,7 +538,7 @@ end
 
 ---
 
-## Phase 4-05: ダッシュボード改善（予定）
+## Phase 4-06: ダッシュボード改善（予定）
 
 ### ステータス
 ⏳ **未着手**
@@ -480,7 +589,17 @@ end
 
 **進捗率**: 83% (5/6 完了)
 
-### Milestone 4.4: マイアカウント実装（目標: TBD）
+### Milestone 4.4: Brakeman静的セキュリティ分析（目標: 2025-10-14）
+
+- [ ] Brakeman導入（Gemfile, 設定ファイル）
+- [ ] 初回スキャン実施・問題分析
+- [ ] CI統合（GitHub Actions）
+- [ ] ドキュメント整備（security.md）
+- [ ] PR作成・マージ
+
+**進捗率**: 0% (0/5 完了)
+
+### Milestone 4.5: マイアカウント実装（目標: TBD）
 
 - [ ] マイアカウント画面作成
 - [ ] プロフィール編集機能
