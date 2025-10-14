@@ -82,13 +82,13 @@
 
         <div class="mt-4">
           <label class="flex items-start p-3 bg-white rounded border border-gray-200 cursor-pointer">
-            <%= check_box_tag "has_other_condition", "true", false,
+            <%= check_box_tag "has_other_condition", "true", @other_medical_condition_value.present?,
                 class: "form-checkbox h-5 w-5 text-green-600 mt-1",
                 data: { action: "questionnaire#toggleOtherConditionDetail" } %>
             <span class="ml-3 text-base">その他</span>
           </label>
-          <div id="other_condition_detail" class="hidden mt-2 ml-8">
-            <%= text_field_tag "other_medical_condition", "",
+          <div id="other_condition_detail" class="<%= @other_medical_condition_value.present? ? '' : 'hidden' %> mt-2 ml-8">
+            <%= text_field_tag "other_medical_condition", @other_medical_condition_value || "",
                 class: "block w-full rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring-green-500 text-base p-3",
                 placeholder: "その他の病気を記入してください" %>
           </div>
@@ -122,13 +122,13 @@
         <p class="text-sm font-medium text-gray-700 mb-3">該当するものをすべて選択してください：</p>
         <div class="space-y-3">
           <label class="flex items-start p-3 bg-white rounded border border-gray-200 hover:bg-gray-50 cursor-pointer">
-            <%= check_box_tag "allergies[]", "drug_allergy", @allergies_array.include?("drug_allergy"),
+            <%= check_box_tag "allergies[]", "drug_allergy", @allergies_array.include?("drug_allergy") || @drug_allergy_detail_value.present?,
                 class: "form-checkbox h-5 w-5 text-green-600 mt-1",
                 data: { action: "questionnaire#toggleDrugAllergyDetail" } %>
             <span class="ml-3 text-base">薬物アレルギー</span>
           </label>
-          <div id="drug_allergy_detail" class="hidden ml-8">
-            <%= text_field_tag "drug_allergy_detail", "",
+          <div id="drug_allergy_detail" class="<%= @drug_allergy_detail_value.present? ? '' : 'hidden' %> ml-8">
+            <%= text_field_tag "drug_allergy_detail", @drug_allergy_detail_value || "",
                 class: "block w-full rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring-green-500 text-base p-3",
                 placeholder: "薬品名を記入してください（例：ペニシリン系）" %>
           </div>
@@ -144,13 +144,13 @@
           </label>
 
           <label class="flex items-start p-3 bg-white rounded border border-gray-200 hover:bg-gray-50 cursor-pointer">
-            <%= check_box_tag "allergies[]", "food_allergy", @allergies_array.include?("food_allergy"),
+            <%= check_box_tag "allergies[]", "food_allergy", @allergies_array.include?("food_allergy") || @food_allergy_detail_value.present?,
                 class: "form-checkbox h-5 w-5 text-green-600 mt-1",
                 data: { action: "questionnaire#toggleFoodAllergyDetail" } %>
             <span class="ml-3 text-base">食物アレルギー</span>
           </label>
-          <div id="food_allergy_detail" class="hidden ml-8">
-            <%= text_field_tag "food_allergy_detail", "",
+          <div id="food_allergy_detail" class="<%= @food_allergy_detail_value.present? ? '' : 'hidden' %> ml-8">
+            <%= text_field_tag "food_allergy_detail", @food_allergy_detail_value || "",
                 class: "block w-full rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring-green-500 text-base p-3",
                 placeholder: "食品名を記入してください（例：そば、卵など）" %>
           </div>
@@ -166,13 +166,13 @@
           </label>
 
           <label class="flex items-start p-3 bg-white rounded border border-gray-200 hover:bg-gray-50 cursor-pointer">
-            <%= check_box_tag "has_other_allergy", "true", false,
+            <%= check_box_tag "has_other_allergy", "true", @other_allergy_value.present?,
                 class: "form-checkbox h-5 w-5 text-green-600 mt-1",
                 data: { action: "questionnaire#toggleOtherAllergyDetail" } %>
             <span class="ml-3 text-base">その他</span>
           </label>
-          <div id="other_allergy_detail" class="hidden ml-8">
-            <%= text_field_tag "other_allergy", "",
+          <div id="other_allergy_detail" class="<%= @other_allergy_value.present? ? '' : 'hidden' %> ml-8">
+            <%= text_field_tag "other_allergy", @other_allergy_value || "",
                 class: "block w-full rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring-green-500 text-base p-3",
                 placeholder: "その他のアレルギーを記入してください" %>
           </div>
@@ -246,25 +246,25 @@
           </label>
 
           <label class="flex items-start p-3 bg-white rounded border border-gray-200 hover:bg-gray-50 cursor-pointer">
-            <%= check_box_tag "medications[]", "supplement", @current_medications_array.include?("supplement"),
+            <%= check_box_tag "medications[]", "supplement", @current_medications_array.include?("supplement") || @supplement_detail_value.present?,
                 class: "form-checkbox h-5 w-5 text-green-600 mt-1",
                 data: { action: "questionnaire#toggleSupplementDetail" } %>
             <span class="ml-3 text-base">サプリメント</span>
           </label>
-          <div id="supplement_detail" class="hidden ml-8">
-            <%= text_field_tag "supplement_detail", "",
+          <div id="supplement_detail" class="<%= @supplement_detail_value.present? ? '' : 'hidden' %> ml-8">
+            <%= text_field_tag "supplement_detail", @supplement_detail_value || "",
                 class: "block w-full rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring-green-500 text-base p-3",
                 placeholder: "サプリメント名を記入してください" %>
           </div>
 
           <label class="flex items-start p-3 bg-white rounded border border-gray-200 hover:bg-gray-50 cursor-pointer">
-            <%= check_box_tag "has_other_medication", "true", false,
+            <%= check_box_tag "has_other_medication", "true", @other_medication_value.present?,
                 class: "form-checkbox h-5 w-5 text-green-600 mt-1",
                 data: { action: "questionnaire#toggleOtherMedicationDetail" } %>
             <span class="ml-3 text-base">その他</span>
           </label>
-          <div id="other_medication_detail" class="hidden ml-8">
-            <%= text_field_tag "other_medication", "",
+          <div id="other_medication_detail" class="<%= @other_medication_value.present? ? '' : 'hidden' %> ml-8">
+            <%= text_field_tag "other_medication", @other_medication_value || "",
                 class: "block w-full rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring-green-500 text-base p-3",
                 placeholder: "その他の薬を記入してください" %>
           </div>
@@ -296,7 +296,8 @@
 
       <div class="<%= @past_surgeries_array.any? ? '' : 'hidden' %> mt-6 p-4 bg-gray-50 rounded-lg" data-questionnaire-target="surgeriesDetail">
         <label class="block text-sm font-medium text-gray-700 mb-2">手術内容と時期を教えてください：</label>
-        <%= text_area_tag "surgery_details", "", rows: 3,
+        <%= text_area_tag "surgery_details", @surgery_details_value || "", rows: 3,
+            id: "surgery_details",
             class: "block w-full rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring-green-500 text-base p-3",
             placeholder: "例：虫垂炎手術（2015年）、帝王切開（2018年）" %>
       </div>
@@ -373,13 +374,13 @@
         </label>
 
         <label class="flex items-start p-3 bg-white rounded border border-gray-200 hover:bg-gray-50 cursor-pointer">
-          <%= check_box_tag "has_other_treatment", "true", false,
+          <%= check_box_tag "has_other_treatment", "true", @other_treatment_value.present?,
               class: "form-checkbox h-5 w-5 text-purple-600 mt-1",
               data: { action: "questionnaire#toggleOtherTreatmentDetail" } %>
           <span class="ml-3 text-base">その他</span>
         </label>
-        <div id="other_treatment_detail" class="hidden ml-8">
-          <%= text_field_tag "other_treatment", "",
+        <div id="other_treatment_detail" class="<%= @other_treatment_value.present? ? '' : 'hidden' %> ml-8">
+          <%= text_field_tag "other_treatment", @other_treatment_value || "",
               class: "block w-full rounded-md border-gray-300 shadow-sm focus:border-purple-500 focus:ring-purple-500 text-base p-3",
               placeholder: "その他の施術を記入してください" %>
         </div>
@@ -436,14 +437,14 @@
 
           <div>
             <label class="block text-sm font-medium text-gray-700 mb-2">施術時期：</label>
-            <%= text_field_tag "past_treatment_date", "",
+            <%= text_field_tag "past_treatment_date", @past_treatment_date_value || "",
                 class: "block w-full rounded-md border-gray-300 shadow-sm focus:border-purple-500 focus:ring-purple-500 text-base p-3",
                 placeholder: "例：2022年3月頃" %>
           </div>
 
           <div>
             <label class="block text-sm font-medium text-gray-700 mb-2">施術場所：</label>
-            <%= text_field_tag "past_treatment_location", "",
+            <%= text_field_tag "past_treatment_location", @past_treatment_location_value || "",
                 class: "block w-full rounded-md border-gray-300 shadow-sm focus:border-purple-500 focus:ring-purple-500 text-base p-3",
                 placeholder: "例：○○クリニック" %>
           </div>
@@ -452,15 +453,15 @@
             <label class="block text-sm font-medium text-gray-700 mb-2">トラブルの有無：</label>
             <div class="flex space-x-4 mb-2">
               <label class="inline-flex items-center">
-                <%= radio_button_tag "had_trouble", "false", true, class: "form-radio h-4 w-4 text-purple-600" %>
+                <%= radio_button_tag "had_trouble", "false", @trouble_detail_value.blank? || @trouble_detail_value == 'なし', class: "form-radio h-4 w-4 text-purple-600" %>
                 <span class="ml-2 text-sm">なし</span>
               </label>
               <label class="inline-flex items-center">
-                <%= radio_button_tag "had_trouble", "true", false, class: "form-radio h-4 w-4 text-purple-600" %>
+                <%= radio_button_tag "had_trouble", "true", @trouble_detail_value.present? && @trouble_detail_value != 'なし', class: "form-radio h-4 w-4 text-purple-600" %>
                 <span class="ml-2 text-sm">あり</span>
               </label>
             </div>
-            <%= text_field_tag "trouble_detail", "",
+            <%= text_field_tag "trouble_detail", (@trouble_detail_value && @trouble_detail_value != 'なし' ? @trouble_detail_value : ""),
                 class: "block w-full rounded-md border-gray-300 shadow-sm focus:border-purple-500 focus:ring-purple-500 text-base p-3",
                 placeholder: "トラブルの内容を記入してください（ある場合）" %>
           </div>

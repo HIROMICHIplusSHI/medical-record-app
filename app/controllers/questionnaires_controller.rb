@@ -108,6 +108,19 @@ class QuestionnairesController < ApplicationController
     @desired_treatments_array = []
     @past_treatments_array = []
     @skin_conditions_array = []
+
+    # テキスト入力フィールドも空文字で初期化
+    @other_medical_condition_value = ''
+    @drug_allergy_detail_value = ''
+    @food_allergy_detail_value = ''
+    @other_allergy_value = ''
+    @supplement_detail_value = ''
+    @other_medication_value = ''
+    @surgery_details_value = ''
+    @other_treatment_value = ''
+    @past_treatment_date_value = ''
+    @past_treatment_location_value = ''
+    @trouble_detail_value = ''
   end
 
   def prepare_questionnaire_data
@@ -120,6 +133,9 @@ class QuestionnairesController < ApplicationController
     fields.each do |field|
       instance_variable_set("@#{field}_array", parse_json_field(@questionnaire.send(field)))
     end
+
+    # テキスト入力フィールドの事前入力用データを抽出
+    extract_text_field_values
   end
 
   def parse_json_field(field_value)
@@ -135,6 +151,43 @@ class QuestionnairesController < ApplicationController
     rescue JSON::ParserError
       []
     end
+  end
+
+  # JSON配列からテキスト入力フィールドの値を抽出
+  def extract_text_field_values
+    # 既往歴の「その他」詳細
+    @other_medical_condition_value = extract_detail_value(@medical_conditions_array, 'その他')
+
+    # アレルギー詳細
+    @drug_allergy_detail_value = extract_detail_value(@allergies_array, '薬物')
+    @food_allergy_detail_value = extract_detail_value(@allergies_array, '食物')
+    @other_allergy_value = extract_detail_value(@allergies_array, 'その他')
+
+    # 服薬詳細
+    @supplement_detail_value = extract_detail_value(@current_medications_array, 'サプリメント')
+    @other_medication_value = extract_detail_value(@current_medications_array, 'その他')
+
+    # 手術歴（配列の最初の要素がテキスト）
+    @surgery_details_value = @past_surgeries_array.first || ''
+
+    # 希望施術の「その他」詳細
+    @other_treatment_value = extract_detail_value(@desired_treatments_array, 'その他')
+
+    # 過去のアートメイク経験詳細
+    @past_treatment_date_value = extract_detail_value(@past_treatments_array, '施術時期')
+    @past_treatment_location_value = extract_detail_value(@past_treatments_array, '施術場所')
+    @trouble_detail_value = extract_detail_value(@past_treatments_array, 'トラブル')
+  end
+
+  # 配列から「キー: 値」形式の文字列を見つけて、値部分を抽出
+  def extract_detail_value(array, key)
+    return '' if array.blank?
+
+    matching = array.find { |item| item.to_s.start_with?("#{key}:") || item.to_s.start_with?("#{key}：") }
+    return '' unless matching
+
+    # "キー: 値" または "キー：値" の形式から値部分を抽出
+    matching.to_s.sub(/^#{Regexp.escape(key)}[:：]\s*/, '')
   end
 
   # 問診票の基本情報を患者レコードに同期
