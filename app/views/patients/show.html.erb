@@ -14,41 +14,119 @@
   <% end %>
 
   <div class="bg-white shadow-md rounded p-6">
-    <dl class="grid grid-cols-1 gap-6">
-      <div>
-        <dt class="text-sm font-medium text-gray-500">氏名</dt>
-        <dd class="mt-1 text-lg text-gray-900"><%= @patient.name %></dd>
+    <% if @patient.questionnaire.present? %>
+      <%# 問診票が存在する場合は問診票から基本情報を表示 %>
+      <% questionnaire = @patient.questionnaire %>
+      <div class="bg-blue-50 border border-blue-200 rounded p-3 mb-4">
+        <p class="text-sm text-blue-800">基本情報は問診票から取得されています。変更する場合は問診票を編集してください。</p>
       </div>
+      <dl class="grid grid-cols-1 gap-6">
+        <div>
+          <dt class="text-sm font-medium text-gray-500">氏名</dt>
+          <dd class="mt-1 text-lg text-gray-900"><%= questionnaire.full_name %></dd>
+        </div>
 
-      <div>
-        <dt class="text-sm font-medium text-gray-500">生年月日</dt>
-        <dd class="mt-1 text-lg text-gray-900"><%= @patient.date_of_birth&.strftime('%Y年%m月%d日') || "未登録" %></dd>
-      </div>
+        <% if questionnaire.full_name_kana.present? %>
+          <div>
+            <dt class="text-sm font-medium text-gray-500">フリガナ</dt>
+            <dd class="mt-1 text-lg text-gray-900"><%= questionnaire.full_name_kana %></dd>
+          </div>
+        <% end %>
 
-      <div>
-        <dt class="text-sm font-medium text-gray-500">性別</dt>
-        <dd class="mt-1 text-lg text-gray-900"><%= t("activerecord.attributes.patient.genders.#{@patient.gender}") %></dd>
-      </div>
+        <div>
+          <dt class="text-sm font-medium text-gray-500">生年月日</dt>
+          <dd class="mt-1 text-lg text-gray-900">
+            <%= if questionnaire.birth_date.present?
+                  begin
+                    Date.parse(questionnaire.birth_date.to_s).strftime('%Y年%m月%d日')
+                  rescue
+                    questionnaire.birth_date
+                  end
+                else
+                  "未登録"
+                end %>
+          </dd>
+        </div>
 
-      <div>
-        <dt class="text-sm font-medium text-gray-500">電話番号</dt>
-        <dd class="mt-1 text-lg text-gray-900"><%= @patient.phone || "未登録" %></dd>
-      </div>
+        <div>
+          <dt class="text-sm font-medium text-gray-500">性別</dt>
+          <dd class="mt-1 text-lg text-gray-900">
+            <%= case questionnaire.gender
+                when 'male' then '男性'
+                when 'female' then '女性'
+                when 'other' then 'その他'
+                when 'prefer_not_to_say' then '回答しない'
+                else "未登録"
+                end %>
+          </dd>
+        </div>
 
-      <div>
-        <dt class="text-sm font-medium text-gray-500">メールアドレス</dt>
-        <dd class="mt-1 text-lg text-gray-900"><%= @patient.email || "未登録" %></dd>
-      </div>
+        <div>
+          <dt class="text-sm font-medium text-gray-500">電話番号</dt>
+          <dd class="mt-1 text-lg text-gray-900"><%= questionnaire.phone %></dd>
+        </div>
 
-      <div>
-        <dt class="text-sm font-medium text-gray-500">住所</dt>
-        <dd class="mt-1 text-lg text-gray-900"><%= @patient.address || "未登録" %></dd>
-      </div>
+        <div>
+          <dt class="text-sm font-medium text-gray-500">メールアドレス</dt>
+          <dd class="mt-1 text-lg text-gray-900"><%= questionnaire.email || "未登録" %></dd>
+        </div>
 
-      <div>
-        <dt class="text-sm font-medium text-gray-500">緊急連絡先</dt>
-        <dd class="mt-1 text-lg text-gray-900"><%= @patient.emergency_contact || "未登録" %></dd>
-      </div>
+        <% if questionnaire.postal_code.present? %>
+          <div>
+            <dt class="text-sm font-medium text-gray-500">郵便番号</dt>
+            <dd class="mt-1 text-lg text-gray-900"><%= questionnaire.postal_code %></dd>
+          </div>
+        <% end %>
+
+        <div>
+          <dt class="text-sm font-medium text-gray-500">住所</dt>
+          <dd class="mt-1 text-lg text-gray-900"><%= questionnaire.address || "未登録" %></dd>
+        </div>
+
+        <div>
+          <dt class="text-sm font-medium text-gray-500">緊急連絡先</dt>
+          <dd class="mt-1 text-lg text-gray-900"><%= questionnaire.emergency_contact || "未登録" %></dd>
+        </div>
+      </dl>
+    <% else %>
+      <%# 問診票が存在しない場合は患者レコードから表示 %>
+      <dl class="grid grid-cols-1 gap-6">
+        <div>
+          <dt class="text-sm font-medium text-gray-500">氏名</dt>
+          <dd class="mt-1 text-lg text-gray-900"><%= @patient.name %></dd>
+        </div>
+
+        <div>
+          <dt class="text-sm font-medium text-gray-500">生年月日</dt>
+          <dd class="mt-1 text-lg text-gray-900"><%= @patient.date_of_birth&.strftime('%Y年%m月%d日') || "未登録" %></dd>
+        </div>
+
+        <div>
+          <dt class="text-sm font-medium text-gray-500">性別</dt>
+          <dd class="mt-1 text-lg text-gray-900"><%= t("activerecord.attributes.patient.genders.#{@patient.gender}") %></dd>
+        </div>
+
+        <div>
+          <dt class="text-sm font-medium text-gray-500">電話番号</dt>
+          <dd class="mt-1 text-lg text-gray-900"><%= @patient.phone || "未登録" %></dd>
+        </div>
+
+        <div>
+          <dt class="text-sm font-medium text-gray-500">メールアドレス</dt>
+          <dd class="mt-1 text-lg text-gray-900"><%= @patient.email || "未登録" %></dd>
+        </div>
+
+        <div>
+          <dt class="text-sm font-medium text-gray-500">住所</dt>
+          <dd class="mt-1 text-lg text-gray-900"><%= @patient.address || "未登録" %></dd>
+        </div>
+
+        <div>
+          <dt class="text-sm font-medium text-gray-500">緊急連絡先</dt>
+          <dd class="mt-1 text-lg text-gray-900"><%= @patient.emergency_contact || "未登録" %></dd>
+        </div>
+      </dl>
+    <% end %>
 
       <div>
         <dt class="text-sm font-medium text-gray-500">登録日時</dt>
@@ -65,7 +143,8 @@
       <h2 class="text-xl font-bold text-gray-900 mb-4">問診票</h2>
       <% if @patient.questionnaire.present? %>
         <div class="flex space-x-3">
-          <%= link_to "問診票を表示", edit_patient_questionnaire_path(@patient), class: "bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded" %>
+          <%= link_to "問診票を表示", patient_questionnaire_path(@patient), class: "bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded" %>
+          <%= link_to "問診票を編集", edit_patient_questionnaire_path(@patient), class: "bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded" %>
           <%= button_to "問診票を削除", patient_questionnaire_path(@patient), method: :delete, data: { turbo_confirm: "本当に削除しますか？" }, class: "bg-yellow-500 hover:bg-yellow-700 text-white font-bold py-2 px-4 rounded" %>
         </div>
       <% else %>
