@@ -1,24 +1,27 @@
 module QuestionnairesHelper
   # JSON配列データを人間が読みやすい形式に変換
+  # XSS対策: ユーザー入力をHTMLエスケープ
   def format_json_field(field_value)
     return '' if field_value.blank?
 
     # 既に配列の場合
-    return field_value.map { |v| translate_value(v) }.join("\n") if field_value.is_a?(Array)
+    if field_value.is_a?(Array)
+      return field_value.map { |v| ERB::Util.html_escape(translate_value(v)) }.join("\n").html_safe
+    end
 
     # JSON文字列の場合
     begin
       parsed = JSON.parse(field_value)
       if parsed.is_a?(Array)
-        parsed.map { |v| translate_value(v) }.join("\n")
+        parsed.map { |v| ERB::Util.html_escape(translate_value(v)) }.join("\n").html_safe
       elsif parsed.is_a?(String)
-        translate_value(parsed)
+        ERB::Util.html_escape(translate_value(parsed))
       else
-        field_value
+        ERB::Util.html_escape(field_value.to_s)
       end
     rescue JSON::ParserError
-      # JSONパースに失敗した場合はそのまま表示
-      field_value
+      # JSONパースに失敗した場合もエスケープ
+      ERB::Util.html_escape(field_value.to_s)
     end
   end
 

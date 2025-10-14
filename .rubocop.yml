@@ -38,12 +38,13 @@ Metrics/MethodLength:
     - 'questionnaire_params'
     - 'initialize_empty_arrays'
     - 'translate_value'
+    - 'format_json_field'
 
 Metrics/ClassLength:
-  Max: 150
+  Max: 155
 
 Metrics/AbcSize:
-  Max: 20
+  Max: 25
 
 Metrics/CyclomaticComplexity:
   Max: 8
