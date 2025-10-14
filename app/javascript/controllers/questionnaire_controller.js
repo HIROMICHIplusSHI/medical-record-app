@@ -97,6 +97,7 @@ export default class extends Controller {
   }
 
   // フォーム送信前にチェックボックスデータをJSON形式に変換
+  // 注: インラインJavaScriptでも同様の処理を実装（Stimulusロード失敗時のフォールバック）
   handleSubmit(event) {
     // 既往歴・治療中の病気
     this.aggregateCheckboxData("medical_conditions[]", "medical_conditions_json")

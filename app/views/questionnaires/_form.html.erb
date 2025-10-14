@@ -93,14 +93,24 @@
 <% end %>
 
 <script>
+  // 注: Stimulusフレームワークのロードに失敗した場合のフォールバック
+  // questionnaire_controller.jsと同様の処理を実装
   (function() {
     const form = document.querySelector('form[data-controller="questionnaire"]');
     if (!form) return;
 
     form.addEventListener('submit', function(event) {
+      // ヘルパー関数: 隠しフィールドに安全に値を設定
+      const setHiddenField = (fieldId, value) => {
+        const field = document.getElementById(fieldId);
+        if (field) {
+          field.value = typeof value === 'string' ? value : JSON.stringify(value);
+        }
+      };
+
       // 既往歴・治療中の病気
       const medicalConditions = Array.from(form.querySelectorAll('input[name="medical_conditions[]"]:checked')).map(cb => cb.value);
-      document.getElementById('medical_conditions_json').value = JSON.stringify(medicalConditions);
+      setHiddenField('medical_conditions_json', medicalConditions);
 
       // アレルギー
       const allergies = Array.from(form.querySelectorAll('input[name="allergies[]"]:checked')).map(cb => cb.value);
@@ -116,7 +126,7 @@
       if (otherAllergyDetail && otherAllergyDetail.value.trim()) {
         allergies.push(`その他: ${otherAllergyDetail.value.trim()}`);
       }
-      document.getElementById('allergies_json').value = JSON.stringify(allergies);
+      setHiddenField('allergies_json', allergies);
 
       // 服薬中の薬
       const medications = Array.from(form.querySelectorAll('input[name="medications[]"]:checked')).map(cb => cb.value);
@@ -128,20 +138,20 @@
       if (otherMedicationDetail && otherMedicationDetail.value.trim()) {
         medications.push(`その他: ${otherMedicationDetail.value.trim()}`);
       }
-      document.getElementById('current_medications_json').value = JSON.stringify(medications);
+      setHiddenField('current_medications_json', medications);
 
       // 手術歴
       const surgeryDetail = document.getElementById('surgery_details');
       const surgeries = surgeryDetail && surgeryDetail.value.trim() ? [surgeryDetail.value.trim()] : [];
-      document.getElementById('past_surgeries_json').value = JSON.stringify(surgeries);
+      setHiddenField('past_surgeries_json', surgeries);
 
       // 妊娠・授乳状況
       const pregnancy = Array.from(form.querySelectorAll('input[name="pregnancy_status[]"]:checked')).map(cb => cb.value);
-      document.getElementById('pregnancy_info_json').value = JSON.stringify(pregnancy);
+      setHiddenField('pregnancy_info_json', pregnancy);
 
       // 希望施術部位
       const desiredTreatments = Array.from(form.querySelectorAll('input[name="desired_treatments[]"]:checked')).map(cb => cb.value);
-      document.getElementById('desired_treatments_json').value = JSON.stringify(desiredTreatments);
+      setHiddenField('desired_treatments_json', desiredTreatments);
 
       // 過去のアートメイク経験
       const pastTreatments = Array.from(form.querySelectorAll('input[name="past_treatment_parts[]"]:checked')).map(cb => cb.value);
@@ -149,11 +159,11 @@
       if (otherTreatmentDetail && otherTreatmentDetail.value.trim()) {
         pastTreatments.push(`その他: ${otherTreatmentDetail.value.trim()}`);
       }
-      document.getElementById('past_treatments_json').value = JSON.stringify(pastTreatments);
+      setHiddenField('past_treatments_json', pastTreatments);
 
       // 肌の状態
       const skinConditions = Array.from(form.querySelectorAll('input[name="skin_conditions[]"]:checked')).map(cb => cb.value);
-      document.getElementById('skin_conditions_json').value = JSON.stringify(skinConditions);
+      setHiddenField('skin_conditions_json', skinConditions);
     });
   })();
 </script>
