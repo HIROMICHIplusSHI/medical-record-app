@@ -100,14 +100,14 @@ class QuestionnairesController < ApplicationController
 
   def prepare_questionnaire_data
     # JSONデータを配列に変換してインスタンス変数に格納
-    @medical_conditions_array = parse_json_field(@questionnaire.medical_conditions)
-    @allergies_array = parse_json_field(@questionnaire.allergies)
-    @current_medications_array = parse_json_field(@questionnaire.current_medications)
-    @past_surgeries_array = parse_json_field(@questionnaire.past_surgeries)
-    @pregnancy_info_array = parse_json_field(@questionnaire.pregnancy_info)
-    @desired_treatments_array = parse_json_field(@questionnaire.desired_treatments)
-    @past_treatments_array = parse_json_field(@questionnaire.past_treatments)
-    @skin_conditions_array = parse_json_field(@questionnaire.skin_conditions)
+    fields = %i[
+      medical_conditions allergies current_medications past_surgeries
+      pregnancy_info desired_treatments past_treatments skin_conditions
+    ]
+
+    fields.each do |field|
+      instance_variable_set("@#{field}_array", parse_json_field(@questionnaire.send(field)))
+    end
   end
 
   def parse_json_field(field_value)

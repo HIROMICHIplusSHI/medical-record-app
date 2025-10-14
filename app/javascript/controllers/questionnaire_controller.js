@@ -98,8 +98,6 @@ export default class extends Controller {
 
   // フォーム送信前にチェックボックスデータをJSON形式に変換
   handleSubmit(event) {
-    console.log("Form submit handler called") // デバッグ用
-
     // 既往歴・治療中の病気
     this.aggregateCheckboxData("medical_conditions[]", "medical_conditions_json")
 
@@ -220,9 +218,6 @@ export default class extends Controller {
       } else {
         hiddenField.value = values
       }
-      console.log(`Set ${fieldId}:`, hiddenField.value) // デバッグ用
-    } else {
-      console.error(`Hidden field not found: ${fieldId}`)
     }
   }
 }
