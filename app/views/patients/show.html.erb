@@ -36,28 +36,28 @@
         <div>
           <dt class="text-sm font-medium text-gray-500">生年月日</dt>
           <dd class="mt-1 text-lg text-gray-900">
-            <%= if questionnaire.birth_date.present?
-                  begin
-                    Date.parse(questionnaire.birth_date.to_s).strftime('%Y年%m月%d日')
-                  rescue
-                    questionnaire.birth_date
-                  end
-                else
-                  "未登録"
-                end %>
+            <%= h(if questionnaire.birth_date.present?
+                    begin
+                      Date.parse(questionnaire.birth_date.to_s).strftime('%Y年%m月%d日')
+                    rescue
+                      questionnaire.birth_date
+                    end
+                  else
+                    "未登録"
+                  end) %>
           </dd>
         </div>
 
         <div>
           <dt class="text-sm font-medium text-gray-500">性別</dt>
           <dd class="mt-1 text-lg text-gray-900">
-            <%= case questionnaire.gender
-                when 'male' then '男性'
-                when 'female' then '女性'
-                when 'other' then 'その他'
-                when 'prefer_not_to_say' then '回答しない'
-                else "未登録"
-                end %>
+            <%= h(case questionnaire.gender
+                  when 'male' then '男性'
+                  when 'female' then '女性'
+                  when 'other' then 'その他'
+                  when 'prefer_not_to_say' then '回答しない'
+                  else "未登録"
+                  end) %>
           </dd>
         </div>
 

@@ -36,13 +36,13 @@
           <div>
             <dt class="text-sm font-medium text-gray-500">性別</dt>
             <dd class="mt-1 text-lg text-gray-900">
-              <%= case @questionnaire.gender
-                  when 'male' then '男性'
-                  when 'female' then '女性'
-                  when 'other' then 'その他'
-                  when 'prefer_not_to_say' then '回答しない'
-                  else @questionnaire.gender
-                  end %>
+              <%= h(case @questionnaire.gender
+                    when 'male' then '男性'
+                    when 'female' then '女性'
+                    when 'other' then 'その他'
+                    when 'prefer_not_to_say' then '回答しない'
+                    else @questionnaire.gender
+                    end) %>
             </dd>
           </div>
         <% end %>
