@@ -188,4 +188,27 @@ RSpec.describe Invoice, type: :model do
       expect(Invoice.ransackable_associations).to include('user', 'facility', 'invoice_items')
     end
   end
+
+  describe '並行処理対策' do
+    it '請求書番号が自動生成される' do
+      invoice = build(:invoice, invoice_number: nil)
+      invoice.valid?
+      expect(invoice.invoice_number).to match(/\AINV-\d{6}-\d{4}\z/)
+    end
+
+    it '同じ月内で連続して請求書を作成すると番号が増加する' do
+      # 連続して請求書を作成
+      invoice1 = create(:invoice, invoice_number: nil)
+      invoice2 = create(:invoice, invoice_number: nil)
+      invoice3 = create(:invoice, invoice_number: nil)
+
+      # 番号が全て異なり、増加していることを確認
+      numbers = [invoice1, invoice2, invoice3].map(&:invoice_number)
+      expect(numbers.uniq.size).to eq(3)
+
+      # 番号の末尾が増加していることを確認
+      last_digits = numbers.map { |n| n.match(/-(\d{4})\z/)[1].to_i }
+      expect(last_digits).to eq(last_digits.sort)
+    end
+  end
 end
