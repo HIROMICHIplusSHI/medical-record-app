@@ -10,7 +10,7 @@
 
       <!-- デスクトップナビゲーション（md以上で表示） -->
       <nav class="hidden md:flex items-center space-x-1" role="navigation">
-        <%= link_to_nav_item('ダッシュボード', '#', disabled: true) %>
+        <%= link_to_nav_item('ダッシュボード', dashboard_path) %>
         <%= link_to_nav_item('カルテ', medical_records_path) %>
         <%= link_to_nav_item('患者', patients_path) %>
         <%= link_to_nav_item('施術場所', facilities_path) %>
@@ -71,7 +71,7 @@
     role="navigation"
   >
     <div class="px-2 pt-2 pb-3 space-y-1">
-      <%= link_to_mobile_nav_item('ダッシュボード', '#', disabled: true) %>
+      <%= link_to_mobile_nav_item('ダッシュボード', dashboard_path) %>
       <%= link_to_mobile_nav_item('カルテ', medical_records_path) %>
       <%= link_to_mobile_nav_item('患者', patients_path) %>
       <%= link_to_mobile_nav_item('施術場所', facilities_path) %>
