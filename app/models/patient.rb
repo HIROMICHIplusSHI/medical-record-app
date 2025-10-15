@@ -11,7 +11,7 @@ class Patient < ApplicationRecord
   encrypts :emergency_contact
 
   # enum
-  enum gender: {
+  enum :gender, {
     unspecified: 0,
     male: 1,
     female: 2,
