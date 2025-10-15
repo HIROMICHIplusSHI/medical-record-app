@@ -22,8 +22,9 @@ class Invoice < ApplicationRecord
   scope :recent, -> { order(issued_at: :desc) }
   scope :by_status, ->(status) { where(status: status) }
   scope :by_facility, ->(facility_id) { where(facility_id: facility_id) }
+  # 指定期間と重複する請求書を取得
   scope :by_period, lambda { |start_date, end_date|
-    where('billing_period_start >= ? AND billing_period_end <= ?', start_date, end_date)
+    where('billing_period_start <= ? AND billing_period_end >= ?', end_date, start_date)
   }
 
   # Ransack configuration
@@ -65,20 +66,25 @@ class Invoice < ApplicationRecord
   private
 
   # 請求書番号の自動生成
+  # 並行処理対策として悲観的ロック（FOR UPDATE）を使用
   def generate_invoice_number
     date_prefix = Date.current.strftime('%Y%m')
-    last_invoice = Invoice.where('invoice_number LIKE ?', "INV-#{date_prefix}-%")
-                          .order(invoice_number: :desc)
-                          .first
 
-    if last_invoice && last_invoice.invoice_number =~ /INV-#{date_prefix}-(\d{4})/
-      last_number = ::Regexp.last_match(1).to_i
-      new_number = last_number + 1
-    else
-      new_number = 1
+    Invoice.transaction do
+      last_invoice = Invoice.where('invoice_number LIKE ?', "INV-#{date_prefix}-%")
+                            .lock('FOR UPDATE')
+                            .order(invoice_number: :desc)
+                            .first
+
+      if last_invoice && last_invoice.invoice_number =~ /INV-#{date_prefix}-(\d{4})/
+        last_number = ::Regexp.last_match(1).to_i
+        new_number = last_number + 1
+      else
+        new_number = 1
+      end
+
+      self.invoice_number = "INV-#{date_prefix}-#{new_number.to_s.rjust(4, '0')}"
     end
-
-    self.invoice_number = "INV-#{date_prefix}-#{new_number.to_s.rjust(4, '0')}"
   end
 
   # 請求期間の妥当性検証
