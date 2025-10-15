@@ -42,11 +42,21 @@ class DashboardsController < ApplicationController
     if params[:start_date].present? && params[:end_date].present?
       @start_date = Date.parse(params[:start_date])
       @end_date = Date.parse(params[:end_date])
+
+      if @start_date > @end_date
+        flash[:alert] = '開始日は終了日より前である必要があります'
+        @start_date = Date.current.beginning_of_month
+        @end_date = Date.current.end_of_month
+      end
     else
       # デフォルトは今月
       @start_date = Date.current.beginning_of_month
       @end_date = Date.current.end_of_month
     end
+  rescue ArgumentError
+    flash[:alert] = '不正な日付形式です'
+    @start_date = Date.current.beginning_of_month
+    @end_date = Date.current.end_of_month
   end
 
   def generate_csv(facility_data)

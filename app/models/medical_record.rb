@@ -62,14 +62,14 @@ class MedicalRecord < ApplicationRecord
   def self.revenue_by_facility(start_date, end_date)
     in_period(start_date, end_date)
       .joins(:facility, :cost_items)
-      .group(:facility_id)
-      .select('facility_id, SUM(cost_items.total_price) as revenue')
-      .order('SUM(cost_items.total_price) DESC')
+      .group('facilities.id', 'facilities.name')
+      .select('facilities.id as facility_id, facilities.name as facility_name,
+               SUM(cost_items.total_price) as revenue')
+      .order('revenue DESC')
       .map do |result|
-        facility = Facility.find(result.facility_id)
         OpenStruct.new(
-          id: facility.id,
-          name: facility.name,
+          id: result.facility_id,
+          name: result.facility_name,
           revenue: result.revenue
         )
       end
