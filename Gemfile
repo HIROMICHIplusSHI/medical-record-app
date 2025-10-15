@@ -8,7 +8,7 @@ gem 'importmap-rails'
 gem 'jbuilder'
 gem 'pg', '~> 1.1'
 gem 'puma', '>= 5.0'
-gem 'rails', '~> 7.1.5', '>= 7.1.5.2'
+gem 'rails', '~> 7.2.0'
 gem 'redis', '~> 5.0' # 将来的なActioncable用
 gem 'sprockets-rails'
 gem 'stimulus-rails'
