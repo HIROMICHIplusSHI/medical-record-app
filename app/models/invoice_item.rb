@@ -9,8 +9,9 @@ class InvoiceItem < ApplicationRecord
   validates :medical_record_id, uniqueness: { scope: :invoice_id, message: 'はすでに存在します' }
 
   # Callbacks
-  after_save :update_invoice_total
-  after_destroy :update_invoice_total
+  # トランザクション安全性のためafter_commitを使用
+  after_commit :update_invoice_total, on: %i[create update]
+  after_commit :update_invoice_total, on: :destroy
 
   # Instance Methods
 
