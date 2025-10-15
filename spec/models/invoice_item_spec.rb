@@ -34,20 +34,29 @@ RSpec.describe InvoiceItem, type: :model do
   end
 
   describe 'invoice total_amount update' do
-    it '明細作成/更新時にinvoiceの合計金額が更新されるコールバックが定義されている' do
-      # after_commitコールバックの存在確認
-      callbacks = InvoiceItem._commit_callbacks.select do |cb|
-        cb.filter == :update_invoice_total
-      end
-      expect(callbacks).not_to be_empty
+    let(:invoice) { create(:invoice, total_amount: 0) }
+
+    it '明細作成時にinvoiceの合計金額が自動更新される' do
+      expect do
+        create(:invoice_item, invoice: invoice, amount: 5000)
+      end.to change { invoice.reload.total_amount }.from(0).to(5000)
     end
 
-    it '明細削除時にinvoiceの合計金額が更新されるコールバックが定義されている' do
-      # after_commitコールバックの存在確認（destroy時）
-      callbacks = InvoiceItem._commit_callbacks.select do |cb|
-        cb.filter == :update_invoice_total && cb.kind == :after
-      end
-      expect(callbacks).not_to be_empty
+    it '明細更新時にinvoiceの合計金額が再計算される' do
+      item = create(:invoice_item, invoice: invoice, amount: 5000)
+
+      expect do
+        item.update!(amount: 8000)
+      end.to change { invoice.reload.total_amount }.from(5000).to(8000)
+    end
+
+    it '明細削除時にinvoiceの合計金額が再計算される' do
+      create(:invoice_item, invoice: invoice, amount: 5000)
+      item2 = create(:invoice_item, invoice: invoice, amount: 3000)
+
+      expect do
+        item2.destroy!
+      end.to change { invoice.reload.total_amount }.from(8000).to(5000)
     end
   end
 
