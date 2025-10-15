@@ -75,11 +75,27 @@
 
 ### 次のステップ
 
-**Phase 5-B**: 請求書生成機能（2週間）
-- Invoice モデル作成
-- 請求書自動生成ロジック
-- PDF出力機能（Prawn）
-- 日本語フォント対応
+**Phase 5-B**: 請求書生成機能（2週間、3つのサブフェーズに分割）
+
+#### Phase 5-B-1: データモデル基盤（2-3日）
+- Invoice/InvoiceItem モデル作成
+- マイグレーション実装
+- Model Spec（25-30件）
+- **ブランチ**: `feature/p5b1-invoice-models`
+
+#### Phase 5-B-2: 請求書生成機能（3-4日）
+- InvoiceGenerator サービス実装
+- 基本CRUD（コントローラー + ビュー）
+- Request/System Spec（35-40件）
+- **ブランチ**: `feature/p5b2-invoice-generator`
+
+#### Phase 5-B-3: PDF生成機能（3-4日）
+- InvoicePdfGenerator サービス実装
+- 日本語フォント対応（IPAexゴシック）
+- PDF関連Spec（25-30件）
+- **ブランチ**: `feature/p5b3-pdf-generation`
+
+**詳細**: `docs/phases/phase5/phase5b_branch_strategy.md`
 
 ---
 
