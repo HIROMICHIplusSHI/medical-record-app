@@ -20,12 +20,13 @@ RSpec.describe 'Header Navigation', type: :system do
       visit root_path
 
       within('header') do
-        # 無効化されたアイテムはspanとして表示される
-        expect(page).to have_css('span.cursor-not-allowed', text: 'ダッシュボード')
+        # 有効化されたアイテムはlinkとして表示される
+        expect(page).to have_link('ダッシュボード', href: dashboard_path)
         expect(page).to have_link('カルテ', href: medical_records_path)
         expect(page).to have_link('患者', href: patients_path)
         expect(page).to have_link('施術場所', href: facilities_path)
         expect(page).to have_link('コストシート', href: cost_sheets_path)
+        # 請求書は未実装なので無効化されたまま
         expect(page).to have_css('span.cursor-not-allowed', text: '請求書')
       end
     end

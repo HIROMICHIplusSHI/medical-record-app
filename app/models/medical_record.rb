@@ -1,3 +1,5 @@
+require 'ostruct'
+
 class MedicalRecord < ApplicationRecord
   belongs_to :patient
   belongs_to :facility
@@ -34,6 +36,12 @@ class MedicalRecord < ApplicationRecord
   scope :by_patient, ->(patient_id) { where(patient_id: patient_id) if patient_id.present? }
   scope :by_facility, ->(facility_id) { where(facility_id: facility_id) if facility_id.present? }
 
+  # 売上集計用スコープ
+  scope :in_period, ->(start_date, end_date) { where(visit_date: start_date..end_date) }
+  scope :by_user, lambda { |user_id|
+    joins(:facility).where(facilities: { user_id: user_id })
+  }
+
   # Ransack設定
   def self.ransackable_attributes(_auth_object = nil)
     %w[visit_date treatment_location chief_complaint diagnosis treatment_content notes
@@ -42,6 +50,44 @@ class MedicalRecord < ApplicationRecord
 
   def self.ransackable_associations(_auth_object = nil)
     %w[patient facility tags]
+  end
+
+  # 売上集計メソッド
+  def self.total_revenue(start_date, end_date)
+    in_period(start_date, end_date)
+      .joins(:cost_items)
+      .sum('cost_items.total_price')
+  end
+
+  def self.revenue_by_facility(start_date, end_date)
+    in_period(start_date, end_date)
+      .joins(:facility, :cost_items)
+      .group('facilities.id', 'facilities.name')
+      .select('facilities.id as facility_id, facilities.name as facility_name,
+               SUM(cost_items.total_price) as revenue')
+      .order('revenue DESC')
+      .map do |result|
+        OpenStruct.new(
+          id: result.facility_id,
+          name: result.facility_name,
+          revenue: result.revenue
+        )
+      end
+  end
+
+  def self.monthly_revenue(year)
+    (1..12).map do |month|
+      start_date = Date.new(year, month, 1)
+      end_date = start_date.end_of_month
+
+      records_in_month = in_period(start_date, end_date)
+
+      {
+        month: month,
+        revenue: records_in_month.joins(:cost_items).sum('cost_items.total_price'),
+        count: records_in_month.count,
+      }
+    end
   end
 
   private

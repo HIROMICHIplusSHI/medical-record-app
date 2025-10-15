@@ -39,12 +39,15 @@ Metrics/MethodLength:
     - 'initialize_empty_arrays'
     - 'translate_value'
     - 'format_json_field'
+    - 'set_date_range'
 
 Metrics/ClassLength:
   Max: 155
 
 Metrics/AbcSize:
   Max: 25
+  AllowedMethods:
+    - 'set_date_range'
 
 Metrics/CyclomaticComplexity:
   Max: 8
@@ -66,3 +69,8 @@ Style/TrailingCommaInArrayLiteral:
 
 Style/TrailingCommaInHashLiteral:
   EnforcedStyleForMultiline: consistent_comma
+
+# OpenStruct is used intentionally to work around PostgreSQL GROUP BY limitations
+# in revenue_by_facility method (MedicalRecord model)
+Style/OpenStructUse:
+  Enabled: false

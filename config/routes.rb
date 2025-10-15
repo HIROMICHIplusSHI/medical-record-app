@@ -3,6 +3,10 @@ Rails.application.routes.draw do
 
   # 認証後のルーティング
   authenticate :user do
+    # ダッシュボード
+    get 'dashboard', to: 'dashboards#index'
+    get 'dashboard/export', to: 'dashboards#export', as: :export_dashboard
+
     resources :facilities
     resources :patients do
       resource :questionnaire, only: [:new, :create, :show, :edit, :update, :destroy]

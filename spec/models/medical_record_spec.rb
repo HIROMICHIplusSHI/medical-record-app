@@ -146,6 +146,154 @@ RSpec.describe MedicalRecord, type: :model do
     end
   end
 
+  describe '売上集計' do
+    let(:user) { create(:user) }
+    let(:patient) { create(:patient, user: user) }
+    let(:facility1) { create(:facility, user: user, name: '施設A') }
+    let(:facility2) { create(:facility, user: user, name: '施設B') }
+
+    before do
+      # 2024年1月のデータ
+      create(:medical_record, user: user, patient: patient, facility: facility1,
+                              visit_date: Date.new(2024, 1, 15)) do |record|
+        create(:cost_item, medical_record: record, quantity: 1, unit_price: 50_000)
+      end
+
+      create(:medical_record, user: user, patient: patient, facility: facility1,
+                              visit_date: Date.new(2024, 1, 20)) do |record|
+        create(:cost_item, medical_record: record, quantity: 2, unit_price: 30_000)
+      end
+
+      # 2024年2月のデータ
+      create(:medical_record, user: user, patient: patient, facility: facility2,
+                              visit_date: Date.new(2024, 2, 10)) do |record|
+        create(:cost_item, medical_record: record, quantity: 1, unit_price: 80_000)
+      end
+
+      # 2024年3月のデータ
+      create(:medical_record, user: user, patient: patient, facility: facility1,
+                              visit_date: Date.new(2024, 3, 5)) do |record|
+        create(:cost_item, medical_record: record, quantity: 3, unit_price: 20_000)
+      end
+    end
+
+    describe '.in_period' do
+      it '指定期間内のカルテを取得する' do
+        start_date = Date.new(2024, 1, 1)
+        end_date = Date.new(2024, 1, 31)
+        records = MedicalRecord.in_period(start_date, end_date)
+
+        expect(records.count).to eq(2)
+        expect(records.pluck(:visit_date)).to all(be_between(start_date, end_date))
+      end
+
+      it '期間外のカルテは取得しない' do
+        start_date = Date.new(2024, 4, 1)
+        end_date = Date.new(2024, 4, 30)
+        records = MedicalRecord.in_period(start_date, end_date)
+
+        expect(records.count).to eq(0)
+      end
+    end
+
+    describe '.by_user' do
+      let(:other_user) { create(:user) }
+      let(:other_patient) { create(:patient, user: other_user) }
+      let(:other_facility) { create(:facility, user: other_user) }
+
+      before do
+        create(:medical_record, user: other_user, patient: other_patient, facility: other_facility,
+                                visit_date: Date.new(2024, 1, 10))
+      end
+
+      it '指定ユーザーのカルテのみ取得する' do
+        records = MedicalRecord.by_user(user.id)
+        expect(records.count).to eq(4)
+        expect(records.pluck(:user_id).uniq).to eq([user.id])
+      end
+    end
+
+    describe '.total_revenue' do
+      it '期間内の総売上を計算する' do
+        start_date = Date.new(2024, 1, 1)
+        end_date = Date.new(2024, 1, 31)
+
+        total = MedicalRecord.total_revenue(start_date, end_date)
+        expect(total).to eq(110_000) # 50,000 + 60,000
+      end
+
+      it '該当データがない場合は0を返す' do
+        start_date = Date.new(2024, 12, 1)
+        end_date = Date.new(2024, 12, 31)
+
+        total = MedicalRecord.total_revenue(start_date, end_date)
+        expect(total).to eq(0)
+      end
+    end
+
+    describe '.revenue_by_facility' do
+      it '施設別の売上を集計する' do
+        start_date = Date.new(2024, 1, 1)
+        end_date = Date.new(2024, 12, 31)
+
+        result = MedicalRecord.revenue_by_facility(start_date, end_date)
+
+        expect(result.count).to eq(2)
+
+        facility1_revenue = result.find { |r| r.id == facility1.id }
+        expect(facility1_revenue.name).to eq('施設A')
+        expect(facility1_revenue.revenue).to eq(170_000) # 50,000 + 60,000 + 60,000
+
+        facility2_revenue = result.find { |r| r.id == facility2.id }
+        expect(facility2_revenue.name).to eq('施設B')
+        expect(facility2_revenue.revenue).to eq(80_000)
+      end
+
+      it '売上の多い順に並ぶ' do
+        start_date = Date.new(2024, 1, 1)
+        end_date = Date.new(2024, 12, 31)
+
+        result = MedicalRecord.revenue_by_facility(start_date, end_date)
+
+        expect(result.first.name).to eq('施設A')
+        expect(result.last.name).to eq('施設B')
+      end
+    end
+
+    describe '.monthly_revenue' do
+      it '指定年の月次売上を配列で返す' do
+        result = MedicalRecord.monthly_revenue(2024)
+
+        expect(result).to be_an(Array)
+        expect(result.length).to eq(12)
+
+        # 1月のデータ
+        jan_data = result[0]
+        expect(jan_data[:month]).to eq(1)
+        expect(jan_data[:revenue]).to eq(110_000)
+        expect(jan_data[:count]).to eq(2)
+
+        # 2月のデータ
+        feb_data = result[1]
+        expect(feb_data[:month]).to eq(2)
+        expect(feb_data[:revenue]).to eq(80_000)
+        expect(feb_data[:count]).to eq(1)
+
+        # 3月のデータ
+        mar_data = result[2]
+        expect(mar_data[:month]).to eq(3)
+        expect(mar_data[:revenue]).to eq(60_000)
+        expect(mar_data[:count]).to eq(1)
+
+        # データがない月は0
+        apr_data = result[3]
+        expect(apr_data[:month]).to eq(4)
+        expect(apr_data[:revenue]).to eq(0)
+        expect(apr_data[:count]).to eq(0)
+      end
+    end
+  end
+
   describe 'nested attributes' do
     let(:user) { create(:user) }
     let(:patient) { create(:patient, user: user) }
