@@ -66,3 +66,8 @@ Style/TrailingCommaInArrayLiteral:
 
 Style/TrailingCommaInHashLiteral:
   EnforcedStyleForMultiline: consistent_comma
+
+# OpenStruct is used intentionally to work around PostgreSQL GROUP BY limitations
+# in revenue_by_facility method (MedicalRecord model)
+Style/OpenStructUse:
+  Enabled: false
