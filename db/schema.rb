@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2025_10_13_092001) do
+ActiveRecord::Schema[7.2].define(version: 2025_10_15_131427) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -80,6 +80,38 @@ ActiveRecord::Schema[7.1].define(version: 2025_10_13_092001) do
     t.datetime "updated_at", null: false
     t.index ["user_id", "name"], name: "index_facilities_on_user_id_and_name"
     t.index ["user_id"], name: "index_facilities_on_user_id"
+  end
+
+  create_table "invoice_items", force: :cascade do |t|
+    t.bigint "invoice_id", null: false
+    t.bigint "medical_record_id", null: false
+    t.string "description", null: false
+    t.decimal "amount", precision: 10, scale: 2, default: "0.0", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["invoice_id", "medical_record_id"], name: "index_invoice_items_on_invoice_and_medical_record", unique: true
+    t.index ["invoice_id"], name: "index_invoice_items_on_invoice_id"
+    t.index ["medical_record_id"], name: "index_invoice_items_on_medical_record_id"
+  end
+
+  create_table "invoices", force: :cascade do |t|
+    t.bigint "user_id", null: false
+    t.bigint "facility_id", null: false
+    t.string "invoice_number", null: false
+    t.datetime "issued_at", null: false
+    t.date "billing_period_start", null: false
+    t.date "billing_period_end", null: false
+    t.decimal "total_amount", precision: 10, scale: 2, default: "0.0", null: false
+    t.integer "status", default: 0, null: false
+    t.datetime "sent_at"
+    t.text "notes"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["facility_id", "billing_period_start"], name: "index_invoices_on_facility_id_and_billing_period_start"
+    t.index ["facility_id"], name: "index_invoices_on_facility_id"
+    t.index ["invoice_number"], name: "index_invoices_on_invoice_number", unique: true
+    t.index ["status"], name: "index_invoices_on_status"
+    t.index ["user_id"], name: "index_invoices_on_user_id"
   end
 
   create_table "medical_record_tags", force: :cascade do |t|
@@ -186,6 +218,10 @@ ActiveRecord::Schema[7.1].define(version: 2025_10_13_092001) do
   add_foreign_key "cost_items", "medical_records"
   add_foreign_key "cost_sheets", "users"
   add_foreign_key "facilities", "users"
+  add_foreign_key "invoice_items", "invoices"
+  add_foreign_key "invoice_items", "medical_records"
+  add_foreign_key "invoices", "facilities"
+  add_foreign_key "invoices", "users"
   add_foreign_key "medical_record_tags", "medical_records"
   add_foreign_key "medical_record_tags", "tags"
   add_foreign_key "medical_records", "facilities"
