@@ -321,7 +321,7 @@ RSpec.describe 'Invoices', type: :request do
       before do
         # 前のテストで生成されたPDFファイルを削除
         pdf_path = Rails.root.join('tmp', 'pdfs', "invoice_#{invoice.id}.pdf")
-        File.delete(pdf_path) if File.exist?(pdf_path)
+        FileUtils.rm_f(pdf_path)
       end
 
       it 'エラーメッセージが表示される' do
