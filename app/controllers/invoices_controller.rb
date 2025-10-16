@@ -28,14 +28,24 @@ class InvoicesController < ApplicationController
     @invoice.issued_at = Time.current
     @invoice.status = :draft
 
-    if @invoice.save
-      # 該当期間・施設のカルテから明細を自動作成
-      create_invoice_items_from_medical_records
-      redirect_to @invoice, notice: '請求書を作成しました。'
-    else
-      @facilities = Facility.order(:name)
-      render :new, status: :unprocessable_entity
+    ActiveRecord::Base.transaction do
+      if @invoice.save
+        # 該当期間・施設のカルテから明細を自動作成
+        medical_records_count = create_invoice_items_from_medical_records
+
+        # カルテが0件の場合はロールバックしてエラー表示
+        raise ActiveRecord::Rollback, '該当期間にカルテが見つかりません。' if medical_records_count.zero?
+
+        redirect_to @invoice, notice: '請求書を作成しました。'
+      else
+        @facilities = Facility.order(:name)
+        render :new, status: :unprocessable_entity
+      end
     end
+  rescue ActiveRecord::Rollback => e
+    @invoice.errors.add(:base, e.message)
+    @facilities = Facility.order(:name)
+    render :new, status: :unprocessable_entity
   end
 
   def edit
@@ -72,13 +82,20 @@ class InvoicesController < ApplicationController
       return
     end
 
-    # 既存の明細を削除
-    @invoice.invoice_items.destroy_all
+    ActiveRecord::Base.transaction do
+      # 既存の明細を削除
+      @invoice.invoice_items.destroy_all
 
-    # 期間内のカルテから明細を再作成
-    create_invoice_items_from_medical_records
+      # 期間内のカルテから明細を再作成
+      medical_records_count = create_invoice_items_from_medical_records
+
+      # カルテが0件の場合はロールバックしてエラー表示
+      raise ActiveRecord::Rollback, '該当期間にカルテが見つかりません。' if medical_records_count.zero?
+    end
 
     redirect_to @invoice, notice: '請求明細を更新しました。'
+  rescue ActiveRecord::Rollback => e
+    redirect_to @invoice, alert: e.message
   end
 
   private
@@ -98,6 +115,7 @@ class InvoicesController < ApplicationController
   end
 
   # 該当期間・施設のカルテから請求明細を自動作成
+  # @return [Integer] 作成した明細の件数
   def create_invoice_items_from_medical_records
     medical_records = MedicalRecord
                       .where(user: current_user)
@@ -113,6 +131,8 @@ class InvoicesController < ApplicationController
         amount: record.total_cost
       )
     end
+
+    medical_records.size
   end
 
   # 請求明細の内容を生成（コスト項目内訳のみ）

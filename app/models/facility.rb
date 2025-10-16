@@ -1,8 +1,7 @@
 class Facility < ApplicationRecord
   belongs_to :user
   has_many :medical_records, dependent: :restrict_with_error
-  # Invoiceモデル実装後に有効化
-  # has_many :invoices, dependent: :restrict_with_error
+  has_many :invoices, dependent: :restrict_with_error
 
   validates :name, presence: true, length: { maximum: 100 }
   validates :phone, format: { with: /\A\d{2,4}-?\d{2,4}-?\d{3,4}\z/, allow_blank: true }
@@ -33,6 +32,6 @@ class Facility < ApplicationRecord
   end
 
   def self.ransackable_associations(_auth_object = nil)
-    %w[medical_records user]
+    %w[invoices medical_records user]
   end
 end
