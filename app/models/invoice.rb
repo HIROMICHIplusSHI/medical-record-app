@@ -53,9 +53,14 @@ class Invoice < ApplicationRecord
     "#{billing_period_start} ~ #{billing_period_end}"
   end
 
-  # 編集可能かどうか
+  # 編集可能かどうか（ステータス変更など）
   def can_edit?
     draft? || issued?
+  end
+
+  # 明細を更新可能かどうか
+  def can_refresh_items?
+    draft?
   end
 
   # 削除可能かどうか

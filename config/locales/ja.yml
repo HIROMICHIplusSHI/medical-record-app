@@ -52,6 +52,8 @@ ja:
       medical_record: カルテ
       cost_sheet: コスト項目
       cost_item: コスト項目
+      invoice: 請求書
+      invoice_item: 請求明細
     attributes:
       patient:
         name: 氏名
@@ -96,3 +98,28 @@ ja:
         quantity: 数量
         unit_price: 単価
         total_price: 合計金額
+      invoice:
+        invoice_number: 請求書番号
+        facility: 施設
+        facility_id: 施設
+        user: ユーザー
+        user_id: ユーザー
+        issued_at: 発行日
+        billing_period_start: 請求期間開始日
+        billing_period_end: 請求期間終了日
+        status: ステータス
+        total_amount: 合計金額
+        notes: 備考
+        statuses:
+          draft: ドラフト
+          issued: 発行済み
+          sent: 送信済み
+          paid: 支払済み
+          cancelled: キャンセル済み
+      invoice_item:
+        invoice: 請求書
+        invoice_id: 請求書
+        medical_record: カルテ
+        medical_record_id: カルテ
+        description: 内容
+        amount: 金額

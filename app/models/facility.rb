@@ -26,4 +26,13 @@ class Facility < ApplicationRecord
   # def medical_records_count
   #   medical_records.count
   # end
+
+  # Ransack検索用の許可属性
+  def self.ransackable_attributes(_auth_object = nil)
+    %w[address created_at email id name notes phone updated_at]
+  end
+
+  def self.ransackable_associations(_auth_object = nil)
+    %w[medical_records user]
+  end
 end
