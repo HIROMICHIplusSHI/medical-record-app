@@ -18,6 +18,14 @@ Rails.application.routes.draw do
         delete :remove_photo
       end
     end
+
+    resources :invoices do
+      member do
+        post :generate_pdf
+        get :download_pdf
+        post :refresh_items
+      end
+    end
   end
 
   # Reveal health status on /up that returns 200 if the app boots with no exceptions, otherwise 500.

@@ -92,9 +92,10 @@ RSpec.describe 'Patients', type: :request do
     context 'ページネーション' do
       it 'デフォルトで25件ずつ表示する' do
         # created_atを明示的に設定してソート順を確定
+        # 明示的な名前を使用して他のテストとの干渉を防ぐ
         # patients[0] = 1秒前, patients[29] = 30秒前
         patients = (1..30).map do |i|
-          create(:patient, user: user, created_at: i.seconds.ago)
+          create(:patient, user: user, name: "ページ1テスト患者#{format('%02d', i)}", created_at: i.seconds.ago)
         end
         get patients_path
         expect(response).to have_http_status(:success)
@@ -110,9 +111,10 @@ RSpec.describe 'Patients', type: :request do
 
       it 'pageパラメータで2ページ目を表示できる' do
         # created_atを明示的に設定してソート順を確定
+        # 明示的な名前を使用して他のテストとの干渉を防ぐ
         # patients[0] = 1秒前, patients[29] = 30秒前
         patients = (1..30).map do |i|
-          create(:patient, user: user, created_at: i.seconds.ago)
+          create(:patient, user: user, name: "ページ2テスト患者#{format('%02d', i)}", created_at: i.seconds.ago)
         end
         get patients_path, params: { page: 2 }
         expect(response).to have_http_status(:success)
