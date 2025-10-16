@@ -26,8 +26,8 @@ RSpec.describe 'Header Navigation', type: :system do
         expect(page).to have_link('患者', href: patients_path)
         expect(page).to have_link('施術場所', href: facilities_path)
         expect(page).to have_link('コストシート', href: cost_sheets_path)
-        # 請求書は未実装なので無効化されたまま
-        expect(page).to have_css('span.cursor-not-allowed', text: '請求書')
+        # Phase 5-B-2で請求書機能を実装したため有効化
+        expect(page).to have_link('請求書', href: invoices_path)
       end
     end
 
@@ -84,6 +84,17 @@ RSpec.describe 'Header Navigation', type: :system do
 
       expect(page).to have_current_path(patients_path)
       expect(page).to have_selector('h1', text: '患者一覧')
+    end
+
+    it '「請求書」リンクをクリックすると請求書一覧に遷移する' do
+      visit root_path
+
+      within('header') do
+        click_link '請求書'
+      end
+
+      expect(page).to have_current_path(invoices_path)
+      expect(page).to have_selector('h1', text: '請求書一覧')
     end
   end
 
