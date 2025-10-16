@@ -23,29 +23,13 @@ class InvoicesController < ApplicationController
   end
 
   def create
-    @invoice = Invoice.new(invoice_params)
-    @invoice.user = current_user
-    @invoice.issued_at = Time.current
-    @invoice.status = :draft
-
-    ActiveRecord::Base.transaction do
-      if @invoice.save
-        # 該当期間・施設のカルテから明細を自動作成
-        medical_records_count = create_invoice_items_from_medical_records
-
-        # カルテが0件の場合はロールバックしてエラー表示
-        raise ActiveRecord::Rollback, '該当期間にカルテが見つかりません。' if medical_records_count.zero?
-
-        redirect_to @invoice, notice: '請求書を作成しました。'
-      else
-        @facilities = Facility.order(:name)
-        render :new, status: :unprocessable_entity
-      end
+    @invoice = build_new_invoice
+    if save_invoice_with_items
+      redirect_to @invoice, notice: '請求書を作成しました。'
+    else
+      @facilities = Facility.order(:name)
+      render :new, status: :unprocessable_entity
     end
-  rescue ActiveRecord::Rollback => e
-    @invoice.errors.add(:base, e.message)
-    @facilities = Facility.order(:name)
-    render :new, status: :unprocessable_entity
   end
 
   def edit
@@ -102,6 +86,28 @@ class InvoicesController < ApplicationController
 
   def set_invoice
     @invoice = current_user.invoices.find(params[:id])
+  end
+
+  def build_new_invoice
+    invoice = Invoice.new(invoice_params)
+    invoice.user = current_user
+    invoice.issued_at = Time.current
+    invoice.status = :draft
+    invoice
+  end
+
+  def save_invoice_with_items
+    ActiveRecord::Base.transaction do
+      return false unless @invoice.save
+
+      medical_records_count = create_invoice_items_from_medical_records
+      raise ActiveRecord::Rollback, '該当期間にカルテが見つかりません。' if medical_records_count.zero?
+
+      true
+    end
+  rescue ActiveRecord::Rollback => e
+    @invoice.errors.add(:base, e.message)
+    false
   end
 
   def invoice_params
