@@ -65,8 +65,13 @@
       </div>
 
       <div>
-        <dt class="text-sm font-medium text-gray-500">合計金額</dt>
-        <dd class="mt-1 text-2xl font-bold text-gray-900">¥<%= number_with_delimiter(@invoice.total_amount.to_i) %></dd>
+        <dt class="text-sm font-medium text-gray-500">請求金額</dt>
+        <dd class="mt-1 text-2xl font-bold text-gray-900">¥<%= number_with_delimiter(@invoice.billed_amount) %></dd>
+        <% if @invoice.facility.billing_rate.present? && @invoice.facility.billing_rate != 100 %>
+          <dd class="mt-1 text-sm text-gray-500">
+            実費: ¥<%= number_with_delimiter(@invoice.total_amount.to_i) %> × <%= @invoice.facility.billing_rate.to_i %>%
+          </dd>
+        <% end %>
       </div>
 
       <% if @invoice.notes.present? %>
@@ -112,9 +117,17 @@
           </tbody>
           <tfoot class="bg-gray-50">
             <tr>
-              <td colspan="3" class="px-6 py-4 text-right text-sm font-bold text-gray-900">合計</td>
+              <td colspan="3" class="px-6 py-4 text-right text-sm font-bold text-gray-900">
+                実費合計
+                <% if @invoice.facility.billing_rate.present? && @invoice.facility.billing_rate != 100 %>
+                  <br><span class="text-xs font-normal text-gray-600">請求割合 <%= @invoice.facility.billing_rate.to_i %>% 適用</span>
+                <% end %>
+              </td>
               <td class="px-6 py-4 whitespace-nowrap text-sm font-bold text-gray-900 text-right">
                 ¥<%= number_with_delimiter(@invoice.total_amount.to_i) %>
+                <% if @invoice.facility.billing_rate.present? && @invoice.facility.billing_rate != 100 %>
+                  <br><span class="text-lg">¥<%= number_with_delimiter(@invoice.billed_amount) %></span>
+                <% end %>
               </td>
             </tr>
           </tfoot>
@@ -128,9 +141,44 @@
   <!-- アクション -->
   <div class="bg-white shadow-md rounded p-6">
     <h2 class="text-xl font-bold text-gray-900 mb-4">操作</h2>
+
+    <!-- PDF生成フォーム -->
+    <div class="bg-gray-50 border border-gray-200 rounded-lg p-4 mb-4">
+      <h3 class="text-sm font-semibold text-gray-900 mb-3">PDF生成オプション</h3>
+
+      <div class="flex items-center mb-4">
+        <input type="checkbox" id="tax-display-checkbox" <%= 'checked' if @invoice.tax_display %> class="h-4 w-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500">
+        <label for="tax-display-checkbox" class="ml-2 text-sm text-gray-700">消費税表示を含める</label>
+        <span class="ml-2 text-xs text-gray-500">（チェックすると消費税込みの金額が表示されます）</span>
+      </div>
+
+      <div class="flex gap-2">
+        <%= form_with url: generate_pdf_invoice_path(@invoice), method: :post, local: true, class: "inline" do |f| %>
+          <%= hidden_field_tag :tax_display, "", id: "tax-display-hidden" %>
+          <%= f.submit "PDF生成", class: "bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-4 rounded shadow", onclick: "document.getElementById('tax-display-hidden').value = document.getElementById('tax-display-checkbox').checked ? '1' : '0';" %>
+        <% end %>
+
+        <button type="button" onclick="previewPDF()" class="bg-purple-600 hover:bg-purple-700 text-white font-bold py-2 px-4 rounded shadow" style="background-color: #9333ea; color: white; font-weight: bold; padding: 0.5rem 1rem; border-radius: 0.25rem; box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1); cursor: pointer; border: none;">
+          プレビュー
+        </button>
+      </div>
+
+      <script>
+        function previewPDF() {
+          console.log('previewPDF function called');
+          var checkbox = document.getElementById('tax-display-checkbox');
+          console.log('checkbox:', checkbox);
+          console.log('checkbox.checked:', checkbox ? checkbox.checked : 'checkbox not found');
+          var taxDisplay = checkbox ? checkbox.checked : false;
+          var url = '<%= preview_pdf_invoice_path(@invoice) %>?tax_display=' + taxDisplay;
+          console.log('Opening URL:', url);
+          window.open(url, '_blank');
+        }
+      </script>
+    </div>
+
     <div class="flex flex-wrap gap-2">
-      <%= button_to "PDF生成", generate_pdf_invoice_path(@invoice), method: :post, class: "bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded" %>
-      <%= link_to "PDFダウンロード", download_pdf_invoice_path(@invoice), class: "bg-purple-500 hover:bg-purple-700 text-white font-bold py-2 px-4 rounded inline-block" %>
+      <%= link_to "PDFダウンロード", download_pdf_invoice_path(@invoice), class: "bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded shadow inline-block" %>
 
       <% if @invoice.can_delete? %>
         <%= button_to "削除", @invoice, method: :delete,
@@ -139,4 +187,5 @@
       <% end %>
     </div>
   </div>
+
 </div>
