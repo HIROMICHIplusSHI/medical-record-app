@@ -14,6 +14,10 @@ class User < ApplicationRecord
   has_many :invoices, dependent: :destroy
   has_many :tags, dependent: :destroy
 
+  # Validations
+  validates :company_email, format: { with: URI::MailTo::EMAIL_REGEXP, allow_blank: true }
+  validates :company_phone, length: { maximum: 30 }, allow_blank: true
+
   # OmniAuth
   def self.from_omniauth(auth)
     where(provider: auth.provider, uid: auth.uid).first_or_create do |user|
