@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2025_10_15_131427) do
+ActiveRecord::Schema[7.2].define(version: 2025_10_16_130241) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -78,6 +78,8 @@ ActiveRecord::Schema[7.2].define(version: 2025_10_15_131427) do
     t.text "notes"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.string "billing_addressee"
+    t.decimal "billing_rate"
     t.index ["user_id", "name"], name: "index_facilities_on_user_id_and_name"
     t.index ["user_id"], name: "index_facilities_on_user_id"
   end
@@ -107,6 +109,7 @@ ActiveRecord::Schema[7.2].define(version: 2025_10_15_131427) do
     t.text "notes"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.boolean "tax_display", default: false, null: false
     t.index ["facility_id", "billing_period_start"], name: "index_invoices_on_facility_id_and_billing_period_start"
     t.index ["facility_id"], name: "index_invoices_on_facility_id"
     t.index ["invoice_number"], name: "index_invoices_on_invoice_number", unique: true
@@ -207,6 +210,12 @@ ActiveRecord::Schema[7.2].define(version: 2025_10_15_131427) do
     t.string "name"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.string "company_name"
+    t.string "company_postal"
+    t.text "company_address"
+    t.string "company_phone"
+    t.string "company_email"
+    t.text "bank_info"
     t.index ["email"], name: "index_users_on_email", unique: true
     t.index ["provider", "uid"], name: "index_users_on_provider_and_uid", unique: true
     t.index ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true
