@@ -1,6 +1,7 @@
 class InvoicesController < ApplicationController
   before_action :authenticate_user!
-  before_action :set_invoice, only: %i[show edit update destroy generate_pdf download_pdf refresh_items]
+  before_action :set_invoice, only: %i[show edit update destroy generate_pdf download_pdf preview_pdf refresh_items]
+  skip_before_action :verify_authenticity_token, only: [:preview_pdf]
 
   def index
     @q = current_user.invoices.ransack(params[:q])
@@ -51,13 +52,71 @@ class InvoicesController < ApplicationController
   end
 
   def generate_pdf
-    # TODO: Phase 5-B-3で実装
-    redirect_to @invoice, alert: 'PDF生成機能は Phase 5-B-3 で実装予定です。'
+    # 請求明細がない場合はエラー
+    if @invoice.invoice_items.empty?
+      redirect_to @invoice, alert: '請求明細がないためPDFを生成できません。'
+      return
+    end
+
+    # 税表示フラグを更新
+    @invoice.update(tax_display: params[:tax_display] == '1')
+
+    # PDF生成サービスを呼び出し
+    InvoicePdfGenerator.new(@invoice).generate
+    redirect_to @invoice, notice: 'PDFを生成しました。'
+  rescue StandardError => e
+    Rails.logger.error "PDF Generation Error: #{e.class}: #{e.message}"
+    Rails.logger.error e.backtrace.first(10).join("\n")
+    redirect_to @invoice, alert: "PDF生成中にエラーが発生しました: #{e.message}"
   end
 
   def download_pdf
-    # TODO: Phase 5-B-3で実装
-    redirect_to @invoice, alert: 'PDF生成機能は Phase 5-B-3 で実装予定です。'
+    pdf_path = Rails.root.join('tmp', 'pdfs', "invoice_#{@invoice.id}.pdf")
+
+    # PDFファイルが存在しない場合はエラー
+    unless File.exist?(pdf_path)
+      redirect_to @invoice, alert: 'PDFが生成されていません。先にPDF生成を実行してください。'
+      return
+    end
+
+    # PDFファイルを送信
+    send_file pdf_path,
+              type: 'application/pdf',
+              disposition: 'attachment',
+              filename: "invoice_#{@invoice.invoice_number}.pdf"
+  end
+
+  def preview_pdf
+    Rails.logger.info "PDF Preview: Started for invoice #{params[:id]} with tax_display=#{params[:tax_display]}"
+
+    # 請求明細がない場合はエラー
+    if @invoice.invoice_items.empty?
+      Rails.logger.warn 'PDF Preview: No invoice items found'
+      render plain: '請求明細がないためPDFをプレビューできません。', status: :unprocessable_entity
+      return
+    end
+
+    # 一時的に税表示フラグを設定（DBには保存しない）
+    @invoice.tax_display = params[:tax_display] == 'true'
+    Rails.logger.info "PDF Preview: tax_display set to #{@invoice.tax_display}"
+
+    # PDF生成（一時ファイル）
+    begin
+      generator = InvoicePdfGenerator.new(@invoice)
+      pdf_content = generator.generate_to_string
+      Rails.logger.info "PDF Preview: PDF content generated, size: #{pdf_content.bytesize} bytes"
+
+      send_data pdf_content,
+                type: 'application/pdf',
+                disposition: 'inline',
+                filename: "preview_invoice_#{@invoice.invoice_number}.pdf"
+
+      Rails.logger.info 'PDF Preview: Successfully sent PDF'
+    rescue StandardError => e
+      Rails.logger.error "PDF Preview Error: #{e.class}: #{e.message}"
+      Rails.logger.error e.backtrace.first(10).join("\n")
+      render plain: "PDF生成中にエラーが発生しました: #{e.message}", status: :internal_server_error
+    end
   end
 
   def refresh_items

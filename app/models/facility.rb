@@ -6,6 +6,7 @@ class Facility < ApplicationRecord
   validates :name, presence: true, length: { maximum: 100 }
   validates :phone, format: { with: /\A\d{2,4}-?\d{2,4}-?\d{3,4}\z/, allow_blank: true }
   validates :email, format: { with: URI::MailTo::EMAIL_REGEXP, allow_blank: true }
+  validates :billing_rate, numericality: { greater_than_or_equal_to: 0, less_than_or_equal_to: 100 }, allow_nil: true
 
   scope :recent, -> { order(created_at: :desc) }
   scope :by_name, -> { order(:name) }

@@ -131,6 +131,38 @@ RSpec.describe Invoice, type: :model do
       end
     end
 
+    describe '#billed_amount' do
+      it '請求割合が100%の場合、実費と同額を返す' do
+        facility = create(:facility, billing_rate: 100)
+        invoice = create(:invoice, facility: facility, total_amount: 10_000)
+        expect(invoice.billed_amount).to eq(10_000)
+      end
+
+      it '請求割合が80%の場合、実費の80%を返す' do
+        facility = create(:facility, billing_rate: 80)
+        invoice = create(:invoice, facility: facility, total_amount: 10_000)
+        expect(invoice.billed_amount).to eq(8000)
+      end
+
+      it '請求割合が50%の場合、実費の50%を返す' do
+        facility = create(:facility, billing_rate: 50)
+        invoice = create(:invoice, facility: facility, total_amount: 10_000)
+        expect(invoice.billed_amount).to eq(5000)
+      end
+
+      it '請求割合が未設定（nil）の場合、実費と同額（100%）を返す' do
+        facility = create(:facility, billing_rate: nil)
+        invoice = create(:invoice, facility: facility, total_amount: 10_000)
+        expect(invoice.billed_amount).to eq(10_000)
+      end
+
+      it '端数が出る場合は四捨五入される' do
+        facility = create(:facility, billing_rate: 33.33)
+        invoice = create(:invoice, facility: facility, total_amount: 10_000)
+        expect(invoice.billed_amount).to eq(3333) # 10000 * 0.3333 = 3333.0
+      end
+    end
+
     describe '#period' do
       it '請求期間を文字列で返す' do
         invoice = build(:invoice, billing_period_start: Date.new(2025, 1, 1), billing_period_end: Date.new(2025, 1, 31))

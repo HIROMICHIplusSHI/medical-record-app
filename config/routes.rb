@@ -7,6 +7,10 @@ Rails.application.routes.draw do
     get 'dashboard', to: 'dashboards#index'
     get 'dashboard/export', to: 'dashboards#export', as: :export_dashboard
 
+    # マイページ
+    get 'mypage', to: 'mypage#edit'
+    patch 'mypage', to: 'mypage#update'
+
     resources :facilities
     resources :patients do
       resource :questionnaire, only: [:new, :create, :show, :edit, :update, :destroy]
@@ -23,6 +27,7 @@ Rails.application.routes.draw do
       member do
         post :generate_pdf
         get :download_pdf
+        get :preview_pdf
         post :refresh_items
       end
     end

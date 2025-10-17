@@ -38,7 +38,7 @@ class Invoice < ApplicationRecord
 
   # Instance Methods
 
-  # 請求書明細の合計金額を計算
+  # 請求書明細の合計金額を計算（実費）
   def calculate_total_amount
     invoice_items.sum(:amount)
   end
@@ -46,6 +46,12 @@ class Invoice < ApplicationRecord
   # 合計金額を再計算して保存
   def update_total_amount!
     update!(total_amount: calculate_total_amount)
+  end
+
+  # 請求割合を適用した請求額を計算
+  def billed_amount
+    billing_rate = facility.billing_rate || 100.0
+    (total_amount * billing_rate / 100.0).round
   end
 
   # 請求期間を文字列で返す

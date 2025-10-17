@@ -129,15 +129,35 @@ RSpec.describe '請求書管理ワークフロー', type: :system do
     end
   end
 
-  describe 'PDF機能（スタブ）' do
+  describe 'PDF機能' do
+    let!(:medical_record) do
+      create(:medical_record,
+             user: user,
+             facility: facility,
+             patient: patient,
+             visit_date: Date.current)
+    end
     let!(:invoice) { create(:invoice, user: user, facility: facility) }
+    let!(:invoice_item) { create(:invoice_item, invoice: invoice, medical_record: medical_record) }
 
-    it 'PDF生成ボタンが表示され、Phase 5-B-3メッセージが表示される', js: true do
+    it 'PDF生成とダウンロードができる', js: true do
       visit invoice_path(invoice)
 
+      # PDF生成ボタンをクリック
       click_button 'PDF生成'
+      expect(page).to have_content('PDFを生成しました')
 
-      expect(page).to have_content('PDF生成機能は Phase 5-B-3 で実装予定です')
+      # PDFダウンロードリンクをクリック（新しいタブで開く）
+      # System testではダウンロードの実際の内容は確認せず、リンクの存在を確認
+      expect(page).to have_link('PDFダウンロード')
+    end
+
+    it '請求明細がない場合はPDF生成できない', js: true do
+      invoice_no_items = create(:invoice, user: user, facility: facility)
+      visit invoice_path(invoice_no_items)
+
+      click_button 'PDF生成'
+      expect(page).to have_content('請求明細がないためPDFを生成できません')
     end
   end
 
