@@ -74,9 +74,9 @@ RSpec.describe InvoicePdfGenerator do
       end
 
       it 'PDF生成が失敗する（日本語文字列と互換性エラー）' do
-        expect {
+        expect do
           generator.generate
-        }.to raise_error(Prawn::Errors::IncompatibleStringEncoding)
+        end.to raise_error(Prawn::Errors::IncompatibleStringEncoding)
       end
     end
   end
@@ -113,7 +113,7 @@ RSpec.describe InvoicePdfGenerator do
 
     it 'ファイルシステムに書き込まない' do
       pdf_path = Rails.root.join('tmp', 'pdfs', "invoice_#{invoice.id}.pdf")
-      FileUtils.rm_f(pdf_path) if File.exist?(pdf_path)
+      FileUtils.rm_f(pdf_path)
 
       generator.generate_to_string
 
@@ -298,9 +298,9 @@ RSpec.describe InvoicePdfGenerator do
     end
 
     it 'PDFが生成できる（切り詰め処理が機能）' do
-      expect {
+      expect do
         generator.generate_to_string
-      }.not_to raise_error
+      end.not_to raise_error
     end
   end
 
@@ -314,9 +314,9 @@ RSpec.describe InvoicePdfGenerator do
       end
 
       it 'PDFが生成できる' do
-        expect {
+        expect do
           generator.generate_to_string
-        }.not_to raise_error
+        end.not_to raise_error
       end
 
       it '0円が表示される' do
@@ -336,9 +336,9 @@ RSpec.describe InvoicePdfGenerator do
       end
 
       it 'PDFが生成できる' do
-        expect {
+        expect do
           generator.generate_to_string
-        }.not_to raise_error
+        end.not_to raise_error
       end
     end
 
@@ -351,9 +351,9 @@ RSpec.describe InvoicePdfGenerator do
       end
 
       it 'PDFが生成できる' do
-        expect {
+        expect do
           generator.generate_to_string
-        }.not_to raise_error
+        end.not_to raise_error
       end
     end
   end
