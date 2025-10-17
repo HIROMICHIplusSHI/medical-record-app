@@ -73,6 +73,7 @@ group :test do
   gem 'capybara', '~> 3.39'
   gem 'cuprite', '~> 0.15'
   gem 'database_cleaner-active_record', '~> 2.1'
+  gem 'pdf-reader', '~> 2.12' # PDFコンテンツ検証用
   gem 'selenium-webdriver', '~> 4.10'
   gem 'shoulda-matchers', '~> 6.0'
   gem 'simplecov', '~> 0.22', require: false
