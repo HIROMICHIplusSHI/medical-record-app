@@ -3,7 +3,7 @@
 **プロジェクト名**: フリーランス美容施術者向け電子カルテアプリ
 **対象**: アートメイク施術者（出張型フリーランス）
 **開発方針**: TDD・アジャイル・MVP重視
-**最終更新**: 2025-10-15
+**最終更新**: 2025-10-17
 
 ---
 
@@ -33,7 +33,7 @@
 
 ---
 
-## 🎯 開発状況（2025-10-15時点）
+## 🎯 開発状況（2025-10-17時点）
 
 ### 完了したフェーズ
 
@@ -65,37 +65,46 @@
 - CSV出力機能
 - N+1クエリ最適化
 
+#### ✅ Phase 5-B: 請求書生成機能
+- **PR #16, #17, #18**（2025-10-16〜17 マージ済み）
+- Invoice/InvoiceItem モデル
+- 請求書CRUD操作
+- カルテからの自動明細作成
+- PDF生成（Prawn + Noto Sans JP）
+- 会社情報管理（マイページ）
+- 施設請求割合設定
+- PDFプレビュー機能
+- 税表示オプション
+
 ### 現在の進捗
 
 **Phase**: Phase 5（拡張機能実装中）
-**最新PR**: #15 - Phase 5-A: 売上管理ダッシュボード実装（マージ済み）
-**品質スコア**: 90/100
-**テスト**: 375 examples, 0 failures
-**RuboCop**: 68 files, no offenses
+**最新PR**: #18 - Phase 5-B: 請求書PDF機能実装（マージ済み）
+**品質スコア**: 95/100
+**テスト**: 85+ examples, 0 failures
+**RuboCop**: 84 files, no offenses
 
 ### 次のステップ
 
-**Phase 5-B**: 請求書生成機能（2週間、3つのサブフェーズに分割）
+**Phase 5-C**: パフォーマンス最適化・品質向上（3-5日、相談中）
 
-#### Phase 5-B-1: データモデル基盤（2-3日）
-- Invoice/InvoiceItem モデル作成
-- マイグレーション実装
-- Model Spec（25-30件）
-- **ブランチ**: `feature/p5b1-invoice-models`
+#### 実装候補
+- データベース最適化（インデックス追加）
+- 残存N+1クエリの完全解消
+- Lighthouse測定とフロントエンド最適化
+- エラーページカスタマイズ（404, 500）
+- ログ・監視設定（Sentry導入検討）
+- ユーザーマニュアル作成
 
-#### Phase 5-B-2: 請求書生成機能（3-4日）
-- InvoiceGenerator サービス実装
-- 基本CRUD（コントローラー + ビュー）
-- Request/System Spec（35-40件）
-- **ブランチ**: `feature/p5b2-invoice-generator`
+**Phase 5-D**: 本番デプロイ（2-3日）
 
-#### Phase 5-B-3: PDF生成機能（3-4日）
-- InvoicePdfGenerator サービス実装
-- 日本語フォント対応（IPAexゴシック）
-- PDF関連Spec（25-30件）
-- **ブランチ**: `feature/p5b3-pdf-generation`
+#### 実装内容
+- Render環境構築
+- PostgreSQL/Cloudflare R2設定
+- 環境変数設定
+- デプロイ実行・動作確認
 
-**詳細**: `docs/phases/phase5/phase5b_branch_strategy.md`
+**詳細**: `docs/gap_analysis.md`
 
 ---
 
@@ -144,6 +153,8 @@ app/
 │   ├── medical_record.rb # カルテ（売上集計ロジック含む）
 │   ├── cost_item.rb    # コスト項目
 │   ├── cost_sheet.rb   # コストシートテンプレート
+│   ├── invoice.rb      # 請求書
+│   ├── invoice_item.rb # 請求書明細
 │   └── tag.rb          # タグ
 ├── controllers/         # リクエスト処理
 │   ├── dashboards_controller.rb # 売上ダッシュボード
@@ -152,7 +163,11 @@ app/
 │   ├── questionnaires_controller.rb
 │   ├── medical_records_controller.rb
 │   ├── cost_sheets_controller.rb
+│   ├── invoices_controller.rb # 請求書管理
+│   ├── mypage_controller.rb   # 会社情報管理
 │   └── tags_controller.rb
+├── services/            # サービスクラス
+│   └── invoice_pdf_generator.rb # PDF生成
 ├── views/               # UI（ERB + Tailwind CSS）
 ├── javascript/          # Stimulus コントローラー
 │   └── controllers/
@@ -177,6 +192,7 @@ User (施術者)
   has_many :patients
   has_many :medical_records
   has_many :cost_sheets
+  has_many :invoices
   has_many :tags
 
 Patient (患者)
@@ -187,14 +203,26 @@ Patient (患者)
 Facility (施術場所)
   belongs_to :user
   has_many :medical_records
+  has_many :invoices
 
 MedicalRecord (カルテ)
   belongs_to :user
   belongs_to :patient
   belongs_to :facility
   has_many :cost_items
+  has_many :invoice_items
   has_many :tags, through: :medical_record_tags
   has_many_attached :photos
+
+Invoice (請求書)
+  belongs_to :user
+  belongs_to :facility
+  has_many :invoice_items, dependent: :destroy
+  has_many :medical_records, through: :invoice_items
+
+InvoiceItem (請求書明細)
+  belongs_to :invoice
+  belongs_to :medical_record
 
 CostItem (コスト項目)
   belongs_to :medical_record
@@ -801,8 +829,8 @@ bundle exec rubocop -A
 
 ---
 
-**Last Updated**: 2025-10-15
+**Last Updated**: 2025-10-17
 **Current Phase**: Phase 5（拡張機能実装中）
-**Next Milestone**: Phase 5-B（請求書生成機能）
+**Next Milestone**: Phase 5-C（パフォーマンス最適化）または Phase 5-D（本番デプロイ）
 
 **このドキュメントは、Claude Codeが効率的に開発支援を行うための情報源です。プロジェクトの進捗に応じて継続的に更新してください。**
