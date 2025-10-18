@@ -1,5 +1,6 @@
 class Facility < ApplicationRecord
   belongs_to :user
+  has_many :facility_doctors, dependent: :destroy
   has_many :medical_records, dependent: :restrict_with_error
   has_many :invoices, dependent: :restrict_with_error
 
@@ -33,6 +34,6 @@ class Facility < ApplicationRecord
   end
 
   def self.ransackable_associations(_auth_object = nil)
-    %w[invoices medical_records user]
+    %w[facility_doctors invoices medical_records user]
   end
 end

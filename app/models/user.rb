@@ -13,6 +13,8 @@ class User < ApplicationRecord
   has_many :cost_sheets, dependent: :destroy
   has_many :invoices, dependent: :destroy
   has_many :tags, dependent: :destroy
+  has_many :consent_form_templates, dependent: :destroy
+  has_many :patient_consents, dependent: :destroy
 
   # Validations
   validates :company_email, format: { with: URI::MailTo::EMAIL_REGEXP, allow_blank: true }
