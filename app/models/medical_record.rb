@@ -7,6 +7,7 @@ class MedicalRecord < ApplicationRecord
   has_many :cost_items, dependent: :destroy
   has_many :medical_record_tags, dependent: :destroy
   has_many :tags, through: :medical_record_tags
+  has_many :patient_consents, dependent: :restrict_with_error
   has_many_attached :photos
 
   accepts_nested_attributes_for :cost_items, allow_destroy: true, reject_if: :all_blank
@@ -49,7 +50,7 @@ class MedicalRecord < ApplicationRecord
   end
 
   def self.ransackable_associations(_auth_object = nil)
-    %w[patient facility tags]
+    %w[patient facility patient_consents tags]
   end
 
   # 売上集計メソッド

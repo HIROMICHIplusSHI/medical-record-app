@@ -3,6 +3,7 @@ class Patient < ApplicationRecord
   belongs_to :user
   has_one :questionnaire, dependent: :destroy
   has_many :medical_records, dependent: :restrict_with_error
+  has_many :patient_consents, dependent: :destroy
 
   # 暗号化（患者名は検索性能のため暗号化しない）
   encrypts :phone
@@ -50,6 +51,6 @@ class Patient < ApplicationRecord
   end
 
   def self.ransackable_associations(_auth_object = nil)
-    %w[user medical_records questionnaire]
+    %w[user medical_records patient_consents questionnaire]
   end
 end
