@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2025_10_17_112854) do
+ActiveRecord::Schema[7.2].define(version: 2025_10_18_221536) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -40,6 +40,39 @@ ActiveRecord::Schema[7.2].define(version: 2025_10_17_112854) do
     t.bigint "blob_id", null: false
     t.string "variation_digest", null: false
     t.index ["blob_id", "variation_digest"], name: "index_active_storage_variant_records_uniqueness", unique: true
+  end
+
+  create_table "consent_form_items", force: :cascade do |t|
+    t.bigint "consent_form_template_id", null: false
+    t.text "content", null: false
+    t.integer "position", null: false
+    t.boolean "is_required", default: true, null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["consent_form_template_id", "position"], name: "idx_on_consent_form_template_id_position_0f140619d7"
+    t.index ["consent_form_template_id"], name: "index_consent_form_items_on_consent_form_template_id"
+  end
+
+  create_table "consent_form_templates", force: :cascade do |t|
+    t.bigint "user_id", null: false
+    t.string "title", null: false
+    t.text "description"
+    t.boolean "is_active", default: true, null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["user_id", "title"], name: "index_consent_form_templates_on_user_id_and_title", unique: true
+    t.index ["user_id"], name: "index_consent_form_templates_on_user_id"
+  end
+
+  create_table "consent_item_responses", force: :cascade do |t|
+    t.bigint "patient_consent_id", null: false
+    t.bigint "consent_form_item_id", null: false
+    t.boolean "checked", default: false, null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["consent_form_item_id"], name: "index_consent_item_responses_on_consent_form_item_id"
+    t.index ["patient_consent_id", "consent_form_item_id"], name: "index_consent_responses_uniqueness", unique: true
+    t.index ["patient_consent_id"], name: "index_consent_item_responses_on_patient_consent_id"
   end
 
   create_table "cost_items", force: :cascade do |t|
@@ -82,6 +115,17 @@ ActiveRecord::Schema[7.2].define(version: 2025_10_17_112854) do
     t.decimal "billing_rate", precision: 5, scale: 2
     t.index ["user_id", "name"], name: "index_facilities_on_user_id_and_name"
     t.index ["user_id"], name: "index_facilities_on_user_id"
+  end
+
+  create_table "facility_doctors", force: :cascade do |t|
+    t.bigint "facility_id", null: false
+    t.string "name", null: false
+    t.string "medical_license_number"
+    t.string "specialization"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["facility_id", "medical_license_number"], name: "index_facility_doctors_on_facility_and_license", unique: true
+    t.index ["facility_id"], name: "index_facility_doctors_on_facility_id"
   end
 
   create_table "invoice_items", force: :cascade do |t|
@@ -144,6 +188,31 @@ ActiveRecord::Schema[7.2].define(version: 2025_10_17_112854) do
     t.index ["user_id", "visit_date"], name: "index_medical_records_on_user_id_and_visit_date"
     t.index ["user_id"], name: "index_medical_records_on_user_id"
     t.index ["visit_date"], name: "index_medical_records_on_visit_date"
+  end
+
+  create_table "patient_consents", force: :cascade do |t|
+    t.bigint "patient_id", null: false
+    t.bigint "consent_form_template_id", null: false
+    t.bigint "medical_record_id", null: false
+    t.bigint "facility_doctor_id", null: false
+    t.bigint "user_id", null: false
+    t.datetime "agreed_at", null: false
+    t.text "signature_data"
+    t.text "practitioner_name"
+    t.text "facility_name"
+    t.text "facility_address"
+    t.text "facility_phone"
+    t.string "signed_ip"
+    t.text "signed_user_agent"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["agreed_at"], name: "index_patient_consents_on_agreed_at"
+    t.index ["consent_form_template_id"], name: "index_patient_consents_on_consent_form_template_id"
+    t.index ["facility_doctor_id"], name: "index_patient_consents_on_facility_doctor_id"
+    t.index ["medical_record_id", "consent_form_template_id"], name: "index_consents_on_record_and_template"
+    t.index ["medical_record_id"], name: "index_patient_consents_on_medical_record_id"
+    t.index ["patient_id"], name: "index_patient_consents_on_patient_id"
+    t.index ["user_id"], name: "index_patient_consents_on_user_id"
   end
 
   create_table "patients", force: :cascade do |t|
@@ -223,10 +292,15 @@ ActiveRecord::Schema[7.2].define(version: 2025_10_17_112854) do
 
   add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"
   add_foreign_key "active_storage_variant_records", "active_storage_blobs", column: "blob_id"
+  add_foreign_key "consent_form_items", "consent_form_templates"
+  add_foreign_key "consent_form_templates", "users"
+  add_foreign_key "consent_item_responses", "consent_form_items"
+  add_foreign_key "consent_item_responses", "patient_consents"
   add_foreign_key "cost_items", "cost_sheets"
   add_foreign_key "cost_items", "medical_records"
   add_foreign_key "cost_sheets", "users"
   add_foreign_key "facilities", "users"
+  add_foreign_key "facility_doctors", "facilities"
   add_foreign_key "invoice_items", "invoices"
   add_foreign_key "invoice_items", "medical_records"
   add_foreign_key "invoices", "facilities"
@@ -236,6 +310,11 @@ ActiveRecord::Schema[7.2].define(version: 2025_10_17_112854) do
   add_foreign_key "medical_records", "facilities"
   add_foreign_key "medical_records", "patients"
   add_foreign_key "medical_records", "users"
+  add_foreign_key "patient_consents", "consent_form_templates"
+  add_foreign_key "patient_consents", "facility_doctors"
+  add_foreign_key "patient_consents", "medical_records"
+  add_foreign_key "patient_consents", "patients"
+  add_foreign_key "patient_consents", "users"
   add_foreign_key "patients", "users"
   add_foreign_key "questionnaires", "patients"
   add_foreign_key "tags", "users"
