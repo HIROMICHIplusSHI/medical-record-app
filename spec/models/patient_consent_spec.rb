@@ -30,9 +30,11 @@ RSpec.describe PatientConsent, type: :model do
   describe '暗号化' do
     it 'signature_dataが暗号化される' do
       consent = create(:patient_consent, signature_data: 'test_signature_data')
-      raw_value = ActiveRecord::Base.connection.execute(
-        "SELECT signature_data FROM patient_consents WHERE id = #{consent.id}"
-      ).first['signature_data']
+      sql = ActiveRecord::Base.sanitize_sql_array([
+                                                    'SELECT signature_data FROM patient_consents WHERE id = ?',
+                                                    consent.id,
+                                                  ])
+      raw_value = ActiveRecord::Base.connection.execute(sql).first['signature_data']
 
       expect(raw_value).not_to eq('test_signature_data')
       expect(consent.reload.signature_data).to eq('test_signature_data')
