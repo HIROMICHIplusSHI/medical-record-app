@@ -165,13 +165,9 @@
 
       <script>
         function previewPDF() {
-          console.log('previewPDF function called');
           var checkbox = document.getElementById('tax-display-checkbox');
-          console.log('checkbox:', checkbox);
-          console.log('checkbox.checked:', checkbox ? checkbox.checked : 'checkbox not found');
           var taxDisplay = checkbox ? checkbox.checked : false;
           var url = '<%= preview_pdf_invoice_path(@invoice) %>?tax_display=' + taxDisplay;
-          console.log('Opening URL:', url);
           window.open(url, '_blank');
         }
       </script>

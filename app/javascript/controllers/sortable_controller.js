@@ -120,7 +120,7 @@ export default class extends Controller {
         return response.json()
       })
       .then(data => {
-        console.log('Positions updated successfully:', data)
+        // Position update successful
       })
       .catch(error => {
         console.error('Failed to update positions:', error)
