@@ -21,6 +21,11 @@ export default class extends Controller {
     if (this.signaturePad) {
       this.signaturePad.off()
     }
+
+    // リサイズイベントリスナーのクリーンアップ
+    if (this.resizeHandler) {
+      window.removeEventListener("resize", this.resizeHandler)
+    }
   }
 
   initializeSignaturePad() {
@@ -43,9 +48,11 @@ export default class extends Controller {
     })
 
     // ウィンドウリサイズ時の対応
-    window.addEventListener("resize", () => {
+    // ハンドラーを保存してcleanup可能にする
+    this.resizeHandler = () => {
       this.resizeCanvas(canvas)
-    })
+    }
+    window.addEventListener("resize", this.resizeHandler)
   }
 
   resizeCanvas(canvas) {
