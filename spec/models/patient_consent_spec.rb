@@ -119,36 +119,8 @@ RSpec.describe PatientConsent, type: :model do
     end
   end
 
-  describe 'nurse_confirmed' do
-    it 'デフォルト値がfalseである' do
-      user = create(:user)
-      patient = create(:patient, user: user)
-      facility = create(:facility, user: user)
-      medical_record = create(:medical_record, user: user, patient: patient, facility: facility)
-      consent = create(:patient_consent, :with_responses,
-                       user: user,
-                       patient: patient,
-                       medical_record: medical_record)
-
-      expect(consent.nurse_confirmed).to be false
-    end
-
-    it '看護師確認後にtrueに更新できる' do
-      user = create(:user)
-      patient = create(:patient, user: user)
-      facility = create(:facility, user: user)
-      medical_record = create(:medical_record, user: user, patient: patient, facility: facility)
-      consent = create(:patient_consent, :with_responses,
-                       user: user,
-                       patient: patient,
-                       medical_record: medical_record)
-
-      expect(consent.nurse_confirmed).to be false
-
-      consent.update(nurse_confirmed: true)
-      expect(consent.reload.nurse_confirmed).to be true
-    end
-  end
+  # nurse_confirmedの古いテストは削除（Critical Issue 1対応により不要）
+  # 新しいテストは "看護師確認バリデーション" セクションに統合
 
   describe 'カスタムバリデーション' do
     describe '#all_required_items_checked' do
@@ -310,6 +282,23 @@ RSpec.describe PatientConsent, type: :model do
         expect(PatientConsent.for_medical_record(medical_record.id)).not_to include(other_consent)
       end
     end
+  end
+
+  # Critical Issue 1: 看護師確認のサーバーサイドバリデーション
+  describe '看護師確認バリデーション' do
+    it 'nurse_confirmedがtrueの場合、作成できる' do
+      consent_with_nurse = build(:patient_consent, nurse_confirmed: true)
+      expect(consent_with_nurse.save).to be true
+    end
+
+    it 'nurse_confirmedがfalseの場合、作成できない' do
+      consent_without_nurse = build(:patient_consent, nurse_confirmed: false)
+      expect(consent_without_nurse.save).to be false
+      expect(consent_without_nurse.errors[:nurse_confirmed]).to include('看護師による最終確認が必要です')
+    end
+
+    # nilの場合はデータベース制約（null: false）で阻止されるため、
+    # バリデーションテストは不要（false値のテストで十分）
   end
 
   # PDF改ざん防止機能のテスト
