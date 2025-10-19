@@ -59,7 +59,7 @@
                       <%= template.title %>
                     </label>
                     <% if template.description.present? %>
-                      <p class="text-sm text-gray-600 mt-1"><%= template.description %></p>
+                      <p class="text-sm text-gray-600 mt-1 whitespace-pre-line"><%= template.description %></p>
                     <% end %>
                     <p class="text-xs text-gray-500 mt-1">
                       チェック項目: <%= template.consent_form_items.count %>件
@@ -149,7 +149,7 @@
                               required: item.is_required? %>
                         </div>
                         <div class="ml-3">
-                          <label class="text-sm text-gray-900">
+                          <label class="text-sm text-gray-900 whitespace-pre-line">
                             <%= item.content %>
                             <% if item.is_required? %>
                               <span class="text-red-500">*</span>
