@@ -26,6 +26,11 @@ class PatientConsent < ApplicationRecord
   validates :agreed_at, presence: true
   validates :signature_data, presence: { message: '署名が必要です' }
 
+  # 看護師確認のサーバーサイドバリデーション（Critical Issue 1対応）
+  # クライアントサイドバリデーションはバイパス可能なため、サーバーサイドでも必須チェック
+  validates :nurse_confirmed, acceptance: { accept: true, message: '看護師による最終確認が必要です' },
+                              on: :create
+
   # カスタムバリデーション：必須項目のチェック確認
   validate :all_required_items_checked, on: :create
   # カスタムバリデーション：署名データの検証

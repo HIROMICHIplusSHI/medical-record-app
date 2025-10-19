@@ -24,6 +24,7 @@ FactoryBot.define do
         'dEVYdENyZWF0aW9uIFRpbWUAMDUvMDcvMjAxNkZWFf8AAAAgSURBVGiB7cEBDQAAAMKg909tDwcU' \
         'AAAAAAAAAAAAAAAAgMEDEFAAAes7OygAAAAASUVORK5CYII='
     end
+    nurse_confirmed { true } # Critical Issue 1対応: デフォルトでtrue（サーバーサイドバリデーション必須）
     signed_ip { '192.168.1.1' }
     signed_user_agent { 'Mozilla/5.0' }
 
