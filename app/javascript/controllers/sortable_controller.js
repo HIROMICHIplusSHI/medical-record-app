@@ -55,10 +55,18 @@ export default class extends Controller {
     }
 
     // 全ての項目のIDと新しい位置を収集
-    const items = Array.from(this.element.children).map((item, index) => ({
-      id: item.dataset.id,
-      position: index + 1
-    }))
+    // data-idがない項目（新規追加項目）は除外
+    const items = Array.from(this.element.children)
+      .filter(item => item.dataset.id) // data-idがある項目のみ
+      .map((item, index) => ({
+        id: item.dataset.id,
+        position: index + 1
+      }))
+
+    // 保存済みの項目がない場合は何もしない
+    if (items.length === 0) {
+      return
+    }
 
     // サーバーに送信
     this.updatePositions(items)
