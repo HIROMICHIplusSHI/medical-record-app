@@ -63,6 +63,16 @@ class PatientConsentsController < ApplicationController
       return
     end
 
+    # PDF改ざん検証（Critical Issue 2対応）
+    unless @patient_consent.verify_pdf_integrity?
+      # セキュリティログ記録
+      Rails.logger.warn "[SECURITY] PDF integrity check failed for PatientConsent##{@patient_consent.id}"
+
+      redirect_to medical_record_patient_consent_path(@medical_record, @patient_consent),
+                  alert: 'PDFファイルの整合性検証に失敗しました。PDFを再生成してください。'
+      return
+    end
+
     # PDFファイルを送信
     send_file pdf_path,
               type: 'application/pdf',

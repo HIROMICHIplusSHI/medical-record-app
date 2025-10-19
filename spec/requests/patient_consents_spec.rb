@@ -67,6 +67,7 @@ RSpec.describe 'PatientConsents', type: :request do
             consent_form_template_id: consent_template.id,
             facility_doctor_id: facility_doctor.id,
             signature_data: valid_signature,
+            nurse_confirmed: '1', # Critical Issue 1対応: サーバーサイドバリデーション必須
             consent_item_responses_attributes: {
               '0' => {
                 consent_form_item_id: consent_template.consent_form_items.first.id,
@@ -162,6 +163,7 @@ RSpec.describe 'PatientConsents', type: :request do
               consent_form_template_id: consent_template.id,
               facility_doctor_id: facility_doctor.id,
               signature_data: valid_signature,
+              nurse_confirmed: '1',  # Critical Issue 1対応
               consent_item_responses_attributes: {
                 '0' => {
                   consent_form_item_id: consent_template.consent_form_items.first.id,
@@ -174,6 +176,7 @@ RSpec.describe 'PatientConsents', type: :request do
               consent_form_template_id: consent_template2.id,
               facility_doctor_id: facility_doctor.id,
               signature_data: valid_signature,
+              nurse_confirmed: '1',  # Critical Issue 1対応
               consent_item_responses_attributes: {
                 '0' => {
                   consent_form_item_id: consent_template2.consent_form_items.first.id,
@@ -462,6 +465,22 @@ RSpec.describe 'PatientConsents', type: :request do
 
         expect(response).to redirect_to(medical_record_patient_consent_path(medical_record, patient_consent))
         expect(flash[:alert]).to eq('PDFが生成されていません。先にPDF生成を実行してください。')
+      end
+    end
+
+    # Critical Issue 2: PDF改ざん検証のテスト
+    context 'PDFが改ざんされた場合' do
+      before do
+        # PDFファイルを改ざん
+        pdf_path = Rails.root.join('tmp', 'pdfs', "patient_consent_#{patient_consent.id}.pdf")
+        File.write(pdf_path, 'tampered content')
+      end
+
+      it 'エラーメッセージが表示される' do
+        get download_pdf_medical_record_patient_consent_path(medical_record, patient_consent)
+
+        expect(response).to redirect_to(medical_record_patient_consent_path(medical_record, patient_consent))
+        expect(flash[:alert]).to eq('PDFファイルの整合性検証に失敗しました。PDFを再生成してください。')
       end
     end
 
