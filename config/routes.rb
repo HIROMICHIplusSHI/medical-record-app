@@ -12,6 +12,7 @@ Rails.application.routes.draw do
     patch 'mypage', to: 'mypage#update'
 
     resources :facilities
+    resources :consent_form_templates
     resources :patients do
       resource :questionnaire, only: [:new, :create, :show, :edit, :update, :destroy]
     end
