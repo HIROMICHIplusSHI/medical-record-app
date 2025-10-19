@@ -12,6 +12,7 @@ AllCops:
     - 'tmp/**/*'
     - 'log/**/*'
     - 'spec/spec_helper.rb'
+    - 'app/javascript/**/*'
 
 # Railsプロジェクトの特性に合わせた設定
 Style/Documentation:
