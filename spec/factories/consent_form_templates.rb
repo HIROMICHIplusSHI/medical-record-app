@@ -10,8 +10,14 @@ FactoryBot.define do
     end
 
     trait :with_items do
-      after(:create) do |template|
-        create_list(:consent_form_item, 3, consent_form_template: template)
+      after(:build) do |template|
+        3.times do |i|
+          template.consent_form_items.build(
+            content: "同意項目#{i + 1}",
+            position: i + 1,
+            is_required: i.zero?
+          )
+        end
       end
     end
   end

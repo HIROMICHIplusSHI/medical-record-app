@@ -43,6 +43,8 @@ Metrics/MethodLength:
     - 'translate_value'
     - 'format_json_field'
     - 'set_date_range'
+    - 'build_patient_consent'
+    - 'create'  # PatientConsentsController#create - 複数同意書の一括作成処理
 
 Metrics/ClassLength:
   Max: 155
@@ -55,6 +57,7 @@ Metrics/AbcSize:
   Exclude:
     - 'app/services/invoice_pdf_generator.rb'  # PDF生成は複雑な処理のため除外
     - 'app/controllers/invoices_controller.rb'  # PDF関連アクションを含むため
+    - 'app/controllers/patient_consents_controller.rb'  # 複数同意書の一括作成処理のため除外
   AllowedMethods:
     - 'set_date_range'
 
@@ -67,6 +70,7 @@ Metrics/PerceivedComplexity:
   Max: 9
   Exclude:
     - 'app/services/invoice_pdf_generator.rb'  # PDF生成は複雑な処理のため除外
+    - 'app/controllers/patient_consents_controller.rb'  # 複数同意書の一括作成処理のため除外
 
 Layout/LineLength:
   Max: 120

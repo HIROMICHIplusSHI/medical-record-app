@@ -152,6 +152,44 @@
       </div>
     <% end %>
 
+    <!-- 同意書セクション -->
+    <div class="bg-white shadow-md rounded-lg overflow-hidden mb-6">
+      <div class="px-4 py-5 sm:px-6 bg-gray-50 border-b border-gray-200 flex justify-between items-center">
+        <h3 class="text-lg leading-6 font-medium text-gray-900">同意書</h3>
+        <%= link_to '同意書を作成', new_medical_record_patient_consent_path(@medical_record), class: "inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500" %>
+      </div>
+
+      <div class="px-4 py-5 sm:p-6">
+        <% if @medical_record.patient_consents.any? %>
+          <div class="space-y-3">
+            <% @medical_record.patient_consents.includes(:consent_form_template, :facility_doctor).recent.each do |consent| %>
+              <div class="border border-gray-200 rounded-lg p-4 hover:bg-gray-50 transition-colors">
+                <div class="flex justify-between items-start">
+                  <div class="flex-1">
+                    <h4 class="text-base font-medium text-gray-900"><%= consent.consent_form_template.title %></h4>
+                    <div class="mt-2 text-sm text-gray-600 space-y-1">
+                      <p>署名日時: <%= l consent.agreed_at, format: :long %></p>
+                      <% if consent.facility_doctor.present? %>
+                        <p>担当医師: <%= consent.facility_doctor.name %>（<%= consent.facility_doctor.license_number %>）</p>
+                      <% end %>
+                      <p>施設: <%= consent.facility_name %></p>
+                    </div>
+                  </div>
+                  <div class="ml-4">
+                    <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-green-100 text-green-800">
+                      署名済み
+                    </span>
+                  </div>
+                </div>
+              </div>
+            <% end %>
+          </div>
+        <% else %>
+          <p class="text-gray-500 text-center py-4">同意書はまだ作成されていません。</p>
+        <% end %>
+      </div>
+    </div>
+
     <div class="px-4 py-3 bg-gray-50 text-right sm:px-6">
       <%= link_to '一覧に戻る', medical_records_path, class: "inline-flex items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500" %>
     </div>

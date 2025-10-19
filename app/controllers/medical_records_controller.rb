@@ -60,7 +60,17 @@ class MedicalRecordsController < ApplicationController
 
   def set_medical_record
     @medical_record = current_user.medical_records
-                                  .includes(:cost_items, :tags)
+                                  .includes(
+                                    :patient,
+                                    :facility,
+                                    :tags,
+                                    cost_items: :cost_sheet,
+                                    patient_consents: [
+                                      :consent_form_template,
+                                      :facility_doctor,
+                                      { consent_item_responses: :consent_form_item },
+                                    ]
+                                  )
                                   .find(params[:id])
   end
 
