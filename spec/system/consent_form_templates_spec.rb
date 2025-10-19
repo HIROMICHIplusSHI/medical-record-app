@@ -67,10 +67,9 @@ RSpec.describe 'ConsentFormTemplates', type: :system do
         click_button '項目を追加'
         expect(page).to have_selector('.consent-form-item-row', count: 1)
 
-        # チェック項目を入力
+        # チェック項目を入力（表示順は自動設定されるのでreadonly）
         within all('.consent-form-item-row').last do
           fill_in '項目内容', with: '施術にはリスクがあることを理解しました'
-          fill_in '表示順', with: '1'
           check '必須項目'
         end
 
@@ -80,7 +79,6 @@ RSpec.describe 'ConsentFormTemplates', type: :system do
 
         within all('.consent-form-item-row').last do
           fill_in '項目内容', with: 'アレルギーの有無を正しく申告しました'
-          fill_in '表示順', with: '2'
         end
 
         # 保存
@@ -148,7 +146,6 @@ RSpec.describe 'ConsentFormTemplates', type: :system do
 
         within all('.consent-form-item-row').last do
           fill_in '項目内容', with: '新規項目3'
-          fill_in '表示順', with: '3'
         end
 
         click_button '保存'
