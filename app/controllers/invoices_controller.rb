@@ -213,6 +213,6 @@ class InvoicesController < ApplicationController
   # ファイル名をサニタイズ（パストラバーサル対策）
   def sanitize_filename(filename)
     # 英数字、ハイフン、アンダースコア、ドット以外を除去
-    filename.gsub(%r{[^\w\-.]}, '_')
+    filename.gsub(/[^\w\-.]/, '_')
   end
 end
