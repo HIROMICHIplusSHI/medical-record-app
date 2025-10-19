@@ -12,7 +12,7 @@
         <div class="bg-white shadow-md rounded-lg p-6" data-consent-id="<%= consent.id %>">
           <div class="flex justify-between items-start">
             <div class="flex-1">
-              <h2 class="text-xl font-bold text-gray-900"><%= consent.consent_form_template.title %></h2>
+              <h2 class="text-xl font-bold text-gray-900"><%= consent.template_title %></h2>
               <div class="mt-3 text-sm text-gray-600 space-y-1">
                 <p><strong>署名日時:</strong> <%= l consent.agreed_at, format: :long %></p>
                 <% if consent.facility_doctor.present? %>
@@ -44,7 +44,7 @@
                       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
                     </svg>
                   <% end %>
-                  <%= response.consent_form_item.content %>
+                  <%= response.item_content %>
                 </li>
               <% end %>
             </ul>
