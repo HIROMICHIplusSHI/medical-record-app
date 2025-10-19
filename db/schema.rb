@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2025_10_19_083910) do
+ActiveRecord::Schema[7.2].define(version: 2025_10_19_110044) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -208,6 +208,8 @@ ActiveRecord::Schema[7.2].define(version: 2025_10_19_083910) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.string "template_title"
+    t.boolean "nurse_confirmed", default: false, null: false
+    t.string "pdf_hash"
     t.index ["agreed_at"], name: "index_patient_consents_on_agreed_at"
     t.index ["consent_form_template_id"], name: "index_patient_consents_on_consent_form_template_id"
     t.index ["facility_doctor_id"], name: "index_patient_consents_on_facility_doctor_id"
