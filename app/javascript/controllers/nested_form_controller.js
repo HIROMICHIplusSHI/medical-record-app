@@ -39,6 +39,14 @@ export default class extends Controller {
 
     // コンテナに追加
     this.containerTarget.insertAdjacentHTML('beforeend', html)
+
+    // 追加した項目の表示順を設定（最後の項目なので、現在のアイテム数）
+    const newItem = this.containerTarget.lastElementChild
+    const positionField = newItem.querySelector('.position-field')
+    if (positionField) {
+      const currentItemCount = this.containerTarget.querySelectorAll('[data-nested-form-target="item"]:not([style*="display: none"])').length
+      positionField.value = currentItemCount
+    }
   }
 
   /**
@@ -48,6 +56,11 @@ export default class extends Controller {
    */
   removeItem(e) {
     e.preventDefault()
+
+    // 確認ダイアログを表示
+    if (!confirm('この項目を削除してもよろしいですか？')) {
+      return
+    }
 
     // 削除ボタンの親要素（項目全体）を取得
     const item = e.target.closest('[data-nested-form-target="item"]')
@@ -67,5 +80,21 @@ export default class extends Controller {
       // 新規レコードの場合は完全に削除
       item.remove()
     }
+
+    // 削除後、残りの項目の表示順を振り直す
+    this.updateAllPositions()
+  }
+
+  /**
+   * 全ての表示中の項目の表示順を振り直す
+   */
+  updateAllPositions() {
+    const visibleItems = this.containerTarget.querySelectorAll('[data-nested-form-target="item"]:not([style*="display: none"])')
+    visibleItems.forEach((item, index) => {
+      const positionField = item.querySelector('.position-field')
+      if (positionField) {
+        positionField.value = index + 1
+      }
+    })
   }
 }
