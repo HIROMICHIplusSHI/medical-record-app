@@ -114,12 +114,91 @@ RSpec.describe 'PatientConsents', type: :system do
     end
   end
 
+  describe 'PDF機能', js: true do
+    let!(:patient_consent) do
+      create(:patient_consent, :with_responses,
+             medical_record: medical_record,
+             patient: patient,
+             user: user,
+             facility_doctor: facility_doctor,
+             consent_form_template: consent_template)
+    end
+
+    after do
+      # クリーンアップ
+      pdf_path = Rails.root.join('tmp', 'pdfs', "patient_consent_#{patient_consent.id}.pdf")
+      FileUtils.rm_f(pdf_path)
+    end
+
+    it '同意書詳細からPDFを生成・ダウンロードできる' do
+      visit medical_record_patient_consent_path(medical_record, patient_consent)
+
+      # 同意書詳細画面が表示される
+      expect(page).to have_content('同意書詳細')
+      expect(page).to have_content('美容施術同意書')
+      expect(page).to have_content(patient.name)
+
+      # PDF生成ボタンをクリック
+      click_button 'PDF生成'
+
+      # 成功メッセージが表示される
+      expect(page).to have_content('PDFを生成しました')
+
+      # PDFダウンロードリンクが表示される
+      expect(page).to have_link('PDFダウンロード')
+    end
+
+    it '同意書一覧から詳細画面に遷移できる' do
+      visit medical_record_patient_consents_path(medical_record)
+
+      # 同意書一覧が表示される
+      expect(page).to have_content('同意書一覧')
+      expect(page).to have_content('美容施術同意書')
+
+      # 詳細リンクをクリック
+      click_link '詳細'
+
+      # 同意書詳細画面に遷移する
+      expect(page).to have_current_path(medical_record_patient_consent_path(medical_record, patient_consent))
+      expect(page).to have_content('同意書詳細')
+    end
+  end
+
   describe 'アクセス制御' do
     it '未ログイン時はログイン画面にリダイレクトされる' do
       sign_out user
       visit new_medical_record_patient_consent_path(medical_record)
 
       expect(page).to have_current_path(new_user_session_path)
+    end
+  end
+
+  describe '同意書削除', js: true do
+    let!(:patient_consent) do
+      create(:patient_consent, :with_responses,
+             medical_record: medical_record,
+             patient: patient,
+             user: user,
+             facility_doctor: facility_doctor,
+             consent_form_template: consent_template)
+    end
+
+    it '同意書詳細画面から削除できる' do
+      visit medical_record_patient_consent_path(medical_record, patient_consent)
+
+      expect(page).to have_content('同意書詳細')
+
+      # 削除ボタンをクリック
+      accept_confirm do
+        click_button '同意書を削除'
+      end
+
+      # カルテ詳細画面にリダイレクトされる
+      expect(page).to have_current_path(medical_record_path(medical_record))
+      expect(page).to have_content('同意書を削除しました')
+
+      # 同意書が削除されていることを確認
+      expect(PatientConsent.exists?(patient_consent.id)).to be false
     end
   end
 end
