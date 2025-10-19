@@ -83,7 +83,7 @@ class InvoicesController < ApplicationController
     send_file pdf_path,
               type: 'application/pdf',
               disposition: 'attachment',
-              filename: "invoice_#{@invoice.invoice_number}.pdf"
+              filename: sanitize_filename("invoice_#{@invoice.invoice_number}.pdf")
   end
 
   def preview_pdf
@@ -109,7 +109,7 @@ class InvoicesController < ApplicationController
       send_data pdf_content,
                 type: 'application/pdf',
                 disposition: 'inline',
-                filename: "preview_invoice_#{@invoice.invoice_number}.pdf"
+                filename: sanitize_filename("preview_invoice_#{@invoice.invoice_number}.pdf")
 
       Rails.logger.info 'PDF Preview: Successfully sent PDF'
     rescue StandardError => e
@@ -208,5 +208,11 @@ class InvoicesController < ApplicationController
       formatted_price = item.total_price.to_i.to_s.reverse.gsub(/(\d{3})(?=\d)/, '\1,').reverse
       "#{item.item_name} x #{item.quantity}: ¥#{formatted_price}"
     end.join("\n")
+  end
+
+  # ファイル名をサニタイズ（パストラバーサル対策）
+  def sanitize_filename(filename)
+    # 英数字、ハイフン、アンダースコア、ドット以外を除去
+    filename.gsub(%r{[^\w\-.]}, '_')
   end
 end
