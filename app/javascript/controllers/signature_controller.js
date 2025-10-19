@@ -3,7 +3,7 @@ import SignaturePad from "signature_pad"
 
 // Connects to data-controller="signature"
 export default class extends Controller {
-  static targets = ["canvas", "hiddenField", "clearButton"]
+  static targets = ["canvas", "hiddenField", "clearButton", "patientSection"]
 
   connect() {
     this.initializeSignaturePad()
