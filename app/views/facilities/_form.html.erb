@@ -35,6 +35,31 @@
     <%= form.text_area :notes, rows: 4, class: "mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500", placeholder: "施設に関する備考を入力してください" %>
   </div>
 
+  <!-- 医師情報セクション -->
+  <div class="border-t pt-6 mt-6" data-controller="nested-form">
+    <div class="flex items-center justify-between mb-4">
+      <h3 class="text-lg font-medium text-gray-900">医師情報</h3>
+      <button type="button" data-action="click->nested-form#addItem" class="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+        <svg class="h-4 w-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+        </svg>
+        医師を追加
+      </button>
+    </div>
+
+    <div data-nested-form-target="container">
+      <%= form.fields_for :facility_doctors do |facility_doctor_form| %>
+        <%= render 'facility_doctor_fields', f: facility_doctor_form %>
+      <% end %>
+    </div>
+
+    <template data-nested-form-target="template">
+      <%= form.fields_for :facility_doctors, FacilityDoctor.new, child_index: 'NEW_RECORD' do |facility_doctor_form| %>
+        <%= render 'facility_doctor_fields', f: facility_doctor_form %>
+      <% end %>
+    </template>
+  </div>
+
   <!-- 請求書関連情報 -->
   <div class="border-t pt-6 mt-6">
     <h3 class="text-lg font-medium text-gray-900 mb-4">請求書設定</h3>
