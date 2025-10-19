@@ -51,8 +51,12 @@ RSpec.describe 'PatientConsents', type: :request do
 
   describe 'POST /medical_records/:medical_record_id/patient_consents' do
     let(:valid_signature) do
+      # 50x50ピクセルの白い背景PNG（約600バイト、署名データバリデーション対応）
       'data:image/png;base64,' \
-        'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg=='
+        'iVBORw0KGgoAAAANSUhEUgAAADIAAAAyCAYAAAAeP4ixAAAABHNCSVQICAgIfAhkiAAAAAlwSFlz' \
+        'AAALEgAACxIB0t1+/AAAABx0RVh0U29mdHdhcmUAQWRvYmUgRmlyZXdvcmtzIENTNui8sowAAAAW' \
+        'dEVYdENyZWF0aW9uIFRpbWUAMDUvMDcvMjAxNkZWFf8AAAAgSURBVGiB7cEBDQAAAMKg909tDwcU' \
+        'AAAAAAAAAAAAAAAAgMEDEFAAAes7OygAAAAASUVORK5CYII='
     end
 
     let(:valid_params) do
@@ -294,48 +298,23 @@ RSpec.describe 'PatientConsents', type: :request do
   end
 
   describe 'GET /medical_records/:medical_record_id/patient_consents' do
-    let(:valid_signature) do
-      'data:image/png;base64,' \
-        'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg=='
-    end
-
     let!(:patient_consent1) do
-      consent = PatientConsent.new(
-        medical_record: medical_record,
-        patient: patient,
-        user: user,
-        facility_doctor: facility_doctor,
-        consent_form_template: consent_template,
-        signature_data: valid_signature
-      )
-      consent_template.consent_form_items.where(is_required: true).each do |item|
-        consent.consent_item_responses.build(consent_form_item: item, checked: true)
-      end
-      consent_template.consent_form_items.where(is_required: false).each do |item|
-        consent.consent_item_responses.build(consent_form_item: item, checked: true)
-      end
-      consent.save!
-      consent
+      create(:patient_consent, :with_responses,
+             medical_record: medical_record,
+             patient: patient,
+             user: user,
+             facility_doctor: facility_doctor,
+             consent_form_template: consent_template)
     end
 
     let!(:patient_consent2) do
-      consent = PatientConsent.new(
-        medical_record: medical_record,
-        patient: patient,
-        user: user,
-        facility_doctor: facility_doctor,
-        consent_form_template: consent_template,
-        signature_data: valid_signature,
-        agreed_at: 1.day.ago
-      )
-      consent_template.consent_form_items.where(is_required: true).each do |item|
-        consent.consent_item_responses.build(consent_form_item: item, checked: true)
-      end
-      consent_template.consent_form_items.where(is_required: false).each do |item|
-        consent.consent_item_responses.build(consent_form_item: item, checked: false)
-      end
-      consent.save!
-      consent
+      create(:patient_consent, :with_responses,
+             medical_record: medical_record,
+             patient: patient,
+             user: user,
+             facility_doctor: facility_doctor,
+             consent_form_template: consent_template,
+             agreed_at: 1.day.ago)
     end
 
     it '同意書一覧が表示される' do

@@ -29,24 +29,30 @@ RSpec.describe PatientConsent, type: :model do
 
   describe '暗号化' do
     it 'signature_dataが暗号化される' do
-      consent = create(:patient_consent, signature_data: 'test_signature_data')
+      # 50x50ピクセルの白い背景PNG（約600バイト）
+      test_signature = 'data:image/png;base64,' \
+                       'iVBORw0KGgoAAAANSUhEUgAAADIAAAAyCAYAAAAeP4ixAAAABHNCSVQICAgIfAhkiAAAAAlwSFlz' \
+                       'AAALEgAACxIB0t1+/AAAABx0RVh0U29mdHdhcmUAQWRvYmUgRmlyZXdvcmtzIENTNui8sowAAAAW' \
+                       'dEVYdENyZWF0aW9uIFRpbWUAMDUvMDcvMjAxNkZWFf8AAAAgSURBVGiB7cEBDQAAAMKg909tDwcU' \
+                       'AAAAAAAAAAAAAAAAgMEDEFAAAes7OygAAAAASUVORK5CYII='
+      consent = create(:patient_consent, :with_responses, signature_data: test_signature)
       sql = ActiveRecord::Base.sanitize_sql_array([
                                                     'SELECT signature_data FROM patient_consents WHERE id = ?',
                                                     consent.id,
                                                   ])
       raw_value = ActiveRecord::Base.connection.execute(sql).first['signature_data']
 
-      expect(raw_value).not_to eq('test_signature_data')
-      expect(consent.reload.signature_data).to eq('test_signature_data')
+      expect(raw_value).not_to eq(test_signature)
+      expect(consent.reload.signature_data).to eq(test_signature)
     end
 
     it 'practitioner_nameが暗号化される' do
-      consent = create(:patient_consent)
+      consent = create(:patient_consent, :with_responses)
       expect(consent.practitioner_name).to be_present
     end
 
     it 'facility_nameが暗号化される' do
-      consent = create(:patient_consent)
+      consent = create(:patient_consent, :with_responses)
       expect(consent.facility_name).to be_present
     end
   end
@@ -54,15 +60,18 @@ RSpec.describe PatientConsent, type: :model do
   describe 'コールバック' do
     describe '#snapshot_facility_info' do
       it '作成時に施設情報をスナップショットとして保存する' do
+        user = create(:user, company_name: '美容施術者 田中')
         facility = create(:facility,
+                          user: user,
                           name: 'サロンA',
                           address: '東京都渋谷区',
                           phone: '03-1234-5678')
-        medical_record = create(:medical_record, facility: facility)
-        user = create(:user, company_name: '美容施術者 田中')
+        patient = create(:patient, user: user)
+        medical_record = create(:medical_record, user: user, patient: patient, facility: facility)
 
-        consent = create(:patient_consent,
+        consent = create(:patient_consent, :with_responses,
                          medical_record: medical_record,
+                         patient: patient,
                          user: user)
 
         expect(consent.facility_name).to eq('サロンA')
@@ -73,7 +82,11 @@ RSpec.describe PatientConsent, type: :model do
 
       it 'ユーザーにcompany_nameがない場合はemailを使用する' do
         user = create(:user, company_name: nil, email: 'test@example.com')
-        consent = create(:patient_consent, user: user)
+        patient = create(:patient, user: user)
+        facility = create(:facility, user: user)
+        medical_record = create(:medical_record, user: user, patient: patient, facility: facility)
+        consent = create(:patient_consent, :with_responses, user: user, patient: patient,
+                                                            medical_record: medical_record)
 
         expect(consent.practitioner_name).to eq('test@example.com')
       end
@@ -83,8 +96,16 @@ RSpec.describe PatientConsent, type: :model do
   describe 'カスタムバリデーション' do
     describe '#all_required_items_checked' do
       it '必須項目がすべてチェックされている場合、有効' do
-        template = create(:consent_form_template, :with_items)
-        consent = build(:patient_consent, consent_form_template: template)
+        user = create(:user)
+        template = create(:consent_form_template, :with_items, user: user)
+        patient = create(:patient, user: user)
+        facility = create(:facility, user: user)
+        medical_record = create(:medical_record, user: user, patient: patient, facility: facility)
+        consent = build(:patient_consent,
+                        user: user,
+                        patient: patient,
+                        medical_record: medical_record,
+                        consent_form_template: template)
 
         # すべての項目にチェック済み回答を設定
         template.consent_form_items.each do |item|
@@ -98,13 +119,21 @@ RSpec.describe PatientConsent, type: :model do
       end
 
       it '必須項目がチェックされていない場合、無効' do
-        template = create(:consent_form_template)
+        user = create(:user)
+        template = create(:consent_form_template, user: user)
         required_item = create(:consent_form_item,
                                consent_form_template: template,
                                is_required: true,
                                content: '重要な同意事項')
 
-        consent = build(:patient_consent, consent_form_template: template)
+        patient = create(:patient, user: user)
+        facility = create(:facility, user: user)
+        medical_record = create(:medical_record, user: user, patient: patient, facility: facility)
+        consent = build(:patient_consent,
+                        user: user,
+                        patient: patient,
+                        medical_record: medical_record,
+                        consent_form_template: template)
         consent.consent_item_responses.build(
           consent_form_item: required_item,
           checked: false
@@ -115,12 +144,20 @@ RSpec.describe PatientConsent, type: :model do
       end
 
       it '任意項目はチェックなしでも有効' do
-        template = create(:consent_form_template)
+        user = create(:user)
+        template = create(:consent_form_template, user: user)
         optional_item = create(:consent_form_item,
                                consent_form_template: template,
                                is_required: false)
 
-        consent = build(:patient_consent, consent_form_template: template)
+        patient = create(:patient, user: user)
+        facility = create(:facility, user: user)
+        medical_record = create(:medical_record, user: user, patient: patient, facility: facility)
+        consent = build(:patient_consent,
+                        user: user,
+                        patient: patient,
+                        medical_record: medical_record,
+                        consent_form_template: template)
         consent.consent_item_responses.build(
           consent_form_item: optional_item,
           checked: false
@@ -134,8 +171,24 @@ RSpec.describe PatientConsent, type: :model do
   describe 'スコープ' do
     describe '.recent' do
       it '同意日時の降順で返す' do
-        old_consent = create(:patient_consent, agreed_at: 2.days.ago)
-        new_consent = create(:patient_consent, agreed_at: 1.day.ago)
+        user = create(:user)
+        patient = create(:patient, user: user)
+        facility = create(:facility, user: user)
+        medical_record = create(:medical_record, user: user, patient: patient, facility: facility)
+        template = create(:consent_form_template, :with_items, user: user)
+
+        old_consent = create(:patient_consent, :with_responses,
+                             user: user,
+                             patient: patient,
+                             medical_record: medical_record,
+                             consent_form_template: template,
+                             agreed_at: 2.days.ago)
+        new_consent = create(:patient_consent, :with_responses,
+                             user: user,
+                             patient: patient,
+                             medical_record: medical_record,
+                             consent_form_template: template,
+                             agreed_at: 1.day.ago)
 
         expect(PatientConsent.recent).to eq([new_consent, old_consent])
       end
@@ -143,9 +196,28 @@ RSpec.describe PatientConsent, type: :model do
 
     describe '.for_patient' do
       it '指定した患者の同意書のみを返す' do
-        patient = create(:patient)
-        consent = create(:patient_consent, patient: patient)
-        other_consent = create(:patient_consent)
+        user = create(:user)
+        patient = create(:patient, user: user)
+        facility = create(:facility, user: user)
+        medical_record = create(:medical_record, user: user, patient: patient, facility: facility)
+        template = create(:consent_form_template, :with_items, user: user)
+        consent = create(:patient_consent, :with_responses,
+                         user: user,
+                         patient: patient,
+                         medical_record: medical_record,
+                         consent_form_template: template)
+
+        other_user = create(:user)
+        other_patient = create(:patient, user: other_user)
+        other_facility = create(:facility, user: other_user)
+        other_medical_record = create(:medical_record, user: other_user, patient: other_patient,
+                                                       facility: other_facility)
+        other_template = create(:consent_form_template, :with_items, user: other_user)
+        other_consent = create(:patient_consent, :with_responses,
+                               user: other_user,
+                               patient: other_patient,
+                               medical_record: other_medical_record,
+                               consent_form_template: other_template)
 
         expect(PatientConsent.for_patient(patient.id)).to include(consent)
         expect(PatientConsent.for_patient(patient.id)).not_to include(other_consent)
@@ -154,9 +226,28 @@ RSpec.describe PatientConsent, type: :model do
 
     describe '.for_medical_record' do
       it '指定したカルテの同意書のみを返す' do
-        medical_record = create(:medical_record)
-        consent = create(:patient_consent, medical_record: medical_record)
-        other_consent = create(:patient_consent)
+        user = create(:user)
+        patient = create(:patient, user: user)
+        facility = create(:facility, user: user)
+        medical_record = create(:medical_record, user: user, patient: patient, facility: facility)
+        template = create(:consent_form_template, :with_items, user: user)
+        consent = create(:patient_consent, :with_responses,
+                         user: user,
+                         patient: patient,
+                         medical_record: medical_record,
+                         consent_form_template: template)
+
+        other_user = create(:user)
+        other_patient = create(:patient, user: other_user)
+        other_facility = create(:facility, user: other_user)
+        other_medical_record = create(:medical_record, user: other_user, patient: other_patient,
+                                                       facility: other_facility)
+        other_template = create(:consent_form_template, :with_items, user: other_user)
+        other_consent = create(:patient_consent, :with_responses,
+                               user: other_user,
+                               patient: other_patient,
+                               medical_record: other_medical_record,
+                               consent_form_template: other_template)
 
         expect(PatientConsent.for_medical_record(medical_record.id)).to include(consent)
         expect(PatientConsent.for_medical_record(medical_record.id)).not_to include(other_consent)
