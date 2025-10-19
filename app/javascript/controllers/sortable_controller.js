@@ -54,6 +54,9 @@ export default class extends Controller {
       return
     }
 
+    // 全ての項目の表示順フィールドを更新（視覚的フィードバック）
+    this.updatePositionFields()
+
     // 全ての項目のIDと新しい位置を収集
     // data-idがない項目（新規追加項目）は除外
     const items = Array.from(this.element.children)
@@ -70,6 +73,26 @@ export default class extends Controller {
 
     // サーバーに送信
     this.updatePositions(items)
+  }
+
+  /**
+   * 全ての項目の表示順フィールドを現在の順番で更新
+   */
+  updatePositionFields() {
+    // data-nested-form-target="item" を持つ、表示中の項目のみを対象にする
+    const visibleItems = Array.from(this.element.children).filter(item => {
+      return item.dataset.nestedFormTarget === 'item' &&
+             item.style.display !== 'none' &&
+             !item.hasAttribute('hidden')
+    })
+
+    // 表示中の項目の順番を1から振り直す
+    visibleItems.forEach((item, index) => {
+      const positionField = item.querySelector('.position-field')
+      if (positionField) {
+        positionField.value = index + 1
+      }
+    })
   }
 
   /**
