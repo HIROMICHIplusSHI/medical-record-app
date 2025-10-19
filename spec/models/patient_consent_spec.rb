@@ -119,6 +119,37 @@ RSpec.describe PatientConsent, type: :model do
     end
   end
 
+  describe 'nurse_confirmed' do
+    it 'デフォルト値がfalseである' do
+      user = create(:user)
+      patient = create(:patient, user: user)
+      facility = create(:facility, user: user)
+      medical_record = create(:medical_record, user: user, patient: patient, facility: facility)
+      consent = create(:patient_consent, :with_responses,
+                       user: user,
+                       patient: patient,
+                       medical_record: medical_record)
+
+      expect(consent.nurse_confirmed).to be false
+    end
+
+    it '看護師確認後にtrueに更新できる' do
+      user = create(:user)
+      patient = create(:patient, user: user)
+      facility = create(:facility, user: user)
+      medical_record = create(:medical_record, user: user, patient: patient, facility: facility)
+      consent = create(:patient_consent, :with_responses,
+                       user: user,
+                       patient: patient,
+                       medical_record: medical_record)
+
+      expect(consent.nurse_confirmed).to be false
+
+      consent.update(nurse_confirmed: true)
+      expect(consent.reload.nurse_confirmed).to be true
+    end
+  end
+
   describe 'カスタムバリデーション' do
     describe '#all_required_items_checked' do
       it '必須項目がすべてチェックされている場合、有効' do
@@ -277,6 +308,126 @@ RSpec.describe PatientConsent, type: :model do
 
         expect(PatientConsent.for_medical_record(medical_record.id)).to include(consent)
         expect(PatientConsent.for_medical_record(medical_record.id)).not_to include(other_consent)
+      end
+    end
+  end
+
+  # PDF改ざん防止機能のテスト
+  describe 'PDF改ざん防止機能' do
+    let(:user) { create(:user) }
+    let(:patient) { create(:patient, user: user) }
+    let(:facility) { create(:facility, user: user) }
+    let(:medical_record) { create(:medical_record, user: user, patient: patient, facility: facility) }
+    let(:template) { create(:consent_form_template, :with_items, user: user) }
+    let(:facility_doctor) { create(:facility_doctor, facility: facility) }
+    let(:consent) do
+      create(:patient_consent, :with_responses,
+             user: user,
+             patient: patient,
+             medical_record: medical_record,
+             consent_form_template: template,
+             facility_doctor: facility_doctor)
+    end
+
+    before do
+      # テスト用PDFディレクトリ作成
+      pdf_dir = Rails.root.join('tmp', 'pdfs')
+      FileUtils.mkdir_p(pdf_dir)
+    end
+
+    after do
+      # テスト用PDFファイル削除
+      pdf_path = Rails.root.join('tmp', 'pdfs', "patient_consent_#{consent.id}.pdf")
+      FileUtils.rm_f(pdf_path)
+    end
+
+    describe '#generate_pdf_hash!' do
+      it 'PDFファイルが存在する場合、ハッシュ値を生成・保存する' do
+        # PDF生成
+        pdf_generator = PatientConsentPdfGenerator.new(consent)
+        pdf_generator.generate
+
+        # ハッシュ値が生成されたことを確認
+        expect(consent.reload.pdf_hash).to be_present
+        expect(consent.pdf_hash).to match(/\A[a-f0-9]{64}\z/) # SHA256ハッシュ形式
+      end
+
+      it 'PDFファイルが存在しない場合、falseを返す' do
+        # PDFファイルを削除
+        pdf_path = Rails.root.join('tmp', 'pdfs', "patient_consent_#{consent.id}.pdf")
+        FileUtils.rm_f(pdf_path)
+
+        expect(consent.generate_pdf_hash!).to be false
+      end
+    end
+
+    describe '#verify_pdf_integrity?' do
+      it 'PDFが改ざんされていない場合、trueを返す' do
+        # PDF生成
+        pdf_generator = PatientConsentPdfGenerator.new(consent)
+        pdf_generator.generate
+
+        # 整合性確認
+        expect(consent.reload.verify_pdf_integrity?).to be true
+      end
+
+      it 'PDFが改ざんされた場合、falseを返す' do
+        # PDF生成
+        pdf_generator = PatientConsentPdfGenerator.new(consent)
+        pdf_generator.generate
+
+        # PDFファイルを改ざん
+        pdf_path = Rails.root.join('tmp', 'pdfs', "patient_consent_#{consent.id}.pdf")
+        File.write(pdf_path, 'tampered content')
+
+        # 整合性確認
+        expect(consent.reload.verify_pdf_integrity?).to be false
+      end
+
+      it 'PDFファイルが存在しない場合、falseを返す' do
+        # PDFファイルを削除
+        pdf_path = Rails.root.join('tmp', 'pdfs', "patient_consent_#{consent.id}.pdf")
+        FileUtils.rm_f(pdf_path)
+
+        expect(consent.verify_pdf_integrity?).to be false
+      end
+
+      it 'ハッシュ値が保存されていない場合、falseを返す' do
+        # PDF生成（ハッシュなし）
+        pdf_dir = Rails.root.join('tmp', 'pdfs')
+        pdf_path = pdf_dir.join("patient_consent_#{consent.id}.pdf")
+        File.write(pdf_path, 'dummy pdf content')
+
+        # ハッシュ値をnilに設定
+        consent.update_column(:pdf_hash, nil)
+
+        expect(consent.verify_pdf_integrity?).to be false
+      end
+    end
+
+    describe '#invalidate_pdf_cache' do
+      it '署名データ変更時にpdf_hashがnilになる' do
+        # PDF生成
+        pdf_generator = PatientConsentPdfGenerator.new(consent)
+        pdf_generator.generate
+
+        # ハッシュ値が存在することを確認
+        expect(consent.reload.pdf_hash).to be_present
+        consent.pdf_hash
+
+        # 新しい署名データを作成（十分な大きさ）
+        # 200x50の黒い矩形を描画したダミーPNG（Base64エンコード済み）
+        new_signature_data = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAMgAAAAyCAYAAAAZUZThAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAADHSURBVHhe7dIxDQAgEMCwA/+egQdmCB3JVbn7A/jLQCAYCARjbeDtGABrAwTCgkBYEAgLAmFBICwIhAWBsCAQFgTCgkBYEAgLAmFBICwIhAWBsCAQFgTCgkBYEAgLAmFBICwIhAWBsCAQFgTCgkBYEAgLAmFBICwIhAWBsCAQFgTCgkBYEAgLAmFBICwIhAWBsCAQFgTCgkBYEAgLAmFBICwIhAWBsCAQFgTCgkBYEAgLAmFBICwIhAWBsCAQFgTCgkBYEAgHZu4AsqIDBc8+BAAAAABJRU5ErkJggg==' # rubocop:disable Layout/LineLength
+
+        # 署名データを更新
+        result = consent.update(signature_data: new_signature_data)
+
+        # 更新が成功したことを確認
+        expect(result).to be true
+        expect(consent.signature_data).to eq(new_signature_data)
+
+        # ハッシュ値が無効化されたことを確認
+        expect(consent.reload.pdf_hash).to be_nil
       end
     end
   end

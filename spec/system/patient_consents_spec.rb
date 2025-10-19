@@ -65,14 +65,33 @@ RSpec.describe 'PatientConsents', type: :system do
       # 必須チェック項目をチェック
       first('input[type="checkbox"][required]').check
 
+      # 看護師確認チェックボックスをチェック
+      check 'patient_consents[0][nurse_confirmed]'
+
       # 署名を描画（Canvas APIを使用）
       page.execute_script(<<~JS)
-        const canvas = document.querySelector('canvas[data-signature-target="canvas"]');
-        const ctx = canvas.getContext('2d');
-        ctx.fillStyle = 'black';
-        ctx.fillRect(10, 10, 100, 50);
-        const hiddenField = document.querySelector('input[data-signature-target="hiddenField"]');
-        hiddenField.value = canvas.toDataURL('image/png');
+        (function() {
+          var visibleSection = Array.from(document.querySelectorAll('[data-consent-forms-target="patientSection"]'))
+            .find(function(section) { return !section.classList.contains('hidden'); });
+
+          var canvas = visibleSection.querySelector('canvas[data-signature-target="canvas"]');
+          var hiddenField = visibleSection.querySelector('input[data-signature-target="hiddenField"]');
+
+          // canvasのサイズを明示的に設定
+          var rect = canvas.getBoundingClientRect();
+          var ratio = Math.max(window.devicePixelRatio || 1, 1);
+          canvas.width = rect.width * ratio;
+          canvas.height = rect.height * ratio;
+
+          // コンテキストを取得して描画
+          var ctx = canvas.getContext('2d');
+          ctx.scale(ratio, ratio);
+          ctx.fillStyle = 'black';
+          ctx.fillRect(10, 10, 100, 50);
+
+          // データURLを取得してhiddenFieldに設定
+          hiddenField.value = canvas.toDataURL('image/png');
+        })();
       JS
 
       # 「同意する」ボタンをクリック
@@ -199,6 +218,142 @@ RSpec.describe 'PatientConsents', type: :system do
 
       # 同意書が削除されていることを確認
       expect(PatientConsent.exists?(patient_consent.id)).to be false
+    end
+  end
+
+  describe '署名バリデーション', js: true do
+    it '署名なしで送信するとアラートが表示される' do
+      visit new_medical_record_patient_consent_path(medical_record)
+
+      # テンプレートを選択してStep 2に進む
+      check '美容施術同意書'
+      select '山田太郎', from: 'patient_consents[0][facility_doctor_id]'
+      click_button '患者に渡す →'
+
+      # Step 2が表示される
+      expect(page).to have_content('Step 2: 患者確認・署名')
+
+      # 必須チェック項目をチェック
+      first('input[type="checkbox"][required]').check
+
+      # 看護師確認チェックボックスをチェック
+      check 'patient_consents[0][nurse_confirmed]'
+
+      # 署名なしで「同意する」をクリック
+      accept_alert do
+        click_button '同意する'
+      end
+
+      # フォーム送信が阻止され、Step 2に留まる
+      expect(page).to have_content('Step 2: 患者確認・署名')
+      expect(page).not_to have_content('同意書を作成しました')
+    end
+
+    it '看護師確認なしで送信するとアラートが表示される' do
+      visit new_medical_record_patient_consent_path(medical_record)
+
+      # テンプレートを選択してStep 2に進む
+      check '美容施術同意書'
+      select '山田太郎', from: 'patient_consents[0][facility_doctor_id]'
+      click_button '患者に渡す →'
+
+      # 必須チェック項目をチェック
+      first('input[type="checkbox"][required]').check
+
+      # 署名を描画
+      page.execute_script(<<~JS)
+        (function() {
+          var visibleSection = Array.from(document.querySelectorAll('[data-consent-forms-target="patientSection"]'))
+            .find(function(section) { return !section.classList.contains('hidden'); });
+
+          var canvas = visibleSection.querySelector('canvas[data-signature-target="canvas"]');
+          var hiddenField = visibleSection.querySelector('input[data-signature-target="hiddenField"]');
+
+          var rect = canvas.getBoundingClientRect();
+          var ratio = Math.max(window.devicePixelRatio || 1, 1);
+          canvas.width = rect.width * ratio;
+          canvas.height = rect.height * ratio;
+
+          var ctx = canvas.getContext('2d');
+          ctx.scale(ratio, ratio);
+          ctx.fillStyle = 'black';
+          ctx.fillRect(10, 10, 100, 50);
+
+          hiddenField.value = canvas.toDataURL('image/png');
+        })();
+      JS
+
+      # 看護師確認なしで「同意する」をクリック
+      accept_alert do
+        click_button '同意する'
+      end
+
+      # フォーム送信が阻止され、Step 2に留まる
+      expect(page).to have_content('Step 2: 患者確認・署名')
+      expect(page).not_to have_content('同意書を作成しました')
+    end
+
+    it '署名ありの場合は正常に送信できる' do
+      visit new_medical_record_patient_consent_path(medical_record)
+
+      # テンプレートを選択してStep 2に進む
+      check '美容施術同意書'
+      select '山田太郎', from: 'patient_consents[0][facility_doctor_id]'
+      click_button '患者に渡す →'
+
+      # 必須チェック項目をチェック
+      first('input[type="checkbox"][required]').check
+
+      # 看護師確認チェックボックスをチェック
+      check 'patient_consents[0][nurse_confirmed]'
+
+      # 署名を描画（表示されているpatientSection内のcanvasとhiddenFieldを確実に取得）
+      page.execute_script(<<~JS)
+        (function() {
+          // 表示されている（hiddenクラスがない）patientSection内のcanvasを取得
+          var visibleSection = Array.from(document.querySelectorAll('[data-consent-forms-target="patientSection"]'))
+            .find(function(section) { return !section.classList.contains('hidden'); });
+
+          if (!visibleSection) {
+            throw new Error('表示されているpatientSectionが見つかりません');
+          }
+
+          var canvas = visibleSection.querySelector('canvas[data-signature-target="canvas"]');
+          var hiddenField = visibleSection.querySelector('input[data-signature-target="hiddenField"]');
+          var clearButton = visibleSection.querySelector('button[data-signature-target="clearButton"]');
+
+          if (!canvas || !hiddenField) {
+            throw new Error('canvasまたはhiddenFieldが見つかりません');
+          }
+
+          // canvasのサイズを明示的に設定
+          var rect = canvas.getBoundingClientRect();
+          var ratio = Math.max(window.devicePixelRatio || 1, 1);
+          canvas.width = rect.width * ratio;
+          canvas.height = rect.height * ratio;
+
+          // コンテキストを取得して描画
+          var ctx = canvas.getContext('2d');
+          ctx.scale(ratio, ratio);
+          ctx.fillStyle = 'black';
+          ctx.fillRect(10, 10, 100, 50);
+
+          // データURLを取得してhiddenFieldに設定
+          hiddenField.value = canvas.toDataURL('image/png');
+
+          if (clearButton) clearButton.disabled = false;
+        })();
+      JS
+
+      # JavaScriptの実行完了を待つ
+      expect(page).to have_css('button[data-signature-target="clearButton"]:not([disabled])', wait: 2)
+
+      # 「同意する」ボタンをクリック
+      click_button '同意する'
+
+      # 成功メッセージが表示される
+      expect(page).to have_current_path(medical_record_path(medical_record))
+      expect(page).to have_content('1件の同意書を作成しました')
     end
   end
 end
