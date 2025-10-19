@@ -327,8 +327,12 @@ RSpec.describe 'PatientConsents', type: :request do
     it '新しい順に表示される' do
       get medical_record_patient_consents_path(medical_record)
 
-      # patient_consent1が先に表示される（新しい順）
-      expect(response.body.index(patient_consent1.id.to_s)).to be < response.body.index(patient_consent2.id.to_s)
+      # レスポンスボディで順序を確認（新しい順）
+      # patient_consent1が先に、patient_consent2が後に出現する
+      pos1 = response.body.index("data-consent-id=\"#{patient_consent1.id}\"")
+      pos2 = response.body.index("data-consent-id=\"#{patient_consent2.id}\"")
+
+      expect(pos1).to be < pos2
     end
   end
 

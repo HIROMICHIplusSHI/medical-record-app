@@ -53,7 +53,7 @@ class PatientConsentsController < ApplicationController
 
   # GET /medical_records/:medical_record_id/patient_consents/:id/download_pdf
   def download_pdf
-    pdf_path = Rails.root.join('tmp', 'pdfs', "patient_consent_#{@patient_consent.id}.pdf")
+    pdf_path = pdf_path_for(@patient_consent)
 
     # PDFファイルが存在しない場合はエラー
     unless File.exist?(pdf_path)
@@ -89,8 +89,12 @@ class PatientConsentsController < ApplicationController
   # DELETE /medical_records/:medical_record_id/patient_consents/:id
   def destroy
     # 関連するPDFファイルを削除
-    pdf_path = Rails.root.join('tmp', 'pdfs', "patient_consent_#{@patient_consent.id}.pdf")
-    FileUtils.rm_f(pdf_path)
+    pdf_path = pdf_path_for(@patient_consent)
+
+    if File.exist?(pdf_path)
+      FileUtils.rm_f(pdf_path)
+      Rails.logger.info "Deleted PDF file: #{pdf_path} (consent_id: #{@patient_consent.id})"
+    end
 
     @patient_consent.destroy
     redirect_to medical_record_path(@medical_record), notice: '同意書を削除しました。'
@@ -222,6 +226,26 @@ class PatientConsentsController < ApplicationController
                                           .includes(:consent_form_items)
                                           .order(created_at: :desc)
     @facility_doctors = @medical_record.facility.facility_doctors.order(:name)
+  end
+
+  # PDFファイルパスを安全に構築（パストラバーサル対策）
+  def pdf_path_for(consent)
+    # IDの整数性を保証
+    consent_id = Integer(consent.id)
+
+    pdf_dir = Rails.root.join('tmp', 'pdfs')
+    pdf_filename = "patient_consent_#{consent_id}.pdf"
+
+    # パスの正規化と検証
+    full_path = pdf_dir.join(pdf_filename).cleanpath
+
+    # ディレクトリトラバーサル防止
+    raise ArgumentError, 'Invalid file path' unless full_path.to_s.start_with?(pdf_dir.to_s)
+
+    full_path
+  rescue ArgumentError, TypeError => e
+    Rails.logger.error "Invalid consent ID: #{e.message}"
+    raise ActiveRecord::RecordNotFound
   end
 
   # ファイル名をサニタイズ（パストラバーサル対策）

@@ -9,7 +9,7 @@
   <% if @patient_consents.any? %>
     <div class="space-y-4">
       <% @patient_consents.each do |consent| %>
-        <div class="bg-white shadow-md rounded-lg p-6">
+        <div class="bg-white shadow-md rounded-lg p-6" data-consent-id="<%= consent.id %>">
           <div class="flex justify-between items-start">
             <div class="flex-1">
               <h2 class="text-xl font-bold text-gray-900"><%= consent.consent_form_template.title %></h2>
