@@ -16,4 +16,11 @@ class FacilityDoctor < ApplicationRecord
   def display_name
     medical_license_number.present? ? "#{name} (#{medical_license_number})" : name
   end
+
+  alias name_with_license display_name
+
+  # ライセンス番号のみを取得（表示用）
+  def license_number
+    medical_license_number.present? ? medical_license_number : '未登録'
+  end
 end

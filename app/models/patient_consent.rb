@@ -3,7 +3,7 @@ class PatientConsent < ApplicationRecord
   belongs_to :patient
   belongs_to :consent_form_template
   belongs_to :medical_record
-  belongs_to :facility_doctor
+  belongs_to :facility_doctor, optional: true
   belongs_to :user
 
   has_many :consent_item_responses, dependent: :destroy
@@ -22,7 +22,7 @@ class PatientConsent < ApplicationRecord
 
   # バリデーション
   validates :patient, :consent_form_template, :medical_record,
-            :facility_doctor, :user, presence: true
+            :user, presence: true
   validates :agreed_at, presence: true
   validates :signature_data, presence: { message: '署名が必要です' }
 
@@ -30,6 +30,7 @@ class PatientConsent < ApplicationRecord
   validate :all_required_items_checked, on: :create
 
   # コールバック
+  before_validation :set_agreed_at, on: :create
   before_create :snapshot_facility_info
 
   # スコープ
@@ -47,6 +48,11 @@ class PatientConsent < ApplicationRecord
   end
 
   private
+
+  # 署名日時を自動設定
+  def set_agreed_at
+    self.agreed_at ||= Time.current
+  end
 
   # 施設情報のスナップショット保存
   def snapshot_facility_info
