@@ -37,6 +37,7 @@ class PatientConsent < ApplicationRecord
   before_validation :set_agreed_at, on: :create
   before_create :snapshot_facility_info
   before_create :snapshot_template_title
+  before_save :invalidate_pdf_cache, if: :will_save_change_to_signature_data?
 
   # スコープ
   scope :recent, -> { order(agreed_at: :desc) }
@@ -50,6 +51,25 @@ class PatientConsent < ApplicationRecord
 
   def self.ransackable_associations(_auth_object = nil)
     %w[consent_form_template consent_item_responses facility_doctor medical_record patient user]
+  end
+
+  # PDF整合性検証メソッド
+  def verify_pdf_integrity?
+    pdf_path = Rails.root.join('tmp', 'pdfs', "patient_consent_#{id}.pdf")
+    return false unless File.exist?(pdf_path)
+    return false if pdf_hash.blank?
+
+    current_hash = Digest::SHA256.file(pdf_path).hexdigest
+    current_hash == pdf_hash
+  end
+
+  # PDFハッシュ値生成・保存メソッド
+  def generate_pdf_hash!
+    pdf_path = Rails.root.join('tmp', 'pdfs', "patient_consent_#{id}.pdf")
+    return false unless File.exist?(pdf_path)
+
+    self.pdf_hash = Digest::SHA256.file(pdf_path).hexdigest
+    save
   end
 
   private
@@ -71,6 +91,11 @@ class PatientConsent < ApplicationRecord
   # テンプレートタイトルのスナップショット保存
   def snapshot_template_title
     self.template_title = consent_form_template.title if consent_form_template.present?
+  end
+
+  # 署名データ変更時にPDFキャッシュを無効化
+  def invalidate_pdf_cache
+    self.pdf_hash = nil
   end
 
   # 必須項目がすべてチェックされているか確認
