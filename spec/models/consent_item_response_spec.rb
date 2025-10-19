@@ -84,4 +84,39 @@ RSpec.describe ConsentItemResponse, type: :model do
       expect(response.checked).to be false
     end
   end
+
+  describe 'コールバック' do
+    describe '#snapshot_item_content' do
+      it '作成時に同意項目内容をスナップショットする' do
+        user = create(:user)
+        template = create(:consent_form_template, user: user)
+        item = create(:consent_form_item,
+                      consent_form_template: template,
+                      content: 'オリジナル内容',
+                      is_required: true)
+        patient = create(:patient, user: user)
+        facility = create(:facility, user: user)
+        medical_record = create(:medical_record, user: user, patient: patient, facility: facility)
+        consent = build(:patient_consent,
+                        user: user,
+                        patient: patient,
+                        medical_record: medical_record,
+                        consent_form_template: template)
+        consent.consent_item_responses.build(consent_form_item: item, checked: true)
+        consent.save!
+
+        response = consent.consent_item_responses.first
+
+        # スナップショットされた内容が保存されている
+        expect(response.item_content).to eq('オリジナル内容')
+
+        # 項目変更後もレスポンスのスナップショットは変わらない
+        item.update(content: '変更後内容')
+        response.reload
+
+        expect(response.item_content).to eq('オリジナル内容')
+        expect(response.consent_form_item.content).to eq('変更後内容')
+      end
+    end
+  end
 end

@@ -10,7 +10,7 @@
   <!-- 同意書情報カード -->
   <div class="bg-white shadow-md rounded-lg overflow-hidden mb-6">
     <div class="px-6 py-5 border-b border-gray-200 bg-gray-50">
-      <h2 class="text-xl font-semibold text-gray-900"><%= @patient_consent.consent_form_template.title %></h2>
+      <h2 class="text-xl font-semibold text-gray-900"><%= @patient_consent.template_title %></h2>
       <% if @patient_consent.consent_form_template.description.present? %>
         <p class="text-sm text-gray-600 mt-2 whitespace-pre-line"><%= @patient_consent.consent_form_template.description %></p>
       <% end %>
@@ -46,11 +46,10 @@
       <div>
         <h3 class="text-lg font-semibold text-gray-900 mb-4">同意項目</h3>
         <div class="space-y-3">
-          <% @patient_consent.consent_form_template.consent_form_items.order(:position).each do |item| %>
-            <% response = @patient_consent.consent_item_responses.find { |r| r.consent_form_item_id == item.id } %>
-            <div class="flex items-start p-3 rounded-lg <%= response&.checked ? 'bg-green-50' : 'bg-gray-50' %>">
+          <% @patient_consent.consent_item_responses.includes(:consent_form_item).each do |response| %>
+            <div class="flex items-start p-3 rounded-lg <%= response.checked ? 'bg-green-50' : 'bg-gray-50' %>">
               <div class="flex-shrink-0 mt-1">
-                <% if response&.checked %>
+                <% if response.checked %>
                   <svg class="h-5 w-5 text-green-600" fill="currentColor" viewBox="0 0 20 20">
                     <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
                   </svg>
@@ -62,10 +61,10 @@
               </div>
               <div class="ml-3 flex-1">
                 <p class="text-sm font-medium text-gray-900 whitespace-pre-line">
-                  <% if item.is_required %>
+                  <% if response.consent_form_item.is_required %>
                     <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-red-100 text-red-800 mr-2">必須</span>
                   <% end %>
-                  <%= item.content %>
+                  <%= response.item_content %>
                 </p>
               </div>
             </div>

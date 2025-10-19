@@ -11,7 +11,8 @@ export default class extends Controller {
     "stepIndicator2",
     "nextButton",
     "submitButton",
-    "patientSection"
+    "patientSection",
+    "nurseCheckbox"
   ]
 
   static values = {
@@ -214,5 +215,47 @@ export default class extends Controller {
         delete input.dataset.wasRequired
       }
     })
+  }
+
+  // 看護師確認チェックボックスの状態変更時
+  checkNurseConfirmation() {
+    // 特に何もしない（HTML5バリデーションに任せる）
+    // 必要に応じて送信ボタンの有効/無効を制御することも可能
+  }
+
+  // フォーム送信前の署名・看護師確認バリデーション
+  validateBeforeSubmit(event) {
+    // 表示されているpatientSectionを取得
+    const visibleSections = this.patientSectionTargets.filter(section =>
+      !section.classList.contains('hidden')
+    )
+
+    // 各セクション内の署名データと看護師確認をチェック
+    for (const section of visibleSections) {
+      // 署名チェック
+      const signatureElement = section.querySelector('[data-controller="signature"]')
+      if (!signatureElement) continue
+
+      const hiddenField = signatureElement.querySelector('input[data-signature-target="hiddenField"]')
+      if (!hiddenField || hiddenField.value === '') {
+        event.preventDefault()
+        event.stopPropagation()
+        event.stopImmediatePropagation()
+        alert('署名をお願いします。上記のキャンバスに署名を描いてください。')
+        return false
+      }
+
+      // 看護師確認チェック
+      const nurseCheckbox = section.querySelector('[data-consent-forms-target="nurseCheckbox"]')
+      if (nurseCheckbox && !nurseCheckbox.checked) {
+        event.preventDefault()
+        event.stopPropagation()
+        event.stopImmediatePropagation()
+        alert('看護師による最終確認が必要です。確認後にチェックを入れてください。')
+        return false
+      }
+    }
+
+    return true
   }
 }

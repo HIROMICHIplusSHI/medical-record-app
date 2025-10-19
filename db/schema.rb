@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2025_10_19_042125) do
+ActiveRecord::Schema[7.2].define(version: 2025_10_19_110044) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -70,6 +70,7 @@ ActiveRecord::Schema[7.2].define(version: 2025_10_19_042125) do
     t.boolean "checked", default: false, null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.text "item_content"
     t.index ["consent_form_item_id"], name: "index_consent_item_responses_on_consent_form_item_id"
     t.index ["patient_consent_id", "consent_form_item_id"], name: "index_consent_responses_uniqueness", unique: true
     t.index ["patient_consent_id"], name: "index_consent_item_responses_on_patient_consent_id"
@@ -206,6 +207,9 @@ ActiveRecord::Schema[7.2].define(version: 2025_10_19_042125) do
     t.text "signed_user_agent"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.string "template_title"
+    t.boolean "nurse_confirmed", default: false, null: false
+    t.string "pdf_hash"
     t.index ["agreed_at"], name: "index_patient_consents_on_agreed_at"
     t.index ["consent_form_template_id"], name: "index_patient_consents_on_consent_form_template_id"
     t.index ["facility_doctor_id"], name: "index_patient_consents_on_facility_doctor_id"

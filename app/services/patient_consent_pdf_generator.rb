@@ -7,7 +7,6 @@ class PatientConsentPdfGenerator
   def initialize(patient_consent)
     @consent = patient_consent
     @patient = patient_consent.patient
-    @template = patient_consent.consent_form_template
     @pdf = Prawn::Document.new(page_size: 'A4', margin: 40)
     setup_fonts
   end
@@ -125,7 +124,7 @@ class PatientConsentPdfGenerator
 
   def build_consent_title
     # テンプレート名を中央にタイトル表示
-    @pdf.text @template.title, size: 18, style: :bold, align: :center
+    @pdf.text @consent.template_title, size: 18, style: :bold, align: :center
     @pdf.move_down 5
     @pdf.stroke_horizontal_rule
     @pdf.move_down 20
@@ -155,12 +154,9 @@ class PatientConsentPdfGenerator
   end
 
   def build_consent_items_data
-    items = @template.consent_form_items.order(:position)
-    checked_item_ids = @consent.consent_item_responses.select(&:checked).map(&:consent_form_item_id)
-
-    items.map do |item|
-      check_mark = checked_item_ids.include?(item.id) ? '[✓]' : '[ ]'
-      [check_mark, item.content]
+    @consent.consent_item_responses.order(:id).map do |response|
+      check_mark = response.checked ? '[✓]' : '[ ]'
+      [check_mark, response.item_content]
     end
   end
 
@@ -237,6 +233,9 @@ class PatientConsentPdfGenerator
 
     pdf_path = pdf_dir.join("patient_consent_#{@consent.id}.pdf")
     @pdf.render_file(pdf_path)
+
+    # PDF生成後にハッシュ値を生成・保存（改ざん防止）
+    @consent.generate_pdf_hash!
 
     pdf_path.to_s
   end

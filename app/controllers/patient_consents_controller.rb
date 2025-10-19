@@ -1,7 +1,8 @@
 class PatientConsentsController < ApplicationController
   before_action :authenticate_user!
   before_action :set_medical_record
-  before_action :set_patient_consent, only: %i[show generate_pdf download_pdf preview_pdf destroy]
+  before_action :set_patient_consent,
+                only: %i[show generate_pdf download_pdf preview_pdf destroy]
   before_action :set_patient_consents, only: [:index]
 
   # GET /medical_records/:medical_record_id/patient_consents
@@ -59,6 +60,16 @@ class PatientConsentsController < ApplicationController
     unless File.exist?(pdf_path)
       redirect_to medical_record_patient_consent_path(@medical_record, @patient_consent),
                   alert: 'PDFが生成されていません。先にPDF生成を実行してください。'
+      return
+    end
+
+    # PDF改ざん検証（Critical Issue 2対応）
+    unless @patient_consent.verify_pdf_integrity?
+      # セキュリティログ記録
+      Rails.logger.warn "[SECURITY] PDF integrity check failed for PatientConsent##{@patient_consent.id}"
+
+      redirect_to medical_record_patient_consent_path(@medical_record, @patient_consent),
+                  alert: 'PDFファイルの整合性検証に失敗しました。PDFを再生成してください。'
       return
     end
 
@@ -143,7 +154,8 @@ class PatientConsentsController < ApplicationController
       user: current_user,
       consent_form_template: template,
       facility_doctor: doctor,
-      signature_data: permitted[:signature_data]
+      signature_data: permitted[:signature_data],
+      nurse_confirmed: permitted[:nurse_confirmed] == '1'
     )
 
     # チェック項目の回答を作成
@@ -168,6 +180,7 @@ class PatientConsentsController < ApplicationController
       :consent_form_template_id,
       :facility_doctor_id,
       :signature_data,
+      :nurse_confirmed,
       consent_item_responses_attributes: %i[consent_form_item_id checked]
     )
   end
