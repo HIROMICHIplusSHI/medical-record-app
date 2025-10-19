@@ -162,11 +162,11 @@
                 </div>
 
                 <!-- 署名エリア -->
-                <div class="mb-4">
+                <div class="mb-4" data-controller="signature">
                   <label class="block text-sm font-medium text-gray-700 mb-2">
                     患者署名 <span class="text-red-500">*</span>
                   </label>
-                  <div data-controller="signature" class="border-2 border-gray-300 rounded-lg p-2 bg-white">
+                  <div class="border-2 border-gray-300 rounded-lg p-2 bg-white">
                     <canvas
                       data-signature-target="canvas"
                       class="w-full border border-gray-200 rounded cursor-crosshair"
@@ -191,6 +191,33 @@
                   </p>
                 </div>
 
+                <!-- 看護師確認 -->
+                <div class="mb-4 bg-yellow-50 border-2 border-yellow-200 rounded-lg p-4">
+                  <div class="flex items-start">
+                    <div class="flex items-center h-5 mt-0.5">
+                      <%= check_box_tag "patient_consents[#{index}][nurse_confirmed]",
+                          "1", false,
+                          id: "nurse_confirmed_#{template.id}",
+                          class: "h-5 w-5 text-blue-600 focus:ring-blue-500 border-gray-300 rounded",
+                          data: {
+                            action: "change->consent-forms#checkNurseConfirmation",
+                            consent_forms_target: "nurseCheckbox",
+                            template_id: template.id
+                          },
+                          required: true %>
+                    </div>
+                    <div class="ml-3">
+                      <label for="nurse_confirmed_<%= template.id %>" class="text-sm font-semibold text-gray-900 cursor-pointer">
+                        看護師による最終確認 <span class="text-red-500">*</span>
+                      </label>
+                      <p class="text-xs text-gray-600 mt-1">
+                        患者様の署名内容を看護師が確認した場合にチェックしてください。<br>
+                        このチェックがないと同意書を送信できません。
+                      </p>
+                    </div>
+                  </div>
+                </div>
+
                 <!-- 施設情報（自動表示） -->
                 <div class="bg-gray-100 rounded-lg p-3 text-sm text-gray-700">
                   <p class="font-semibold mb-2">施設情報（自動記録）</p>
@@ -212,7 +239,10 @@
               ← 戻る
             </button>
             <%= f.submit '同意する',
-                data: { consent_forms_target: "submitButton" },
+                data: {
+                  consent_forms_target: "submitButton",
+                  action: "click->consent-forms#validateBeforeSubmit"
+                },
                 class: "px-6 py-3 border border-transparent rounded-md shadow-sm text-base font-medium text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500" %>
           </div>
         <% end %>
