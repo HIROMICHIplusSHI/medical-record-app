@@ -257,6 +257,114 @@ RSpec.describe 'ConsentFormTemplates', type: :request do
     end
   end
 
+  describe 'PATCH /consent_form_templates/:id/sort_items' do
+    let!(:template_with_items) do
+      create(:consent_form_template, user: user, title: 'ソートテスト').tap do |t|
+        create(:consent_form_item, consent_form_template: t, content: '項目1', position: 1)
+        create(:consent_form_item, consent_form_template: t, content: '項目2', position: 2)
+        create(:consent_form_item, consent_form_template: t, content: '項目3', position: 3)
+      end
+    end
+
+    it 'チェック項目の並び順を更新する' do
+      items = template_with_items.consent_form_items.order(:position)
+      item_ids = items.map(&:id)
+
+      # 並び順を逆にする
+      new_order = [
+        { id: item_ids[2], position: 1 },
+        { id: item_ids[1], position: 2 },
+        { id: item_ids[0], position: 3 },
+      ]
+
+      patch sort_items_consent_form_template_path(template_with_items),
+            params: { items: new_order },
+            headers: { 'Content-Type' => 'application/json' },
+            as: :json
+
+      expect(response).to have_http_status(:success)
+      expect(response.parsed_body['success']).to be true
+
+      # 並び順が更新されたことを確認
+      template_with_items.reload
+      sorted_items = template_with_items.consent_form_items.order(:position)
+      expect(sorted_items[0].id).to eq(item_ids[2])
+      expect(sorted_items[1].id).to eq(item_ids[1])
+      expect(sorted_items[2].id).to eq(item_ids[0])
+    end
+
+    it '成功メッセージを返す' do
+      items = template_with_items.consent_form_items.order(:position)
+      item_ids = items.map(&:id)
+
+      new_order = [
+        { id: item_ids[0], position: 1 },
+      ]
+
+      patch sort_items_consent_form_template_path(template_with_items),
+            params: { items: new_order },
+            headers: { 'Content-Type' => 'application/json' },
+            as: :json
+
+      expect(response.parsed_body['message']).to eq('並び順を更新しました')
+    end
+
+    it '存在しない項目IDの場合は404を返す' do
+      new_order = [
+        { id: 99_999, position: 1 },
+      ]
+
+      patch sort_items_consent_form_template_path(template_with_items),
+            params: { items: new_order },
+            headers: { 'Content-Type' => 'application/json' },
+            as: :json
+
+      expect(response).to have_http_status(:not_found)
+      expect(response.parsed_body['success']).to be false
+    end
+
+    it '他のユーザーのテンプレートの項目は並び替えできない' do
+      other_template = create(:consent_form_template, user: other_user).tap do |t|
+        create(:consent_form_item, consent_form_template: t, content: '他者項目', position: 1)
+      end
+
+      item = other_template.consent_form_items.first
+      new_order = [{ id: item.id, position: 2 }]
+
+      patch sort_items_consent_form_template_path(other_template),
+            params: { items: new_order },
+            headers: { 'Content-Type' => 'application/json' },
+            as: :json
+
+      expect(response).to have_http_status(:redirect)
+      expect(response).to redirect_to(consent_form_templates_path)
+    end
+
+    it 'トランザクション処理により一部エラーでも全体がロールバックされる' do
+      items = template_with_items.consent_form_items.order(:position)
+      original_positions = items.map(&:position)
+
+      # 1つ目は正常、2つ目は存在しないIDでエラー
+      new_order = [
+        { id: items[0].id, position: 99 },
+        { id: 99_999, position: 1 },
+      ]
+
+      patch sort_items_consent_form_template_path(template_with_items),
+            params: { items: new_order },
+            headers: { 'Content-Type' => 'application/json' },
+            as: :json
+
+      expect(response).to have_http_status(:not_found)
+
+      # 全ての項目が元の位置に戻っていることを確認（ロールバック）
+      template_with_items.reload
+      items.each_with_index do |item, index|
+        expect(item.reload.position).to eq(original_positions[index])
+      end
+    end
+  end
+
   describe '認証されていない場合' do
     before do
       sign_out user
@@ -295,6 +403,14 @@ RSpec.describe 'ConsentFormTemplates', type: :request do
     it 'destroyにアクセスできない' do
       delete consent_form_template_path(template)
       expect(response).to redirect_to(new_user_session_path)
+    end
+
+    it 'sort_itemsにアクセスできない' do
+      patch sort_items_consent_form_template_path(template),
+            params: { items: [] },
+            headers: { 'Content-Type' => 'application/json' },
+            as: :json
+      expect(response).to have_http_status(:unauthorized)
     end
   end
 end

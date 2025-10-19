@@ -1,6 +1,6 @@
 class ConsentFormTemplatesController < ApplicationController
   before_action :authenticate_user!
-  before_action :set_consent_form_template, only: %i[show edit update destroy]
+  before_action :set_consent_form_template, only: %i[show edit update destroy sort_items]
 
   def index
     @consent_form_templates = current_user.consent_form_templates.recent
@@ -35,6 +35,23 @@ class ConsentFormTemplatesController < ApplicationController
   def destroy
     @consent_form_template.destroy
     redirect_to consent_form_templates_url, notice: '同意書テンプレートが正常に削除されました。'
+  end
+
+  def sort_items
+    items = params[:items]
+
+    ActiveRecord::Base.transaction do
+      items.each do |item_data|
+        item = @consent_form_template.consent_form_items.find(item_data[:id])
+        item.update!(position: item_data[:position])
+      end
+    end
+
+    render json: { success: true, message: '並び順を更新しました' }
+  rescue ActiveRecord::RecordNotFound => e
+    render json: { success: false, error: e.message }, status: :not_found
+  rescue StandardError => e
+    render json: { success: false, error: e.message }, status: :unprocessable_entity
   end
 
   private
