@@ -1,6 +1,7 @@
 class PatientConsentsController < ApplicationController
   before_action :authenticate_user!
   before_action :set_medical_record
+  before_action :set_patient_consent, only: %i[show generate_pdf download_pdf preview_pdf destroy]
   before_action :set_patient_consents, only: [:index]
 
   # GET /medical_records/:medical_record_id/patient_consents
@@ -32,7 +33,81 @@ class PatientConsentsController < ApplicationController
     handle_creation_result(errors)
   end
 
+  # GET /medical_records/:medical_record_id/patient_consents/:id
+  def show
+    # eager loading済み（set_patient_consent）
+  end
+
+  # POST /medical_records/:medical_record_id/patient_consents/:id/generate_pdf
+  def generate_pdf
+    # PDF生成サービスを呼び出し
+    PatientConsentPdfGenerator.new(@patient_consent).generate
+    redirect_to medical_record_patient_consent_path(@medical_record, @patient_consent),
+                notice: 'PDFを生成しました。'
+  rescue StandardError => e
+    Rails.logger.error "PDF Generation Error: #{e.class}: #{e.message}"
+    Rails.logger.error e.backtrace.first(10).join("\n")
+    redirect_to medical_record_patient_consent_path(@medical_record, @patient_consent),
+                alert: "PDF生成中にエラーが発生しました: #{e.message}"
+  end
+
+  # GET /medical_records/:medical_record_id/patient_consents/:id/download_pdf
+  def download_pdf
+    pdf_path = Rails.root.join('tmp', 'pdfs', "patient_consent_#{@patient_consent.id}.pdf")
+
+    # PDFファイルが存在しない場合はエラー
+    unless File.exist?(pdf_path)
+      redirect_to medical_record_patient_consent_path(@medical_record, @patient_consent),
+                  alert: 'PDFが生成されていません。先にPDF生成を実行してください。'
+      return
+    end
+
+    # PDFファイルを送信
+    send_file pdf_path,
+              type: 'application/pdf',
+              disposition: 'attachment',
+              filename: sanitize_filename("patient_consent_#{@patient_consent.id}.pdf")
+  end
+
+  # GET /medical_records/:medical_record_id/patient_consents/:id/preview_pdf
+  def preview_pdf
+    # PDF生成（一時ファイル）
+
+    generator = PatientConsentPdfGenerator.new(@patient_consent)
+    pdf_content = generator.generate_to_string
+
+    send_data pdf_content,
+              type: 'application/pdf',
+              disposition: 'inline',
+              filename: sanitize_filename("preview_patient_consent_#{@patient_consent.id}.pdf")
+  rescue StandardError => e
+    Rails.logger.error "PDF Preview Error: #{e.class}: #{e.message}"
+    Rails.logger.error e.backtrace.first(10).join("\n")
+    render plain: "PDF生成中にエラーが発生しました: #{e.message}", status: :internal_server_error
+  end
+
+  # DELETE /medical_records/:medical_record_id/patient_consents/:id
+  def destroy
+    # 関連するPDFファイルを削除
+    pdf_path = Rails.root.join('tmp', 'pdfs', "patient_consent_#{@patient_consent.id}.pdf")
+    FileUtils.rm_f(pdf_path)
+
+    @patient_consent.destroy
+    redirect_to medical_record_path(@medical_record), notice: '同意書を削除しました。'
+  end
+
   private
+
+  def set_patient_consent
+    @patient_consent = @medical_record.patient_consents
+                                      .includes(
+                                        :patient,
+                                        :consent_form_template,
+                                        :facility_doctor,
+                                        consent_item_responses: :consent_form_item
+                                      )
+                                      .find(params[:id])
+  end
 
   def set_medical_record
     @medical_record = current_user.medical_records.find(params[:medical_record_id])
@@ -147,5 +222,11 @@ class PatientConsentsController < ApplicationController
                                           .includes(:consent_form_items)
                                           .order(created_at: :desc)
     @facility_doctors = @medical_record.facility.facility_doctors.order(:name)
+  end
+
+  # ファイル名をサニタイズ（パストラバーサル対策）
+  def sanitize_filename(filename)
+    # 英数字、ハイフン、アンダースコア、ドット以外を除去
+    filename.gsub(/[^\w\-.]/, '_')
   end
 end

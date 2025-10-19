@@ -26,7 +26,13 @@ Rails.application.routes.draw do
       member do
         delete :remove_photo
       end
-      resources :patient_consents, only: [:new, :create, :index]
+      resources :patient_consents, only: [:new, :create, :index, :show, :destroy] do
+        member do
+          post :generate_pdf
+          get :download_pdf
+          get :preview_pdf
+        end
+      end
     end
 
     resources :invoices do
