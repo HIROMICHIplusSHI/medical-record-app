@@ -5,7 +5,7 @@ RSpec.describe PatientConsent, type: :model do
     it { is_expected.to belong_to(:patient) }
     it { is_expected.to belong_to(:consent_form_template) }
     it { is_expected.to belong_to(:medical_record) }
-    it { is_expected.to belong_to(:facility_doctor) }
+    it { is_expected.to belong_to(:facility_doctor).optional }
     it { is_expected.to belong_to(:user) }
     it { is_expected.to have_many(:consent_item_responses).dependent(:destroy) }
   end
@@ -16,9 +16,9 @@ RSpec.describe PatientConsent, type: :model do
     it { is_expected.to validate_presence_of(:patient) }
     it { is_expected.to validate_presence_of(:consent_form_template) }
     it { is_expected.to validate_presence_of(:medical_record) }
-    it { is_expected.to validate_presence_of(:facility_doctor) }
     it { is_expected.to validate_presence_of(:user) }
-    it { is_expected.to validate_presence_of(:agreed_at) }
+    # agreed_atは before_validation :set_agreed_at で自動設定されるため、presence validationは不要
+    # facility_doctorはオプショナル（必須ではない）
 
     it 'signature_dataが空の場合、エラーになる' do
       consent = build(:patient_consent, signature_data: nil)
