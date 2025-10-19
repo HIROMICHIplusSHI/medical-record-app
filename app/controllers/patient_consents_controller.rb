@@ -1,7 +1,8 @@
 class PatientConsentsController < ApplicationController
   before_action :authenticate_user!
   before_action :set_medical_record
-  before_action :set_patient_consent, only: %i[show generate_pdf download_pdf preview_pdf destroy]
+  before_action :set_patient_consent,
+                only: %i[show generate_pdf download_pdf preview_pdf destroy]
   before_action :set_patient_consents, only: [:index]
 
   # GET /medical_records/:medical_record_id/patient_consents
@@ -143,7 +144,8 @@ class PatientConsentsController < ApplicationController
       user: current_user,
       consent_form_template: template,
       facility_doctor: doctor,
-      signature_data: permitted[:signature_data]
+      signature_data: permitted[:signature_data],
+      nurse_confirmed: permitted[:nurse_confirmed] == '1'
     )
 
     # チェック項目の回答を作成
@@ -168,6 +170,7 @@ class PatientConsentsController < ApplicationController
       :consent_form_template_id,
       :facility_doctor_id,
       :signature_data,
+      :nurse_confirmed,
       consent_item_responses_attributes: %i[consent_form_item_id checked]
     )
   end
