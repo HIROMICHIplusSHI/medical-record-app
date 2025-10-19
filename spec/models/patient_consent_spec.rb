@@ -91,6 +91,32 @@ RSpec.describe PatientConsent, type: :model do
         expect(consent.practitioner_name).to eq('test@example.com')
       end
     end
+
+    describe '#snapshot_template_title' do
+      it '作成時にテンプレートタイトルをスナップショットする' do
+        user = create(:user)
+        template = create(:consent_form_template, title: 'オリジナルタイトル', user: user)
+        patient = create(:patient, user: user)
+        facility = create(:facility, user: user)
+        medical_record = create(:medical_record, user: user, patient: patient, facility: facility)
+
+        consent = create(:patient_consent, :with_responses,
+                         user: user,
+                         patient: patient,
+                         medical_record: medical_record,
+                         consent_form_template: template)
+
+        # スナップショットされたタイトルが保存されている
+        expect(consent.template_title).to eq('オリジナルタイトル')
+
+        # テンプレート変更後も同意書のスナップショットは変わらない
+        template.update(title: '変更後タイトル')
+        consent.reload
+
+        expect(consent.template_title).to eq('オリジナルタイトル')
+        expect(consent.consent_form_template.title).to eq('変更後タイトル')
+      end
+    end
   end
 
   describe 'カスタムバリデーション' do

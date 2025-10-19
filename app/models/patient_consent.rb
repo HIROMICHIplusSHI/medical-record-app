@@ -36,6 +36,7 @@ class PatientConsent < ApplicationRecord
   # コールバック
   before_validation :set_agreed_at, on: :create
   before_create :snapshot_facility_info
+  before_create :snapshot_template_title
 
   # スコープ
   scope :recent, -> { order(agreed_at: :desc) }
@@ -65,6 +66,11 @@ class PatientConsent < ApplicationRecord
     self.facility_address = facility.address
     self.facility_phone = facility.phone
     self.practitioner_name = user.company_name || user.email
+  end
+
+  # テンプレートタイトルのスナップショット保存
+  def snapshot_template_title
+    self.template_title = consent_form_template.title if consent_form_template.present?
   end
 
   # 必須項目がすべてチェックされているか確認
