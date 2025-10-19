@@ -234,6 +234,9 @@ class PatientConsentPdfGenerator
     pdf_path = pdf_dir.join("patient_consent_#{@consent.id}.pdf")
     @pdf.render_file(pdf_path)
 
+    # PDF生成後にハッシュ値を生成・保存（改ざん防止）
+    @consent.generate_pdf_hash!
+
     pdf_path.to_s
   end
 end
