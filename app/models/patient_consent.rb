@@ -28,6 +28,10 @@ class PatientConsent < ApplicationRecord
 
   # カスタムバリデーション：必須項目のチェック確認
   validate :all_required_items_checked, on: :create
+  # カスタムバリデーション：署名データの検証
+  validate :validate_signature_format
+  validate :validate_signature_size
+  validate :validate_signature_content
 
   # コールバック
   before_validation :set_agreed_at, on: :create
@@ -72,6 +76,52 @@ class PatientConsent < ApplicationRecord
 
     required_items.each do |item|
       errors.add(:base, "必須項目「#{item.content}」にチェックが必要です") unless checked_item_ids.include?(item.id)
+    end
+  end
+
+  # 署名データのフォーマット検証
+  def validate_signature_format
+    return if signature_data.blank?
+
+    return if signature_data.match?(%r{\Adata:image/png;base64,[A-Za-z0-9+/=]+\z})
+
+    errors.add(:signature_data, '署名データの形式が不正です')
+  end
+
+  # 署名データのサイズ検証
+  def validate_signature_size
+    return if signature_data.blank?
+
+    base64_data = signature_data.split(',')[1]
+    return if base64_data.blank?
+
+    estimated_size = (base64_data.length * 3) / 4
+
+    max_size = 2.megabytes
+    return unless estimated_size > max_size
+
+    errors.add(:signature_data, "署名データが大きすぎます（最大#{max_size / 1.megabyte}MB）")
+  end
+
+  # 署名データの内容検証
+  def validate_signature_content
+    return if signature_data.blank?
+
+    begin
+      base64_data = signature_data.split(',')[1]
+      return if base64_data.blank?
+
+      decoded = Base64.strict_decode64(base64_data)
+
+      # PNG署名チェック（マジックナンバー）
+      png_signature = "\x89PNG\r\n\x1A\n".force_encoding('ASCII-8BIT')
+      errors.add(:signature_data, '不正な画像形式です') unless decoded.force_encoding('ASCII-8BIT').start_with?(png_signature)
+
+      # 最小サイズチェック（実質的な署名があるか）
+      min_size = 200 # バイト
+      errors.add(:signature_data, '署名が不完全です') if decoded.length < min_size
+    rescue ArgumentError
+      errors.add(:signature_data, 'Base64デコードエラー')
     end
   end
 end
