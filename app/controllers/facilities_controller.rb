@@ -48,6 +48,9 @@ class FacilitiesController < ApplicationController
   end
 
   def facility_params
-    params.require(:facility).permit(:name, :address, :phone, :email, :notes, :billing_addressee, :billing_rate)
+    params.require(:facility).permit(
+      :name, :address, :phone, :email, :notes, :billing_addressee, :billing_rate,
+      facility_doctors_attributes: %i[id name medical_license_number specialization _destroy]
+    )
   end
 end

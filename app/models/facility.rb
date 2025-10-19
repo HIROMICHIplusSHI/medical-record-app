@@ -4,6 +4,11 @@ class Facility < ApplicationRecord
   has_many :medical_records, dependent: :restrict_with_error
   has_many :invoices, dependent: :restrict_with_error
 
+  # ネストフォーム
+  accepts_nested_attributes_for :facility_doctors,
+                                allow_destroy: true,
+                                reject_if: :all_blank
+
   validates :name, presence: true, length: { maximum: 100 }
   validates :phone, format: { with: /\A\d{2,4}-?\d{2,4}-?\d{3,4}\z/, allow_blank: true }
   validates :email, format: { with: URI::MailTo::EMAIL_REGEXP, allow_blank: true }

@@ -17,8 +17,8 @@ Capybara.register_driver(:cuprite) do |app|
       'disable-gpu': nil,
       'disable-dev-shm-usage': nil, # CI環境での共有メモリ問題を回避
     },
-    process_timeout: 30, # CI環境でのブラウザ起動タイムアウトを延長（GitHub Actions対応）
-    timeout: 15, # レスポンスタイムアウト
+    process_timeout: 60, # CI環境でのブラウザ起動タイムアウトを延長（GitHub Actions対応）
+    timeout: 20, # レスポンスタイムアウト
     inspector: ENV.fetch('INSPECTOR', nil),
     headless: !ENV['HEADLESS'].in?(%w[n 0 no false])
   )

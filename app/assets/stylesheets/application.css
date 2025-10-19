@@ -61,3 +61,18 @@ select option {
   padding: 10px 14px;
   font-weight: 600;
 }
+
+/* SortableJS - ドラッグ&ドロップ時のスタイル */
+.sortable-ghost {
+  opacity: 0.4;
+  background-color: #e5e7eb;
+}
+
+.drag-handle {
+  cursor: move;
+  cursor: grab;
+}
+
+.drag-handle:active {
+  cursor: grabbing;
+}

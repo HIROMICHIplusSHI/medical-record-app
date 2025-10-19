@@ -15,6 +15,7 @@
     <%= render 'shared/header' if user_signed_in? %>
 
     <main class="<%= user_signed_in? ? 'mt-4' : 'mt-28' %> container mx-auto px-5">
+      <%= render 'shared/flash' %>
       <%= yield %>
     </main>
   </body>

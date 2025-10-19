@@ -5,7 +5,10 @@ class ConsentFormItem < ApplicationRecord
 
   # バリデーション
   validates :content, presence: true
-  validates :position, presence: true, numericality: { only_integer: true }
+  validates :position, numericality: { only_integer: true }, allow_blank: true
+
+  # コールバック
+  before_validation :set_default_position, on: :create
 
   # デフォルトスコープ
   default_scope { order(:position) }
@@ -17,5 +20,15 @@ class ConsentFormItem < ApplicationRecord
 
   def self.ransackable_associations(_auth_object = nil)
     %w[consent_form_template consent_item_responses]
+  end
+
+  private
+
+  def set_default_position
+    return if position.present?
+
+    # 同じテンプレート内の最大position + 1 を設定
+    max_position = consent_form_template&.consent_form_items&.maximum(:position) || 0
+    self.position = max_position + 1
   end
 end

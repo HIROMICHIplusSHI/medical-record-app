@@ -8,8 +8,29 @@ RSpec.describe ConsentFormItem, type: :model do
 
   describe 'バリデーション' do
     it { is_expected.to validate_presence_of(:content) }
-    it { is_expected.to validate_presence_of(:position) }
-    it { is_expected.to validate_numericality_of(:position).only_integer }
+    it { is_expected.to validate_numericality_of(:position).only_integer.allow_nil }
+  end
+
+  describe 'positionの自動設定' do
+    let(:template) { create(:consent_form_template) }
+
+    it 'positionが空の場合、自動的に1が設定される' do
+      item = create(:consent_form_item, consent_form_template: template, position: nil)
+      expect(item.position).to eq(1)
+    end
+
+    it '既存項目がある場合、最大値+1が設定される' do
+      create(:consent_form_item, consent_form_template: template, position: 1)
+      create(:consent_form_item, consent_form_template: template, position: 2)
+
+      new_item = create(:consent_form_item, consent_form_template: template, position: nil)
+      expect(new_item.position).to eq(3)
+    end
+
+    it 'positionが明示的に指定された場合は、その値を使用する' do
+      item = create(:consent_form_item, consent_form_template: template, position: 5)
+      expect(item.position).to eq(5)
+    end
   end
 
   describe 'デフォルトスコープ' do
