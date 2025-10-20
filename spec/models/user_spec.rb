@@ -62,6 +62,25 @@ RSpec.describe User, type: :model do
       expect(admin.reload.role).to eq('user')
       expect(admin.user?).to be true
     end
+
+    describe 'Mass Assignment保護' do
+      it 'update経由でのrole変更が防止される' do
+        user.update(role: :admin)
+        expect(user.reload.role).to eq('user')
+        expect(user.errors[:role]).to include('は変更できません')
+      end
+
+      it 'update!経由でのrole変更がエラーになる' do
+        expect { user.update!(role: :admin) }.to raise_error(ActiveRecord::RecordNotSaved)
+        expect(user.reload.role).to eq('user')
+      end
+
+      it 'allow_role_change!を使用するとrole変更が許可される' do
+        user.allow_role_change!
+        user.update(role: :admin)
+        expect(user.reload.role).to eq('admin')
+      end
+    end
   end
 
   describe '.from_omniauth' do
