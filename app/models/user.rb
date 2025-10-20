@@ -12,8 +12,10 @@ class User < ApplicationRecord
     admin: 1, # 管理者
   }, default: :user
 
-  # Mass Assignment対策: roleの変更を保護（enum メソッド経由は許可）
-  before_update :prevent_role_change, unless: -> { @allow_role_change || role_changed_by_enum? }
+  # Mass Assignment対策: roleの変更を保護
+  attr_accessor :skip_role_protection
+
+  before_update :prevent_role_change, unless: :skip_role_protection
 
   # Associations
   has_many :facilities, dependent: :destroy
@@ -41,23 +43,18 @@ class User < ApplicationRecord
 
   # 管理者によるロール変更を許可するメソッド
   def allow_role_change!
-    @allow_role_change = true
+    self.skip_role_protection = true
   end
 
   private
 
   # ロール変更を防止（Mass Assignment対策）
+  # 注意: enum メソッド（admin!、user!）も含めて全てのrole変更を防止
+  # 管理者による明示的な権限変更のみ許可（allow_role_change!呼び出し後）
   def prevent_role_change
     return unless role_changed? && persisted?
 
     errors.add(:role, 'は変更できません')
     throw(:abort)
-  end
-
-  # enum メソッド（admin!、user!）経由での変更かを判定
-  def role_changed_by_enum?
-    # caller_locations を使用して呼び出し元を確認
-    # enum メソッドは ActiveRecord::Enum のメソッドを経由する
-    caller_locations.any? { |loc| loc.to_s.include?('active_record/enum') }
   end
 end
