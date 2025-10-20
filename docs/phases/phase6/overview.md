@@ -1352,12 +1352,83 @@ end
 
 ---
 
+### 3. ヘッダーロゴ設置
+
+**実装内容**:
+- PNGロゴファイルを`app/assets/images/`に配置
+- ヘッダーにロゴ表示
+- `root_path`へのリンク設定
+- レスポンシブ対応（モバイル/タブレット/デスクトップ）
+
+**ファイル配置**:
+```bash
+# 通常サイズ
+app/assets/images/logo.png
+
+# 高解像度版（Retina対応、推奨）
+app/assets/images/logo@2x.png
+```
+
+**実装例**:
+```erb
+<!-- app/views/layouts/application.html.erb のヘッダー部分 -->
+<header class="navbar bg-base-100 shadow-lg">
+  <div class="navbar-start">
+    <%= link_to root_path, class: "btn btn-ghost normal-case" do %>
+      <%= image_tag 'logo.png',
+                    alt: '電子カルテアプリ',
+                    class: 'h-6 md:h-8 lg:h-10 w-auto',
+                    srcset: "#{image_path('logo.png')} 1x, #{image_path('logo@2x.png')} 2x" %>
+    <% end %>
+  </div>
+
+  <!-- ナビゲーションメニュー -->
+  <div class="navbar-center hidden lg:flex">
+    <ul class="menu menu-horizontal px-1">
+      <li><%= link_to 'カルテ', medical_records_path %></li>
+      <li><%= link_to '患者', patients_path %></li>
+      <li><%= link_to '施術場所', facilities_path %></li>
+      <li><%= link_to 'ダッシュボード', dashboard_path %></li>
+    </ul>
+  </div>
+
+  <!-- ユーザーメニュー -->
+  <div class="navbar-end">
+    <div class="dropdown dropdown-end">
+      <label tabindex="0" class="btn btn-ghost btn-circle avatar">
+        <div class="w-10 rounded-full bg-primary text-primary-content flex items-center justify-center">
+          <span class="text-lg font-bold"><%= current_user.email[0].upcase %></span>
+        </div>
+      </label>
+      <ul tabindex="0" class="menu menu-sm dropdown-content mt-3 z-[1] p-2 shadow bg-base-100 rounded-box w-52">
+        <li><%= link_to 'マイページ', mypage_path %></li>
+        <% if current_user.admin? %>
+          <li><%= link_to '管理者画面', admin_root_path %></li>
+        <% end %>
+        <li><%= button_to 'ログアウト', destroy_user_session_path, method: :delete %></li>
+      </ul>
+    </div>
+  </div>
+</header>
+```
+
+**推奨仕様**:
+- ロゴサイズ: 高さ32px〜64px程度
+- ファイル形式: PNG（透過背景推奨）
+- Retina対応: 2倍サイズの@2x版も準備
+
+**注意事項**:
+- 実装時にロゴファイルの詳細（サイズ、透過の有無、2倍サイズ版の有無）を確認
+- ファイルサイズ最適化（TinyPNGなど）を推奨
+
+---
+
 ### マイルストーン達成条件（Phase 6-C）
 
 - [ ] ホームページ作成完了（Phase 6-Aで実装済み）
 - [ ] ログインページUI改善完了
 - [ ] Googleログイン削除完了
-- [ ] ヘッダーロゴリンク修正完了（root_pathへ）
+- [ ] ヘッダーロゴ設置完了（PNGファイル配置、リンク設定）
 - [ ] レスポンシブ対応確認完了
 - [ ] System Spec完了（ナビゲーション確認）
 
