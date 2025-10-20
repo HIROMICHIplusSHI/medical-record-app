@@ -7,7 +7,7 @@ RSpec.describe 'Homes', type: :request do
   describe 'GET /' do
     context '未認証の場合' do
       it 'ログインページにリダイレクトされる' do
-        get root_path
+        get user_root_path
         expect(response).to redirect_to(new_user_session_path)
       end
     end
@@ -16,7 +16,7 @@ RSpec.describe 'Homes', type: :request do
       before { sign_in user }
 
       it 'ホームページが表示される' do
-        get root_path
+        get user_root_path
         expect(response).to have_http_status(:success)
       end
 
@@ -25,7 +25,7 @@ RSpec.describe 'Homes', type: :request do
                                           title: 'テストお知らせ')
         create(:announcement, :draft, author: admin)
 
-        get root_path
+        get user_root_path
 
         expect(response.body).to include('テストお知らせ')
       end

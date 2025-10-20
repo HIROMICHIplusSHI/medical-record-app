@@ -60,7 +60,7 @@ RSpec.describe 'Admin::Announcements', type: :request do
 
     it 'お知らせを更新できる' do
       patch admin_announcement_path(announcement), params: {
-        announcement: { title: '更新されたタイトル' }
+        announcement: { title: '更新されたタイトル' },
       }
 
       expect(announcement.reload.title).to eq('更新されたタイトル')

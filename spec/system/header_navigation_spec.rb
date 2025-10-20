@@ -11,13 +11,13 @@ RSpec.describe 'Header Navigation', type: :system do
 
   describe 'ヘッダーの表示' do
     it '全ページでヘッダーが表示される' do
-      visit root_path
+      visit user_root_path
       expect(page).to have_selector('header')
       expect(page).to have_content('電子カルテ')
     end
 
     it 'ナビゲーションメニューが表示される' do
-      visit root_path
+      visit user_root_path
 
       within('header') do
         # 有効化されたアイテムはlinkとして表示される
@@ -32,7 +32,7 @@ RSpec.describe 'Header Navigation', type: :system do
     end
 
     it 'ユーザーメニューが表示される' do
-      visit root_path
+      visit user_root_path
 
       within('header') do
         expect(page).to have_content(user.email.split('@').first)
@@ -65,7 +65,7 @@ RSpec.describe 'Header Navigation', type: :system do
 
   describe 'ナビゲーションの動作', js: true do
     it '「カルテ」リンクをクリックするとカルテ一覧に遷移する' do
-      visit root_path
+      visit user_root_path
 
       within('header') do
         click_link 'カルテ'
@@ -76,7 +76,7 @@ RSpec.describe 'Header Navigation', type: :system do
     end
 
     it '「患者」リンクをクリックすると患者一覧に遷移する' do
-      visit root_path
+      visit user_root_path
 
       within('header') do
         click_link '患者'
@@ -87,7 +87,7 @@ RSpec.describe 'Header Navigation', type: :system do
     end
 
     it '「請求書」リンクをクリックすると請求書一覧に遷移する' do
-      visit root_path
+      visit user_root_path
 
       within('header') do
         click_link '請求書'
@@ -100,7 +100,7 @@ RSpec.describe 'Header Navigation', type: :system do
 
   describe 'ユーザードロップダウン', js: true do
     it 'ユーザー名をクリックするとメニューが表示される' do
-      visit root_path
+      visit user_root_path
 
       within('header') do
         # ドロップダウンメニューは最初は非表示（hiddenクラスで制御）
@@ -115,7 +115,7 @@ RSpec.describe 'Header Navigation', type: :system do
     end
 
     it 'ログアウトリンクが機能する' do
-      visit root_path
+      visit user_root_path
 
       within('header') do
         find('[data-controller="dropdown"] button').click
@@ -138,7 +138,7 @@ RSpec.describe 'Header Navigation', type: :system do
       end
 
       it 'ハンバーガーメニューボタンが表示される' do
-        visit root_path
+        visit user_root_path
 
         within('header') do
           expect(page).to have_css('button[data-action="click->header#toggleMobileMenu"]', visible: :visible)
@@ -146,14 +146,14 @@ RSpec.describe 'Header Navigation', type: :system do
       end
 
       it 'デフォルトでナビゲーションメニューが非表示' do
-        visit root_path
+        visit user_root_path
 
         # モバイルメニューは最初は hidden
         expect(page).to have_css('nav.hidden, nav[style*="display: none"]', visible: :all)
       end
 
       it 'ハンバーガーメニューをクリックするとメニューが表示される' do
-        visit root_path
+        visit user_root_path
 
         within('header') do
           # ハンバーガーアイコンをクリック
@@ -173,7 +173,7 @@ RSpec.describe 'Header Navigation', type: :system do
       end
 
       it 'ハンバーガーメニューボタンが非表示' do
-        visit root_path
+        visit user_root_path
 
         within('header') do
           expect(page).not_to have_css('button[data-action="click->header#toggleMobileMenu"]', visible: :visible)
@@ -181,7 +181,7 @@ RSpec.describe 'Header Navigation', type: :system do
       end
 
       it 'ナビゲーションメニューが常に表示される' do
-        visit root_path
+        visit user_root_path
 
         within('header nav') do
           expect(page).to have_link('カルテ', visible: :visible)
@@ -193,17 +193,17 @@ RSpec.describe 'Header Navigation', type: :system do
 
   describe 'アクセシビリティ' do
     it 'ヘッダーに適切なランドマークロールが設定されている' do
-      visit root_path
+      visit user_root_path
       expect(page).to have_css('header[role="banner"], header')
     end
 
     it 'ナビゲーションに適切なロールが設定されている' do
-      visit root_path
+      visit user_root_path
       expect(page).to have_css('nav[role="navigation"], nav')
     end
 
     it 'ログアウトボタンにmethod: :deleteが設定されている' do
-      visit root_path
+      visit user_root_path
 
       within('header') do
         find('[data-controller="dropdown"] button').click
