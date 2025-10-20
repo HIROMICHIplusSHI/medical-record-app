@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>電子カルテアプリ - 管理画面</title>
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <%= csrf_meta_tags %>
+    <%= csp_meta_tag %>
+
+    <%= stylesheet_link_tag "application", "data-turbo-track": "reload" %>
+    <%= javascript_importmap_tags %>
+  </head>
+
+  <body class="bg-gray-50">
+    <!-- 管理者専用ヘッダー -->
+    <header class="navbar bg-error text-error-content shadow-lg">
+      <div class="navbar-start">
+        <%= link_to admin_root_path, class: "btn btn-ghost normal-case text-xl" do %>
+          <span>⚙️ 管理画面</span>
+        <% end %>
+      </div>
+
+      <div class="navbar-center hidden lg:flex">
+        <ul class="menu menu-horizontal px-1">
+          <li><%= link_to 'ダッシュボード', admin_root_path %></li>
+          <li><%= link_to 'ユーザー管理', admin_users_path %></li>
+          <li><%= link_to 'お知らせ管理', admin_announcements_path %></li>
+        </ul>
+      </div>
+
+      <div class="navbar-end">
+        <div class="dropdown dropdown-end">
+          <label tabindex="0" class="btn btn-ghost btn-circle avatar">
+            <div class="w-10 rounded-full bg-white text-error flex items-center justify-center">
+              <span class="text-lg font-bold"><%= current_user.email[0].upcase %></span>
+            </div>
+          </label>
+          <ul tabindex="0" class="menu menu-sm dropdown-content mt-3 z-[1] p-2 shadow bg-base-100 rounded-box w-52">
+            <li class="menu-title">
+              <span class="text-xs">管理者: <%= current_user.email %></span>
+            </li>
+            <li><%= button_to 'ログアウト', destroy_user_session_path, method: :delete, class: "btn btn-sm btn-ghost w-full" %></li>
+          </ul>
+        </div>
+      </div>
+    </header>
+
+    <!-- フラッシュメッセージ -->
+    <% if notice %>
+      <div class="alert alert-success mx-4 mt-4">
+        <svg xmlns="http://www.w3.org/2000/svg" class="stroke-current shrink-0 h-6 w-6" fill="none" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+        <span><%= notice %></span>
+      </div>
+    <% end %>
+
+    <% if alert %>
+      <div class="alert alert-error mx-4 mt-4">
+        <svg xmlns="http://www.w3.org/2000/svg" class="stroke-current shrink-0 h-6 w-6" fill="none" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+        <span><%= alert %></span>
+      </div>
+    <% end %>
+
+    <!-- メインコンテンツ -->
+    <main>
+      <%= yield %>
+    </main>
+
+    <!-- フッター -->
+    <footer class="footer footer-center p-4 bg-base-300 text-base-content mt-8">
+      <div>
+        <p>電子カルテアプリ - 管理画面 © 2025</p>
+      </div>
+    </footer>
+  </body>
+</html>
