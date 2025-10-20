@@ -6,6 +6,12 @@ class User < ApplicationRecord
   # Phase 2では通常ログインのみ使用（OAuthは将来実装予定）
   # :omniauthable, omniauth_providers: [:google_oauth2]
 
+  # Enums
+  enum :role, {
+    user: 0, # 一般ユーザー
+    admin: 1, # 管理者
+  }, default: :user
+
   # Associations
   has_many :facilities, dependent: :destroy
   has_many :patients, dependent: :destroy

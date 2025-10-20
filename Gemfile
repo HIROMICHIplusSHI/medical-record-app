@@ -22,6 +22,9 @@ gem 'omniauth', '~> 2.1'
 gem 'omniauth-google-oauth2', '~> 1.1'
 gem 'omniauth-rails_csrf_protection', '~> 1.0'
 
+# 認可
+gem 'pundit', '~> 2.3'
+
 # ファイルアップロード・画像処理
 gem 'aws-sdk-s3', '~> 1.130', require: false # Cloudflare R2（S3互換）用
 gem 'image_processing', '~> 1.12'
