@@ -1,0 +1,50 @@
+<div class="container mx-auto px-4 py-8">
+  <h1 class="text-3xl font-bold mb-6">ユーザー管理</h1>
+
+  <!-- ユーザー一覧 -->
+  <div class="card bg-base-100 shadow-xl">
+    <div class="card-body">
+      <% if @users.any? %>
+        <div class="overflow-x-auto">
+          <table class="table table-zebra">
+            <thead>
+              <tr>
+                <th>メールアドレス</th>
+                <th>名前</th>
+                <th>権限</th>
+                <th>登録日</th>
+                <th>操作</th>
+              </tr>
+            </thead>
+            <tbody>
+              <% @users.each do |user| %>
+                <tr>
+                  <td>
+                    <%= link_to user.email, admin_user_path(user), class: "link link-primary" %>
+                  </td>
+                  <td><%= user.name || '-' %></td>
+                  <td>
+                    <span class="badge <%= user.admin? ? 'badge-error' : 'badge-info' %> badge-lg">
+                      <%= user.admin? ? '管理者' : 'ユーザー' %>
+                    </span>
+                  </td>
+                  <td><%= user.created_at.strftime('%Y/%m/%d') %></td>
+                  <td>
+                    <%= link_to "詳細", admin_user_path(user), class: "btn btn-sm btn-outline" %>
+                  </td>
+                </tr>
+              <% end %>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- ページネーション -->
+        <div class="mt-4">
+          <%= paginate @users %>
+        </div>
+      <% else %>
+        <p class="text-gray-500">ユーザーがいません</p>
+      <% end %>
+    </div>
+  </div>
+</div>
