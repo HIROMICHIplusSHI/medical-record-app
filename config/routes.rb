@@ -1,9 +1,29 @@
 Rails.application.routes.draw do
   devise_for :users
 
-  # 認証後のルーティング
-  authenticate :user do
-    # ホームページ
+  # 管理者専用ルート（管理者のみアクセス可能）
+  namespace :admin do
+    root to: 'dashboard#index'
+
+    resources :announcements do
+      member do
+        patch :publish
+        patch :archive
+      end
+    end
+
+    resources :users, only: [:index, :show] do
+      member do
+        patch :toggle_role
+      end
+    end
+  end
+
+  # ユーザー（施術者）専用ルート（一般ユーザーのみアクセス可能）
+  authenticated :user, ->(user) { user.user? } do
+    # ホームページ（ユーザー専用）
+    root to: 'home#index', as: :user_root
+
     get 'home', to: 'home#index', as: :home
     post 'home/dismiss_announcement', to: 'home#dismiss_announcement'
 
@@ -49,10 +69,12 @@ Rails.application.routes.draw do
     end
   end
 
+  # 未認証ユーザー用のroot（ログインページにリダイレクト）
+  unauthenticated do
+    root to: redirect('/users/sign_in'), as: :unauthenticated_root
+  end
+
   # Reveal health status on /up that returns 200 if the app boots with no exceptions, otherwise 500.
   # Can be used by load balancers and uptime monitors to verify that the app is live.
   get "up" => "rails/health#show", as: :rails_health_check
-
-  # Defines the root path route ("/")
-  root "home#index"
 end

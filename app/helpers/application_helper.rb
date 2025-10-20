@@ -9,4 +9,12 @@ module ApplicationHelper
       'bg-blue-100 border border-blue-400 text-blue-700'
     end
   end
+
+  def dynamic_root_path
+    if user_signed_in?
+      current_user.admin? ? admin_root_path : user_root_path
+    else
+      new_user_session_path
+    end
+  end
 end
