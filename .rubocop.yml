@@ -65,6 +65,7 @@ Metrics/AbcSize:
     - 'app/controllers/patient_consents_controller.rb'  # 複数同意書の一括作成処理のため除外
   AllowedMethods:
     - 'set_date_range'
+    - 'dismiss_announcement'  # セッション管理・バリデーション・エラーハンドリングを含むため
 
 Metrics/CyclomaticComplexity:
   Max: 8
