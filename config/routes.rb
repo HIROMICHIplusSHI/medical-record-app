@@ -3,6 +3,10 @@ Rails.application.routes.draw do
 
   # 認証後のルーティング
   authenticate :user do
+    # ホームページ
+    get 'home', to: 'home#index', as: :home
+    post 'home/dismiss_announcement', to: 'home#dismiss_announcement'
+
     # ダッシュボード
     get 'dashboard', to: 'dashboards#index'
     get 'dashboard/export', to: 'dashboards#export', as: :export_dashboard
@@ -50,5 +54,5 @@ Rails.application.routes.draw do
   get "up" => "rails/health#show", as: :rails_health_check
 
   # Defines the root path route ("/")
-  root "facilities#index"
+  root "home#index"
 end

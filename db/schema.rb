@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2025_10_19_110044) do
+ActiveRecord::Schema[7.2].define(version: 2025_10_20_111948) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -40,6 +40,24 @@ ActiveRecord::Schema[7.2].define(version: 2025_10_19_110044) do
     t.bigint "blob_id", null: false
     t.string "variation_digest", null: false
     t.index ["blob_id", "variation_digest"], name: "index_active_storage_variant_records_uniqueness", unique: true
+  end
+
+  create_table "announcements", force: :cascade do |t|
+    t.bigint "author_id", null: false
+    t.string "title", limit: 100, null: false
+    t.text "body", null: false
+    t.integer "status", default: 0, null: false
+    t.integer "severity", default: 0, null: false
+    t.datetime "published_at"
+    t.datetime "expires_at"
+    t.integer "display_order", default: 0, null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["author_id"], name: "index_announcements_on_author_id"
+    t.index ["expires_at"], name: "index_announcements_on_expires_at"
+    t.index ["published_at"], name: "index_announcements_on_published_at"
+    t.index ["status", "published_at", "expires_at"], name: "index_announcements_on_active"
+    t.index ["status"], name: "index_announcements_on_status"
   end
 
   create_table "consent_form_items", force: :cascade do |t|
@@ -289,6 +307,7 @@ ActiveRecord::Schema[7.2].define(version: 2025_10_19_110044) do
     t.string "company_phone"
     t.string "company_email"
     t.text "bank_info"
+    t.integer "role", default: 0, null: false
     t.index ["email"], name: "index_users_on_email", unique: true
     t.index ["provider", "uid"], name: "index_users_on_provider_and_uid", unique: true
     t.index ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true
@@ -296,6 +315,7 @@ ActiveRecord::Schema[7.2].define(version: 2025_10_19_110044) do
 
   add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"
   add_foreign_key "active_storage_variant_records", "active_storage_blobs", column: "blob_id"
+  add_foreign_key "announcements", "users", column: "author_id"
   add_foreign_key "consent_form_items", "consent_form_templates"
   add_foreign_key "consent_form_templates", "users"
   add_foreign_key "consent_item_responses", "consent_form_items"

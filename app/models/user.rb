@@ -6,6 +6,12 @@ class User < ApplicationRecord
   # Phase 2では通常ログインのみ使用（OAuthは将来実装予定）
   # :omniauthable, omniauth_providers: [:google_oauth2]
 
+  # Enums
+  enum :role, {
+    user: 0, # 一般ユーザー
+    admin: 1, # 管理者
+  }, default: :user
+
   # Associations
   has_many :facilities, dependent: :destroy
   has_many :patients, dependent: :destroy
@@ -15,6 +21,7 @@ class User < ApplicationRecord
   has_many :tags, dependent: :destroy
   has_many :consent_form_templates, dependent: :destroy
   has_many :patient_consents, dependent: :destroy
+  has_many :announcements, foreign_key: :author_id, dependent: :destroy, inverse_of: :author
 
   # Validations
   validates :company_email, format: { with: URI::MailTo::EMAIL_REGEXP, allow_blank: true }

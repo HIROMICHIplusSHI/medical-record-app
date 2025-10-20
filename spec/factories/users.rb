@@ -4,6 +4,11 @@ FactoryBot.define do
     email { Faker::Internet.email }
     password { 'password123' }
     password_confirmation { 'password123' }
+    role { :user }
+
+    trait :admin do
+      role { :admin }
+    end
 
     trait :with_oauth do
       provider { 'google_oauth2' }
