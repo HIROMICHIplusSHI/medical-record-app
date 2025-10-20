@@ -764,10 +764,8 @@ class CreateInvitationCodes < ActiveRecord::Migration[7.2]
     create_table :invitation_codes do |t|
       t.string :code, null: false, index: { unique: true }, limit: 12
       t.references :created_by, null: false, foreign_key: { to_table: :users }
-      t.references :used_by, foreign_key: { to_table: :users }
-      t.datetime :used_at
       t.datetime :expires_at
-      t.integer :max_uses, default: 1, null: false
+      t.integer :max_uses  # nil = 無制限、数値 = 最大使用回数
       t.integer :current_uses, default: 0, null: false
       t.integer :status, default: 0, null: false
 
@@ -776,6 +774,7 @@ class CreateInvitationCodes < ActiveRecord::Migration[7.2]
 
     add_index :invitation_codes, :status
     add_index :invitation_codes, :expires_at
+    add_index :invitation_codes, :code
   end
 end
 ```
@@ -785,26 +784,25 @@ end
 # app/models/invitation_code.rb
 class InvitationCode < ApplicationRecord
   belongs_to :created_by, class_name: 'User'
-  belongs_to :used_by, class_name: 'User', optional: true
+  has_many :users, foreign_key: :invitation_code_id, dependent: :nullify
 
   # ステータス管理
   enum :status, {
     active: 0,    # 有効
-    used: 1,      # 使用済み
-    expired: 2,   # 期限切れ
-    revoked: 3    # 無効化
+    expired: 1,   # 期限切れ
+    revoked: 2    # 無効化
   }
 
   # バリデーション
   validates :code, presence: true, uniqueness: true, length: { is: 12 }
-  validates :max_uses, numericality: { only_integer: true, greater_than: 0 }
+  validates :max_uses, numericality: { only_integer: true, greater_than: 0, allow_nil: true }
   validates :current_uses, numericality: { only_integer: true, greater_than_or_equal_to: 0 }
 
   # スコープ
   scope :active, -> {
     where(status: :active)
       .where('expires_at IS NULL OR expires_at > ?', Time.current)
-      .where('current_uses < max_uses')
+      .where('max_uses IS NULL OR current_uses < max_uses')
   }
 
   scope :recent, -> { order(created_at: :desc) }
@@ -819,9 +817,12 @@ class InvitationCode < ApplicationRecord
 
     transaction do
       self.current_uses += 1
-      self.used_by = user if max_uses == 1
-      self.used_at = Time.current if current_uses == max_uses
-      self.status = :used if current_uses >= max_uses
+
+      # max_usesに達したら自動的にexpiredに変更
+      if max_uses.present? && current_uses >= max_uses
+        self.status = :expired
+      end
+
       save!
     end
   end
@@ -830,12 +831,24 @@ class InvitationCode < ApplicationRecord
   def can_use?
     active? &&
     (expires_at.nil? || expires_at > Time.current) &&
-    current_uses < max_uses
+    (max_uses.nil? || current_uses < max_uses)
   end
 
   # 期限切れチェック
   def expired?
     expires_at.present? && expires_at <= Time.current
+  end
+
+  # 無制限コード判定
+  def unlimited?
+    max_uses.nil?
+  end
+
+  # 残り使用回数
+  def remaining_uses
+    return '無制限' if unlimited?
+
+    max_uses - current_uses
   end
 
   private
@@ -1030,11 +1043,20 @@ module Admin
       count = 1 if count < 1
       count = 100 if count > 100
 
+      # max_usesの処理（'unlimited' or 数値）
+      max_uses = if params[:max_uses] == 'unlimited'
+                   nil  # 無制限
+                 elsif params[:max_uses].present?
+                   params[:max_uses].to_i
+                 else
+                   nil  # デフォルト: 無制限
+                 end
+
       codes = []
       count.times do
         code = InvitationCode.create!(
           created_by: current_user,
-          max_uses: params[:max_uses]&.to_i || 1,
+          max_uses: max_uses,
           expires_at: params[:expires_at].present? ? Time.zone.parse(params[:expires_at]) : 30.days.from_now
         )
         codes << code
@@ -1069,19 +1091,122 @@ module Admin
 
     def generate_csv(codes)
       CSV.generate(headers: true, encoding: Encoding::UTF_8) do |csv|
-        csv << ['紹介コード', '有効期限', '最大使用回数']
+        csv << ['紹介コード', '有効期限', '最大使用回数', '現在の使用回数', '残り使用回数']
 
         codes.each do |code|
           csv << [
             code.code,
             code.expires_at&.strftime('%Y/%m/%d %H:%M'),
-            code.max_uses
+            code.max_uses || '無制限',
+            code.current_uses,
+            code.remaining_uses
           ]
         end
       end
     end
   end
 end
+```
+
+---
+
+#### 3-2. 管理者UI（紹介コード作成フォーム）
+
+```erb
+<!-- app/views/admin/invitation_codes/new.html.erb -->
+<div class="container mx-auto px-4 py-8">
+  <h1 class="text-3xl font-bold mb-6">紹介コード作成</h1>
+
+  <%= form_with model: [:admin, @invitation_code], class: "card bg-base-100 shadow-xl" do |f| %>
+    <div class="card-body">
+      <!-- 最大使用回数 -->
+      <div class="form-control mb-4">
+        <%= f.label :max_uses, "最大使用回数", class: "label" %>
+        <%= f.select :max_uses,
+                     options_for_select([
+                       ['無制限', 'unlimited'],
+                       ['1回のみ', 1],
+                       ['10回', 10],
+                       ['50回', 50],
+                       ['100回', 100]
+                     ], 'unlimited'),
+                     {},
+                     class: "select select-bordered w-full" %>
+        <label class="label">
+          <span class="label-text-alt">何回まで使用できるかを設定します</span>
+        </label>
+      </div>
+
+      <!-- 有効期限 -->
+      <div class="form-control mb-6">
+        <%= f.label :expires_at, "有効期限", class: "label" %>
+        <%= f.datetime_field :expires_at,
+                             value: 30.days.from_now.strftime('%Y-%m-%dT%H:%M'),
+                             class: "input input-bordered w-full" %>
+        <label class="label">
+          <span class="label-text-alt">この日時を過ぎるとコードは使用できなくなります</span>
+        </label>
+      </div>
+
+      <!-- ボタン -->
+      <div class="flex gap-2">
+        <%= f.submit "作成する", class: "btn btn-primary" %>
+        <%= link_to "キャンセル", admin_invitation_codes_path, class: "btn btn-ghost" %>
+      </div>
+    </div>
+  <% end %>
+</div>
+```
+
+---
+
+#### 3-3. 一括作成フォーム
+
+```erb
+<!-- app/views/admin/invitation_codes/index.html.erb -->
+<!-- 一括作成フォーム（モーダル or 専用ページ） -->
+<div class="card bg-base-100 shadow-xl mb-6">
+  <div class="card-body">
+    <h2 class="card-title">紹介コード一括作成</h2>
+
+    <%= form_with url: bulk_create_admin_invitation_codes_path, method: :post do |f| %>
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+        <!-- 作成件数 -->
+        <div class="form-control">
+          <%= label_tag :count, "作成件数", class: "label" %>
+          <%= number_field_tag :count, 10, min: 1, max: 100, class: "input input-bordered" %>
+        </div>
+
+        <!-- 最大使用回数 -->
+        <div class="form-control">
+          <%= label_tag :max_uses, "最大使用回数", class: "label" %>
+          <%= select_tag :max_uses,
+                         options_for_select([
+                           ['無制限', 'unlimited'],
+                           ['1回のみ', 1],
+                           ['10回', 10],
+                           ['50回', 50],
+                           ['100回', 100]
+                         ], 'unlimited'),
+                         class: "select select-bordered w-full" %>
+        </div>
+
+        <!-- 有効期限 -->
+        <div class="form-control">
+          <%= label_tag :expires_at, "有効期限", class: "label" %>
+          <%= datetime_field_tag :expires_at,
+                                 30.days.from_now.strftime('%Y-%m-%dT%H:%M'),
+                                 class: "input input-bordered" %>
+        </div>
+      </div>
+
+      <div class="flex gap-2">
+        <%= submit_tag "一括作成", class: "btn btn-primary" %>
+        <%= submit_tag "CSV出力", formaction: bulk_create_admin_invitation_codes_path(format: :csv), class: "btn btn-outline" %>
+      </div>
+    <% end %>
+  </div>
+</div>
 ```
 
 ---
