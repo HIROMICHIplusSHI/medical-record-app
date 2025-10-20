@@ -26,6 +26,7 @@ Metrics/BlockLength:
     - 'spec/**/*'
     - 'config/environments/*'
     - 'config/routes.rb'
+    - 'lib/tasks/**/*'  # Rakeタスクは複数のタスク定義を含むため
 
 Lint/Debugger:
   Exclude:
@@ -47,6 +48,7 @@ Metrics/MethodLength:
     - 'set_date_range'
     - 'build_patient_consent'
     - 'create'  # PatientConsentsController#create - 複数同意書の一括作成処理
+    - 'toggle_role'  # Admin::UsersController#toggle_role - エッジケース処理を含む
 
 Metrics/ClassLength:
   Max: 155

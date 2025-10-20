@@ -123,3 +123,21 @@ ja:
         medical_record_id: カルテ
         description: 内容
         amount: 金額
+      announcement:
+        author: 作成者
+        author_id: 作成者
+        title: タイトル
+        body: 本文
+        status: ステータス
+        severity: 重要度
+        published_at: 公開日時
+        expires_at: 有効期限
+        display_order: 表示順序
+        statuses:
+          draft: 下書き
+          published: 公開中
+          archived: アーカイブ
+        severities:
+          info: 情報
+          warning: 警告
+          critical: 重要

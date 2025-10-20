@@ -1,0 +1,71 @@
+<%= form_with(model: [:admin, announcement], class: "space-y-4") do |form| %>
+  <% if announcement.errors.any? %>
+    <div class="alert alert-error">
+      <svg xmlns="http://www.w3.org/2000/svg" class="stroke-current shrink-0 h-6 w-6" fill="none" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+      <div>
+        <h3 class="font-bold">エラーがあります:</h3>
+        <ul>
+          <% announcement.errors.full_messages.each do |message| %>
+            <li><%= message %></li>
+          <% end %>
+        </ul>
+      </div>
+    </div>
+  <% end %>
+
+  <div class="form-control">
+    <%= form.label :title, "タイトル", class: "label" %>
+    <%= form.text_field :title, class: "input input-bordered w-full", maxlength: 100, required: true %>
+  </div>
+
+  <div class="form-control">
+    <%= form.label :body, "本文", class: "label" %>
+    <%= form.text_area :body, class: "textarea textarea-bordered w-full", rows: 6, maxlength: 1000, required: true %>
+  </div>
+
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+    <div class="form-control">
+      <%= form.label :severity, "重要度", class: "label" %>
+      <%= form.select :severity,
+        [['情報（青）', 'info'], ['警告（黄）', 'warning'], ['重要（赤）', 'critical']],
+        {},
+        class: "select select-bordered w-full" %>
+    </div>
+
+    <div class="form-control">
+      <%= form.label :display_order, "表示順序", class: "label" %>
+      <%= form.number_field :display_order, class: "input input-bordered w-full", min: 0, value: announcement.display_order || 0 %>
+      <label class="label">
+        <span class="label-text-alt">小さい数字ほど上に表示されます</span>
+      </label>
+    </div>
+  </div>
+
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+    <div class="form-control">
+      <%= form.label :published_at, "公開開始日時", class: "label" %>
+      <%= form.datetime_field :published_at, class: "input input-bordered w-full" %>
+    </div>
+
+    <div class="form-control">
+      <%= form.label :expires_at, "公開終了日時", class: "label" %>
+      <%= form.datetime_field :expires_at, class: "input input-bordered w-full" %>
+      <label class="label">
+        <span class="label-text-alt">未設定の場合は無期限</span>
+      </label>
+    </div>
+  </div>
+
+  <div class="form-control">
+    <%= form.label :status, "ステータス", class: "label" %>
+    <%= form.select :status,
+      [['下書き', 'draft'], ['公開', 'published'], ['アーカイブ', 'archived']],
+      {},
+      class: "select select-bordered w-full" %>
+  </div>
+
+  <div class="flex gap-2">
+    <%= form.submit announcement.persisted? ? "更新する" : "作成する", class: "btn btn-primary" %>
+    <%= link_to "キャンセル", admin_announcements_path, class: "btn btn-ghost" %>
+  </div>
+<% end %>

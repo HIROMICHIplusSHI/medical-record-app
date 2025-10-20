@@ -1,0 +1,100 @@
+<div class="container mx-auto px-4 py-8">
+  <div class="flex justify-between items-center mb-6">
+    <h1 class="text-3xl font-bold">ユーザー詳細</h1>
+    <%= link_to "一覧に戻る", admin_users_path, class: "btn btn-ghost" %>
+  </div>
+
+  <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+    <!-- ユーザー基本情報 -->
+    <div class="lg:col-span-2">
+      <div class="card bg-base-100 shadow-xl">
+        <div class="card-body">
+          <h2 class="card-title mb-4">基本情報</h2>
+
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div>
+              <h3 class="font-bold text-sm text-gray-600 mb-2">メールアドレス</h3>
+              <p class="text-lg"><%= @user.email %></p>
+            </div>
+
+            <div>
+              <h3 class="font-bold text-sm text-gray-600 mb-2">名前</h3>
+              <p class="text-lg"><%= @user.name || '未設定' %></p>
+            </div>
+
+            <div>
+              <h3 class="font-bold text-sm text-gray-600 mb-2">権限</h3>
+              <span class="badge <%= @user.admin? ? 'badge-error' : 'badge-info' %> badge-lg">
+                <%= @user.admin? ? '管理者' : 'ユーザー' %>
+              </span>
+            </div>
+
+            <div>
+              <h3 class="font-bold text-sm text-gray-600 mb-2">登録日</h3>
+              <p><%= @user.created_at.strftime('%Y/%m/%d %H:%M') %></p>
+            </div>
+
+            <div>
+              <h3 class="font-bold text-sm text-gray-600 mb-2">会社メールアドレス</h3>
+              <p><%= @user.company_email || '未設定' %></p>
+            </div>
+
+            <div>
+              <h3 class="font-bold text-sm text-gray-600 mb-2">会社電話番号</h3>
+              <p><%= @user.company_phone || '未設定' %></p>
+            </div>
+          </div>
+
+          <div class="divider"></div>
+
+          <!-- 権限変更 -->
+          <div>
+            <h3 class="font-bold mb-2">権限管理</h3>
+            <% if @user == current_user %>
+              <p class="text-sm text-gray-500">自分自身の権限は変更できません</p>
+            <% elsif @user.admin? && User.admin.count == 1 %>
+              <p class="text-sm text-gray-500">最後の管理者の権限は変更できません</p>
+            <% else %>
+              <%= button_to "#{@user.admin? ? 'ユーザー' : '管理者'}に変更",
+                           toggle_role_admin_user_path(@user),
+                           method: :patch,
+                           data: { confirm: "本当に権限を変更しますか？" },
+                           class: "btn btn-warning" %>
+            <% end %>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 統計情報 -->
+    <div class="lg:col-span-1">
+      <div class="card bg-base-100 shadow-xl">
+        <div class="card-body">
+          <h2 class="card-title mb-4">統計情報</h2>
+
+          <div class="space-y-4">
+            <div class="stat bg-base-200 rounded-lg">
+              <div class="stat-title">カルテ数</div>
+              <div class="stat-value text-primary"><%= @stats[:medical_records_count] %></div>
+            </div>
+
+            <div class="stat bg-base-200 rounded-lg">
+              <div class="stat-title">患者数</div>
+              <div class="stat-value text-secondary"><%= @stats[:patients_count] %></div>
+            </div>
+
+            <div class="stat bg-base-200 rounded-lg">
+              <div class="stat-title">施術場所数</div>
+              <div class="stat-value text-accent"><%= @stats[:facilities_count] %></div>
+            </div>
+
+            <div class="stat bg-base-200 rounded-lg">
+              <div class="stat-title">請求書数</div>
+              <div class="stat-value text-info"><%= @stats[:invoices_count] %></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

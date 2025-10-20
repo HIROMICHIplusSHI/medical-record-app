@@ -1,0 +1,83 @@
+<div class="container mx-auto px-4 py-8">
+  <div class="flex justify-between items-center mb-6">
+    <h1 class="text-3xl font-bold">お知らせ詳細</h1>
+    <div class="flex gap-2">
+      <%= link_to "編集", edit_admin_announcement_path(@announcement), class: "btn btn-outline" %>
+      <%= link_to "一覧に戻る", admin_announcements_path, class: "btn btn-ghost" %>
+    </div>
+  </div>
+
+  <div class="card bg-base-100 shadow-xl">
+    <div class="card-body">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div>
+          <h3 class="font-bold text-sm text-gray-600 mb-2">タイトル</h3>
+          <p class="text-lg"><%= @announcement.title %></p>
+        </div>
+
+        <div>
+          <h3 class="font-bold text-sm text-gray-600 mb-2">ステータス</h3>
+          <span class="badge <%= case @announcement.status
+            when 'draft' then 'badge-ghost'
+            when 'published' then 'badge-success'
+            when 'archived' then 'badge-neutral'
+            end %> badge-lg">
+            <%= @announcement.status_i18n %>
+          </span>
+        </div>
+
+        <div class="md:col-span-2">
+          <h3 class="font-bold text-sm text-gray-600 mb-2">本文</h3>
+          <div class="p-4 bg-base-200 rounded whitespace-pre-wrap"><%= @announcement.body %></div>
+        </div>
+
+        <div>
+          <h3 class="font-bold text-sm text-gray-600 mb-2">重要度</h3>
+          <span class="badge <%= case @announcement.severity
+            when 'info' then 'badge-info'
+            when 'warning' then 'badge-warning'
+            when 'critical' then 'badge-error'
+            end %> badge-lg">
+            <%= @announcement.severity_i18n %>
+          </span>
+        </div>
+
+        <div>
+          <h3 class="font-bold text-sm text-gray-600 mb-2">表示順序</h3>
+          <p><%= @announcement.display_order %></p>
+        </div>
+
+        <div>
+          <h3 class="font-bold text-sm text-gray-600 mb-2">公開開始日時</h3>
+          <p><%= @announcement.published_at&.strftime('%Y/%m/%d %H:%M') || '未設定' %></p>
+        </div>
+
+        <div>
+          <h3 class="font-bold text-sm text-gray-600 mb-2">公開終了日時</h3>
+          <p><%= @announcement.expires_at&.strftime('%Y/%m/%d %H:%M') || '無期限' %></p>
+        </div>
+
+        <div>
+          <h3 class="font-bold text-sm text-gray-600 mb-2">作成者</h3>
+          <p><%= @announcement.author.email %></p>
+        </div>
+
+        <div>
+          <h3 class="font-bold text-sm text-gray-600 mb-2">作成日時</h3>
+          <p><%= @announcement.created_at.strftime('%Y/%m/%d %H:%M') %></p>
+        </div>
+      </div>
+
+      <div class="divider"></div>
+
+      <div class="flex gap-2">
+        <% if @announcement.draft? %>
+          <%= button_to "公開する", publish_admin_announcement_path(@announcement), method: :patch, class: "btn btn-success" %>
+        <% end %>
+        <% if @announcement.published? %>
+          <%= button_to "アーカイブする", archive_admin_announcement_path(@announcement), method: :patch, class: "btn btn-ghost" %>
+        <% end %>
+      </div>
+    </div>
+  </div>
+</div>

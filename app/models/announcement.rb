@@ -42,4 +42,13 @@ class Announcement < ApplicationRecord
   def expired?
     expires_at.present? && expires_at <= Time.current
   end
+
+  # Enum日本語表示
+  def status_i18n
+    I18n.t("activerecord.attributes.announcement.statuses.#{status}")
+  end
+
+  def severity_i18n
+    I18n.t("activerecord.attributes.announcement.severities.#{severity}")
+  end
 end

@@ -51,16 +51,14 @@ RSpec.describe User, type: :model do
       expect(admin.user?).to be false
     end
 
-    it 'roleをuserからadminに変更できる' do
-      user.admin!
-      expect(user.reload.role).to eq('admin')
-      expect(user.admin?).to be true
+    it 'enum メソッド（admin!）でのrole変更も防止される' do
+      expect { user.admin! }.to raise_error(ActiveRecord::RecordNotSaved)
+      expect(user.reload.role).to eq('user')
     end
 
-    it 'roleをadminからuserに変更できる' do
-      admin.user!
-      expect(admin.reload.role).to eq('user')
-      expect(admin.user?).to be true
+    it 'enum メソッド（user!）でのrole変更も防止される' do
+      expect { admin.user! }.to raise_error(ActiveRecord::RecordNotSaved)
+      expect(admin.reload.role).to eq('admin')
     end
 
     describe 'Mass Assignment保護' do
