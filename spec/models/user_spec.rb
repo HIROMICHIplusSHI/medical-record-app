@@ -10,6 +10,7 @@ RSpec.describe User, type: :model do
     it { is_expected.to have_many(:tags).dependent(:destroy) }
     it { is_expected.to have_many(:consent_form_templates).dependent(:destroy) }
     it { is_expected.to have_many(:patient_consents).dependent(:destroy) }
+    it { is_expected.to have_many(:announcements).with_foreign_key(:author_id).dependent(:destroy).inverse_of(:author) }
   end
 
   describe 'validations' do
