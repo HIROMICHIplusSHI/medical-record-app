@@ -1,31 +1,62 @@
-<div class="container mx-auto px-4 py-8">
-  <h1 class="text-3xl font-bold mb-8">管理者ダッシュボード</h1>
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+  <!-- ヘッダー -->
+  <div class="mb-8">
+    <h1 class="text-3xl font-bold text-gray-900">管理者ダッシュボード</h1>
+    <p class="mt-2 text-sm text-gray-600">システム統計とユーザー管理</p>
+  </div>
 
   <!-- システム統計 -->
   <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
     <!-- 総ユーザー数 -->
-    <div class="card bg-base-100 shadow-xl">
-      <div class="card-body">
-        <h2 class="card-title text-sm text-gray-600">総ユーザー数</h2>
-        <p class="text-4xl font-bold text-primary"><%= @total_users %></p>
-        <%= link_to "ユーザー管理へ", admin_users_path, class: "btn btn-outline btn-sm mt-2" %>
+    <div class="bg-white overflow-hidden shadow-sm rounded-lg">
+      <div class="p-6">
+        <div class="flex items-center justify-between">
+          <div>
+            <p class="text-sm font-medium text-gray-600">総ユーザー数</p>
+            <p class="mt-2 text-4xl font-bold text-blue-600"><%= @total_users %></p>
+          </div>
+          <div class="flex-shrink-0 bg-blue-500 rounded-md p-3">
+            <svg class="h-8 w-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
+            </svg>
+          </div>
+        </div>
+        <%= link_to "ユーザー管理へ", admin_users_path, class: "mt-4 inline-flex items-center text-sm font-medium text-blue-600 hover:text-blue-700" %>
       </div>
     </div>
 
     <!-- 総カルテ数 -->
-    <div class="card bg-base-100 shadow-xl">
-      <div class="card-body">
-        <h2 class="card-title text-sm text-gray-600">総カルテ数</h2>
-        <p class="text-4xl font-bold text-secondary"><%= @total_medical_records %></p>
+    <div class="bg-white overflow-hidden shadow-sm rounded-lg">
+      <div class="p-6">
+        <div class="flex items-center justify-between">
+          <div>
+            <p class="text-sm font-medium text-gray-600">総カルテ数</p>
+            <p class="mt-2 text-4xl font-bold text-green-600"><%= @total_medical_records %></p>
+          </div>
+          <div class="flex-shrink-0 bg-green-500 rounded-md p-3">
+            <svg class="h-8 w-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+            </svg>
+          </div>
+        </div>
       </div>
     </div>
 
     <!-- アクティブなお知らせ -->
-    <div class="card bg-base-100 shadow-xl">
-      <div class="card-body">
-        <h2 class="card-title text-sm text-gray-600">公開中のお知らせ</h2>
-        <p class="text-4xl font-bold text-accent"><%= @active_announcements %></p>
-        <%= link_to "お知らせ管理へ", admin_announcements_path, class: "btn btn-outline btn-sm mt-2" %>
+    <div class="bg-white overflow-hidden shadow-sm rounded-lg">
+      <div class="p-6">
+        <div class="flex items-center justify-between">
+          <div>
+            <p class="text-sm font-medium text-gray-600">公開中のお知らせ</p>
+            <p class="mt-2 text-4xl font-bold text-yellow-600"><%= @active_announcements %></p>
+          </div>
+          <div class="flex-shrink-0 bg-yellow-500 rounded-md p-3">
+            <svg class="h-8 w-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5.882V19.24a1.76 1.76 0 01-3.417.592l-2.147-6.15M18 13a3 3 0 100-6M5.436 13.683A4.001 4.001 0 017 6h1.832c4.1 0 7.625-1.234 9.168-3v14c-1.543-1.766-5.067-3-9.168-3H7a3.988 3.988 0 01-1.564-.317z" />
+            </svg>
+          </div>
+        </div>
+        <%= link_to "お知らせ管理へ", admin_announcements_path, class: "mt-4 inline-flex items-center text-sm font-medium text-yellow-600 hover:text-yellow-700" %>
       </div>
     </div>
   </div>
@@ -33,25 +64,25 @@
   <!-- クイックリンク -->
   <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
     <!-- 最近登録されたユーザー -->
-    <div class="card bg-base-100 shadow-xl">
-      <div class="card-body">
-        <h2 class="card-title mb-4">最近登録されたユーザー</h2>
+    <div class="bg-white overflow-hidden shadow-sm rounded-lg">
+      <div class="p-6">
+        <h2 class="text-lg font-semibold text-gray-900 mb-4">最近登録されたユーザー</h2>
 
         <% if @recent_users.any? %>
-          <div class="overflow-x-auto">
-            <table class="table table-zebra">
-              <tbody>
+          <div class="overflow-hidden">
+            <table class="min-w-full divide-y divide-gray-200">
+              <tbody class="divide-y divide-gray-200">
                 <% @recent_users.each do |user| %>
-                  <tr>
-                    <td>
-                      <%= link_to user.email, admin_user_path(user), class: "link link-primary" %>
+                  <tr class="hover:bg-gray-50">
+                    <td class="py-3">
+                      <%= link_to user.email, admin_user_path(user), class: "text-sm text-blue-600 hover:text-blue-700" %>
                     </td>
-                    <td>
-                      <span class="badge <%= user.admin? ? 'badge-error' : 'badge-info' %>">
+                    <td class="py-3 text-right">
+                      <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium <%= user.admin? ? 'bg-red-100 text-red-800' : 'bg-blue-100 text-blue-800' %>">
                         <%= user.admin? ? '管理者' : 'ユーザー' %>
                       </span>
                     </td>
-                    <td class="text-sm text-gray-500">
+                    <td class="py-3 text-right text-sm text-gray-500">
                       <%= user.created_at.strftime('%Y/%m/%d') %>
                     </td>
                   </tr>
@@ -60,29 +91,29 @@
             </table>
           </div>
         <% else %>
-          <p class="text-gray-500">ユーザーがいません</p>
+          <p class="text-sm text-gray-500">ユーザーがいません</p>
         <% end %>
       </div>
     </div>
 
     <!-- 最近公開されたお知らせ -->
-    <div class="card bg-base-100 shadow-xl">
-      <div class="card-body">
-        <h2 class="card-title mb-4">最近公開されたお知らせ</h2>
+    <div class="bg-white overflow-hidden shadow-sm rounded-lg">
+      <div class="p-6">
+        <h2 class="text-lg font-semibold text-gray-900 mb-4">最近公開されたお知らせ</h2>
 
         <% if @recent_announcements.any? %>
-          <div class="space-y-2">
+          <div class="space-y-3">
             <% @recent_announcements.each do |announcement| %>
-              <div class="border-l-4 border-<%= announcement.severity %>-500 pl-3">
-                <%= link_to announcement.title, admin_announcement_path(announcement), class: "link link-primary" %>
-                <p class="text-xs text-gray-500">
+              <div class="border-l-4 <%= announcement.severity == 'critical' ? 'border-red-500' : announcement.severity == 'warning' ? 'border-yellow-500' : 'border-blue-500' %> pl-3">
+                <%= link_to announcement.title, admin_announcement_path(announcement), class: "text-sm text-blue-600 hover:text-blue-700 block" %>
+                <p class="text-xs text-gray-500 mt-1">
                   <%= announcement.published_at&.strftime('%Y/%m/%d %H:%M') %>
                 </p>
               </div>
             <% end %>
           </div>
         <% else %>
-          <p class="text-gray-500">お知らせがありません</p>
+          <p class="text-sm text-gray-500">お知らせがありません</p>
         <% end %>
       </div>
     </div>

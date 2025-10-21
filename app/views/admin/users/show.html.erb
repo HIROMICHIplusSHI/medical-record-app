@@ -1,65 +1,73 @@
-<div class="container mx-auto px-4 py-8">
-  <div class="flex justify-between items-center mb-6">
-    <h1 class="text-3xl font-bold">ユーザー詳細</h1>
-    <%= link_to "一覧に戻る", admin_users_path, class: "btn btn-ghost" %>
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+  <!-- ヘッダー -->
+  <div class="mb-8 flex justify-between items-center">
+    <div>
+      <h1 class="text-3xl font-bold text-gray-900">ユーザー詳細</h1>
+      <p class="mt-2 text-sm text-gray-600"><%= @user.email %></p>
+    </div>
+    <%= link_to "一覧に戻る", admin_users_path, class: "inline-flex items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500" %>
   </div>
 
   <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
     <!-- ユーザー基本情報 -->
     <div class="lg:col-span-2">
-      <div class="card bg-base-100 shadow-xl">
-        <div class="card-body">
-          <h2 class="card-title mb-4">基本情報</h2>
-
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div>
-              <h3 class="font-bold text-sm text-gray-600 mb-2">メールアドレス</h3>
-              <p class="text-lg"><%= @user.email %></p>
+      <div class="bg-white shadow-sm rounded-lg overflow-hidden">
+        <div class="px-6 py-5 border-b border-gray-200">
+          <h2 class="text-lg font-semibold text-gray-900">基本情報</h2>
+        </div>
+        <div class="px-6 py-6">
+          <dl class="grid grid-cols-1 gap-y-6">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <dt class="text-sm font-medium text-gray-500">メールアドレス</dt>
+              <dd class="text-base text-gray-900 md:col-span-2 break-all"><%= @user.email %></dd>
             </div>
 
-            <div>
-              <h3 class="font-bold text-sm text-gray-600 mb-2">名前</h3>
-              <p class="text-lg"><%= @user.name || '未設定' %></p>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <dt class="text-sm font-medium text-gray-500">名前</dt>
+              <dd class="text-base text-gray-900 md:col-span-2"><%= @user.name || '未設定' %></dd>
             </div>
 
-            <div>
-              <h3 class="font-bold text-sm text-gray-600 mb-2">権限</h3>
-              <span class="badge <%= @user.admin? ? 'badge-error' : 'badge-info' %> badge-lg">
-                <%= @user.admin? ? '管理者' : 'ユーザー' %>
-              </span>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <dt class="text-sm font-medium text-gray-500">権限</dt>
+              <dd class="md:col-span-2">
+                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium <%= @user.admin? ? 'bg-red-100 text-red-800' : 'bg-blue-100 text-blue-800' %>">
+                  <%= @user.admin? ? '管理者' : 'ユーザー' %>
+                </span>
+              </dd>
             </div>
 
-            <div>
-              <h3 class="font-bold text-sm text-gray-600 mb-2">登録日</h3>
-              <p><%= @user.created_at.strftime('%Y/%m/%d %H:%M') %></p>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <dt class="text-sm font-medium text-gray-500">登録日</dt>
+              <dd class="text-base text-gray-900 md:col-span-2"><%= @user.created_at.strftime('%Y/%m/%d %H:%M') %></dd>
             </div>
 
-            <div>
-              <h3 class="font-bold text-sm text-gray-600 mb-2">会社メールアドレス</h3>
-              <p><%= @user.company_email || '未設定' %></p>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <dt class="text-sm font-medium text-gray-500">会社メールアドレス</dt>
+              <dd class="text-base text-gray-900 md:col-span-2 break-all"><%= @user.company_email || '未設定' %></dd>
             </div>
 
-            <div>
-              <h3 class="font-bold text-sm text-gray-600 mb-2">会社電話番号</h3>
-              <p><%= @user.company_phone || '未設定' %></p>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <dt class="text-sm font-medium text-gray-500">会社電話番号</dt>
+              <dd class="text-base text-gray-900 md:col-span-2"><%= @user.company_phone || '未設定' %></dd>
             </div>
-          </div>
+          </dl>
 
-          <div class="divider"></div>
-
-          <!-- 権限変更 -->
-          <div>
-            <h3 class="font-bold mb-2">権限管理</h3>
+          <div class="mt-8 pt-6 border-t border-gray-200">
+            <h3 class="text-sm font-medium text-gray-900 mb-3">権限管理</h3>
             <% if @user == current_user %>
-              <p class="text-sm text-gray-500">自分自身の権限は変更できません</p>
+              <div class="rounded-md bg-gray-50 p-4">
+                <p class="text-sm text-gray-600">自分自身の権限は変更できません</p>
+              </div>
             <% elsif @user.admin? && User.admin.count == 1 %>
-              <p class="text-sm text-gray-500">最後の管理者の権限は変更できません</p>
+              <div class="rounded-md bg-gray-50 p-4">
+                <p class="text-sm text-gray-600">最後の管理者の権限は変更できません</p>
+              </div>
             <% else %>
               <%= button_to "#{@user.admin? ? 'ユーザー' : '管理者'}に変更",
                            toggle_role_admin_user_path(@user),
                            method: :patch,
                            data: { confirm: "本当に権限を変更しますか？" },
-                           class: "btn btn-warning" %>
+                           class: "inline-flex items-center justify-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-yellow-600 hover:bg-yellow-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-yellow-500 transition-colors duration-200" %>
             <% end %>
           </div>
         </div>
@@ -67,30 +75,78 @@
     </div>
 
     <!-- 統計情報 -->
-    <div class="lg:col-span-1">
-      <div class="card bg-base-100 shadow-xl">
-        <div class="card-body">
-          <h2 class="card-title mb-4">統計情報</h2>
-
-          <div class="space-y-4">
-            <div class="stat bg-base-200 rounded-lg">
-              <div class="stat-title">カルテ数</div>
-              <div class="stat-value text-primary"><%= @stats[:medical_records_count] %></div>
+    <div class="lg:col-span-1 space-y-6">
+      <!-- カルテ数 -->
+      <div class="bg-white shadow-sm rounded-lg overflow-hidden">
+        <div class="px-6 py-5">
+          <div class="flex items-center">
+            <div class="flex-shrink-0 bg-green-500 rounded-md p-3">
+              <svg class="h-6 w-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+              </svg>
             </div>
-
-            <div class="stat bg-base-200 rounded-lg">
-              <div class="stat-title">患者数</div>
-              <div class="stat-value text-secondary"><%= @stats[:patients_count] %></div>
+            <div class="ml-5 w-0 flex-1">
+              <dl>
+                <dt class="text-sm font-medium text-gray-500 truncate">カルテ数</dt>
+                <dd class="mt-1 text-3xl font-semibold text-gray-900"><%= @stats[:medical_records_count] %></dd>
+              </dl>
             </div>
+          </div>
+        </div>
+      </div>
 
-            <div class="stat bg-base-200 rounded-lg">
-              <div class="stat-title">施術場所数</div>
-              <div class="stat-value text-accent"><%= @stats[:facilities_count] %></div>
+      <!-- 患者数 -->
+      <div class="bg-white shadow-sm rounded-lg overflow-hidden">
+        <div class="px-6 py-5">
+          <div class="flex items-center">
+            <div class="flex-shrink-0 bg-blue-500 rounded-md p-3">
+              <svg class="h-6 w-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
+              </svg>
             </div>
+            <div class="ml-5 w-0 flex-1">
+              <dl>
+                <dt class="text-sm font-medium text-gray-500 truncate">患者数</dt>
+                <dd class="mt-1 text-3xl font-semibold text-gray-900"><%= @stats[:patients_count] %></dd>
+              </dl>
+            </div>
+          </div>
+        </div>
+      </div>
 
-            <div class="stat bg-base-200 rounded-lg">
-              <div class="stat-title">請求書数</div>
-              <div class="stat-value text-info"><%= @stats[:invoices_count] %></div>
+      <!-- 施術場所数 -->
+      <div class="bg-white shadow-sm rounded-lg overflow-hidden">
+        <div class="px-6 py-5">
+          <div class="flex items-center">
+            <div class="flex-shrink-0 bg-purple-500 rounded-md p-3">
+              <svg class="h-6 w-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path>
+              </svg>
+            </div>
+            <div class="ml-5 w-0 flex-1">
+              <dl>
+                <dt class="text-sm font-medium text-gray-500 truncate">施術場所数</dt>
+                <dd class="mt-1 text-3xl font-semibold text-gray-900"><%= @stats[:facilities_count] %></dd>
+              </dl>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 請求書数 -->
+      <div class="bg-white shadow-sm rounded-lg overflow-hidden">
+        <div class="px-6 py-5">
+          <div class="flex items-center">
+            <div class="flex-shrink-0 bg-yellow-500 rounded-md p-3">
+              <svg class="h-6 w-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+              </svg>
+            </div>
+            <div class="ml-5 w-0 flex-1">
+              <dl>
+                <dt class="text-sm font-medium text-gray-500 truncate">請求書数</dt>
+                <dd class="mt-1 text-3xl font-semibold text-gray-900"><%= @stats[:invoices_count] %></dd>
+              </dl>
             </div>
           </div>
         </div>
