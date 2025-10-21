@@ -16,6 +16,9 @@ namespace :admin do
         password: password,
         password_confirmation: password
       )
+
+      # ロール変更を許可してから管理者に昇格
+      user.allow_role_change!
       user.admin!
 
       puts '管理者を作成しました:'
@@ -64,6 +67,9 @@ namespace :admin do
         password: password,
         password_confirmation: password_confirmation
       )
+
+      # ロール変更を許可してから管理者に昇格
+      user.allow_role_change!
       user.admin!
 
       puts "\n管理者を作成しました:"
