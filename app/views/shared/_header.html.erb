@@ -10,13 +10,19 @@
 
       <!-- デスクトップナビゲーション（md以上で表示） -->
       <nav class="hidden md:flex items-center space-x-1" role="navigation">
-        <%= link_to_nav_item('ダッシュボード', dashboard_path) %>
-        <%= link_to_nav_item('カルテ', medical_records_path) %>
-        <%= link_to_nav_item('患者', patients_path) %>
-        <%= link_to_nav_item('施術場所', facilities_path) %>
-        <%= link_to_nav_item('コストシート', cost_sheets_path) %>
-        <%= link_to_nav_item('同意書', consent_form_templates_path) %>
-        <%= link_to_nav_item('請求書', invoices_path) %>
+        <% if current_user.admin? %>
+          <%= link_to_nav_item('ダッシュボード', admin_root_path) %>
+          <%= link_to_nav_item('ユーザー管理', admin_users_path) %>
+          <%= link_to_nav_item('お知らせ管理', admin_announcements_path) %>
+        <% else %>
+          <%= link_to_nav_item('ダッシュボード', dashboard_path) %>
+          <%= link_to_nav_item('カルテ', medical_records_path) %>
+          <%= link_to_nav_item('患者', patients_path) %>
+          <%= link_to_nav_item('施術場所', facilities_path) %>
+          <%= link_to_nav_item('コストシート', cost_sheets_path) %>
+          <%= link_to_nav_item('同意書', consent_form_templates_path) %>
+          <%= link_to_nav_item('請求書', invoices_path) %>
+        <% end %>
       </nav>
 
       <!-- 右側：ユーザーメニュー + ハンバーガー -->
@@ -72,13 +78,19 @@
     role="navigation"
   >
     <div class="px-2 pt-2 pb-3 space-y-1">
-      <%= link_to_mobile_nav_item('ダッシュボード', dashboard_path) %>
-      <%= link_to_mobile_nav_item('カルテ', medical_records_path) %>
-      <%= link_to_mobile_nav_item('患者', patients_path) %>
-      <%= link_to_mobile_nav_item('施術場所', facilities_path) %>
-      <%= link_to_mobile_nav_item('コストシート', cost_sheets_path) %>
-      <%= link_to_mobile_nav_item('同意書', consent_form_templates_path) %>
-      <%= link_to_mobile_nav_item('請求書', invoices_path) %>
+      <% if current_user.admin? %>
+        <%= link_to_mobile_nav_item('ダッシュボード', admin_root_path) %>
+        <%= link_to_mobile_nav_item('ユーザー管理', admin_users_path) %>
+        <%= link_to_mobile_nav_item('お知らせ管理', admin_announcements_path) %>
+      <% else %>
+        <%= link_to_mobile_nav_item('ダッシュボード', dashboard_path) %>
+        <%= link_to_mobile_nav_item('カルテ', medical_records_path) %>
+        <%= link_to_mobile_nav_item('患者', patients_path) %>
+        <%= link_to_mobile_nav_item('施術場所', facilities_path) %>
+        <%= link_to_mobile_nav_item('コストシート', cost_sheets_path) %>
+        <%= link_to_mobile_nav_item('同意書', consent_form_templates_path) %>
+        <%= link_to_mobile_nav_item('請求書', invoices_path) %>
+      <% end %>
     </div>
   </nav>
 </header>
