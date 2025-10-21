@@ -29,7 +29,7 @@ Capybara.register_driver(:cuprite) do |app|
     process_timeout: 120, # CI環境でのブラウザ起動タイムアウトを延長
     timeout: 30, # レスポンスタイムアウト
     inspector: ENV.fetch('INSPECTOR', nil),
-    headless: !ENV['HEADLESS'].in?(%w[n 0 no false])
+    headless: !ENV['HEADLESS'].in?(%w[n 0 no false]),
   }
 
   # CI環境の場合はChrome実行パスを明示的に指定
