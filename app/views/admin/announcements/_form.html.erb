@@ -1,71 +1,73 @@
-<%= form_with(model: [:admin, announcement], class: "space-y-4") do |form| %>
+<%= form_with(model: [:admin, announcement], class: "space-y-6") do |form| %>
   <% if announcement.errors.any? %>
-    <div class="alert alert-error">
-      <svg xmlns="http://www.w3.org/2000/svg" class="stroke-current shrink-0 h-6 w-6" fill="none" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
-      <div>
-        <h3 class="font-bold">エラーがあります:</h3>
-        <ul>
-          <% announcement.errors.full_messages.each do |message| %>
-            <li><%= message %></li>
-          <% end %>
-        </ul>
+    <div class="rounded-md bg-red-50 border-l-4 border-red-400 p-4">
+      <div class="flex">
+        <div class="flex-shrink-0">
+          <svg class="h-5 w-5 text-red-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd" />
+          </svg>
+        </div>
+        <div class="ml-3">
+          <h3 class="text-sm font-medium text-red-800">エラーがあります:</h3>
+          <ul class="mt-2 text-sm text-red-700 list-disc list-inside">
+            <% announcement.errors.full_messages.each do |message| %>
+              <li><%= message %></li>
+            <% end %>
+          </ul>
+        </div>
       </div>
     </div>
   <% end %>
 
-  <div class="form-control">
-    <%= form.label :title, "タイトル", class: "label" %>
-    <%= form.text_field :title, class: "input input-bordered w-full", maxlength: 100, required: true %>
+  <div>
+    <%= form.label :title, "タイトル", class: "block text-sm font-medium text-gray-700 mb-2" %>
+    <%= form.text_field :title, class: "appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm", maxlength: 100, required: true, placeholder: "お知らせのタイトルを入力" %>
   </div>
 
-  <div class="form-control">
-    <%= form.label :body, "本文", class: "label" %>
-    <%= form.text_area :body, class: "textarea textarea-bordered w-full", rows: 6, maxlength: 1000, required: true %>
+  <div>
+    <%= form.label :body, "本文", class: "block text-sm font-medium text-gray-700 mb-2" %>
+    <%= form.text_area :body, class: "appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm", rows: 6, maxlength: 1000, required: true, placeholder: "お知らせの本文を入力" %>
   </div>
 
-  <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-    <div class="form-control">
-      <%= form.label :severity, "重要度", class: "label" %>
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+    <div>
+      <%= form.label :severity, "重要度", class: "block text-sm font-medium text-gray-700 mb-2" %>
       <%= form.select :severity,
         [['情報（青）', 'info'], ['警告（黄）', 'warning'], ['重要（赤）', 'critical']],
         {},
-        class: "select select-bordered w-full" %>
+        class: "appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm" %>
     </div>
 
-    <div class="form-control">
-      <%= form.label :display_order, "表示順序", class: "label" %>
-      <%= form.number_field :display_order, class: "input input-bordered w-full", min: 0, value: announcement.display_order || 0 %>
-      <label class="label">
-        <span class="label-text-alt">小さい数字ほど上に表示されます</span>
-      </label>
+    <div>
+      <%= form.label :display_order, "表示順序", class: "block text-sm font-medium text-gray-700 mb-2" %>
+      <%= form.number_field :display_order, class: "appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm", min: 0, value: announcement.display_order || 0 %>
+      <p class="mt-1 text-sm text-gray-500">小さい数字ほど上に表示されます</p>
     </div>
   </div>
 
-  <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-    <div class="form-control">
-      <%= form.label :published_at, "公開開始日時", class: "label" %>
-      <%= form.datetime_field :published_at, class: "input input-bordered w-full" %>
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+    <div>
+      <%= form.label :published_at, "公開開始日時", class: "block text-sm font-medium text-gray-700 mb-2" %>
+      <%= form.datetime_field :published_at, class: "appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm" %>
     </div>
 
-    <div class="form-control">
-      <%= form.label :expires_at, "公開終了日時", class: "label" %>
-      <%= form.datetime_field :expires_at, class: "input input-bordered w-full" %>
-      <label class="label">
-        <span class="label-text-alt">未設定の場合は無期限</span>
-      </label>
+    <div>
+      <%= form.label :expires_at, "公開終了日時", class: "block text-sm font-medium text-gray-700 mb-2" %>
+      <%= form.datetime_field :expires_at, class: "appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm" %>
+      <p class="mt-1 text-sm text-gray-500">未設定の場合は無期限</p>
     </div>
   </div>
 
-  <div class="form-control">
-    <%= form.label :status, "ステータス", class: "label" %>
+  <div>
+    <%= form.label :status, "ステータス", class: "block text-sm font-medium text-gray-700 mb-2" %>
     <%= form.select :status,
       [['下書き', 'draft'], ['公開', 'published'], ['アーカイブ', 'archived']],
       {},
-      class: "select select-bordered w-full" %>
+      class: "appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm" %>
   </div>
 
-  <div class="flex gap-2">
-    <%= form.submit announcement.persisted? ? "更新する" : "作成する", class: "btn btn-primary" %>
-    <%= link_to "キャンセル", admin_announcements_path, class: "btn btn-ghost" %>
+  <div class="flex gap-3 pt-4 border-t border-gray-200">
+    <%= form.submit announcement.persisted? ? "更新する" : "作成する", class: "inline-flex items-center justify-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors duration-200" %>
+    <%= link_to "キャンセル", admin_announcements_path, class: "inline-flex items-center justify-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors duration-200" %>
   </div>
 <% end %>

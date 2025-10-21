@@ -10,13 +10,19 @@
 
       <!-- デスクトップナビゲーション（md以上で表示） -->
       <nav class="hidden md:flex items-center space-x-1" role="navigation">
-        <%= link_to_nav_item('ダッシュボード', dashboard_path) %>
-        <%= link_to_nav_item('カルテ', medical_records_path) %>
-        <%= link_to_nav_item('患者', patients_path) %>
-        <%= link_to_nav_item('施術場所', facilities_path) %>
-        <%= link_to_nav_item('コストシート', cost_sheets_path) %>
-        <%= link_to_nav_item('同意書', consent_form_templates_path) %>
-        <%= link_to_nav_item('請求書', invoices_path) %>
+        <% if current_user.admin? %>
+          <%= link_to_nav_item('ダッシュボード', admin_root_path) %>
+          <%= link_to_nav_item('ユーザー管理', admin_users_path) %>
+          <%= link_to_nav_item('お知らせ管理', admin_announcements_path) %>
+        <% else %>
+          <%= link_to_nav_item('ダッシュボード', dashboard_path) %>
+          <%= link_to_nav_item('カルテ', medical_records_path) %>
+          <%= link_to_nav_item('患者', patients_path) %>
+          <%= link_to_nav_item('施術場所', facilities_path) %>
+          <%= link_to_nav_item('コストシート', cost_sheets_path) %>
+          <%= link_to_nav_item('同意書', consent_form_templates_path) %>
+          <%= link_to_nav_item('請求書', invoices_path) %>
+        <% end %>
       </nav>
 
       <!-- 右側：ユーザーメニュー + ハンバーガー -->
@@ -24,8 +30,13 @@
         <!-- ユーザードロップダウン -->
         <div class="relative" data-controller="dropdown">
           <button
+            id="user-menu-button"
             type="button"
+            aria-haspopup="true"
+            aria-expanded="false"
+            aria-controls="user-menu"
             data-action="click->dropdown#toggle click@window->dropdown#hide"
+            data-dropdown-target="button"
             class="flex items-center space-x-1 p-2 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-white"
           >
             <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -39,13 +50,16 @@
 
           <!-- ドロップダウンメニュー -->
           <div
+            id="user-menu"
+            role="menu"
+            aria-labelledby="user-menu-button"
             data-dropdown-target="menu"
             class="hidden absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 z-50"
           >
-            <%= link_to mypage_path, class: 'block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100' do %>
+            <%= link_to mypage_path, role: 'menuitem', class: 'block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100' do %>
               マイページ設定
             <% end %>
-            <%= link_to destroy_user_session_path, method: :delete, data: { turbo_method: :delete }, class: 'block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100' do %>
+            <%= link_to destroy_user_session_path, method: :delete, role: 'menuitem', data: { turbo_method: :delete }, class: 'block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100' do %>
               ログアウト
             <% end %>
           </div>
@@ -72,13 +86,19 @@
     role="navigation"
   >
     <div class="px-2 pt-2 pb-3 space-y-1">
-      <%= link_to_mobile_nav_item('ダッシュボード', dashboard_path) %>
-      <%= link_to_mobile_nav_item('カルテ', medical_records_path) %>
-      <%= link_to_mobile_nav_item('患者', patients_path) %>
-      <%= link_to_mobile_nav_item('施術場所', facilities_path) %>
-      <%= link_to_mobile_nav_item('コストシート', cost_sheets_path) %>
-      <%= link_to_mobile_nav_item('同意書', consent_form_templates_path) %>
-      <%= link_to_mobile_nav_item('請求書', invoices_path) %>
+      <% if current_user.admin? %>
+        <%= link_to_mobile_nav_item('ダッシュボード', admin_root_path) %>
+        <%= link_to_mobile_nav_item('ユーザー管理', admin_users_path) %>
+        <%= link_to_mobile_nav_item('お知らせ管理', admin_announcements_path) %>
+      <% else %>
+        <%= link_to_mobile_nav_item('ダッシュボード', dashboard_path) %>
+        <%= link_to_mobile_nav_item('カルテ', medical_records_path) %>
+        <%= link_to_mobile_nav_item('患者', patients_path) %>
+        <%= link_to_mobile_nav_item('施術場所', facilities_path) %>
+        <%= link_to_mobile_nav_item('コストシート', cost_sheets_path) %>
+        <%= link_to_mobile_nav_item('同意書', consent_form_templates_path) %>
+        <%= link_to_mobile_nav_item('請求書', invoices_path) %>
+      <% end %>
     </div>
   </nav>
 </header>

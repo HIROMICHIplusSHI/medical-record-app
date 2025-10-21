@@ -9,19 +9,33 @@ Capybara.default_normalize_ws = true
 
 # Cupriteドライバー設定（ヘッドレスChrome）
 Capybara.register_driver(:cuprite) do |app|
-  Capybara::Cuprite::Driver.new(
-    app,
+  # CI環境でのChrome実行パス検出
+  chrome_path = if ENV['CI']
+                  # GitHub Actions環境
+                  '/usr/bin/google-chrome-stable'
+                elsif File.exist?('/Applications/Google Chrome.app/Contents/MacOS/Google Chrome')
+                  # macOS
+                  '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome'
+                end
+
+  options = {
     window_size: [1400, 1400],
     browser_options: {
       'no-sandbox': nil,
       'disable-gpu': nil,
       'disable-dev-shm-usage': nil, # CI環境での共有メモリ問題を回避
+      'disable-software-rasterizer': nil, # CI環境でのレンダリング最適化
     },
-    process_timeout: 120, # CI環境でのブラウザ起動タイムアウトを延長（GitHub Actions対応 - 60秒→120秒）
-    timeout: 30, # レスポンスタイムアウト（20秒→30秒）
+    process_timeout: 120, # CI環境でのブラウザ起動タイムアウトを延長
+    timeout: 30, # レスポンスタイムアウト
     inspector: ENV.fetch('INSPECTOR', nil),
-    headless: !ENV['HEADLESS'].in?(%w[n 0 no false])
-  )
+    headless: !ENV['HEADLESS'].in?(%w[n 0 no false]),
+  }
+
+  # CI環境の場合はChrome実行パスを明示的に指定
+  options[:browser_path] = chrome_path if chrome_path
+
+  Capybara::Cuprite::Driver.new(app, **options)
 end
 
 # JavaScriptを使うテストではCupriteドライバーを使用

@@ -1,50 +1,69 @@
-<div class="container mx-auto px-4 py-8">
-  <h1 class="text-3xl font-bold mb-6">ユーザー管理</h1>
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+  <!-- ヘッダー -->
+  <div class="mb-8">
+    <h1 class="text-3xl font-bold text-gray-900">ユーザー管理</h1>
+    <p class="mt-2 text-sm text-gray-600">登録ユーザーの一覧と管理</p>
+  </div>
 
   <!-- ユーザー一覧 -->
-  <div class="card bg-base-100 shadow-xl">
-    <div class="card-body">
-      <% if @users.any? %>
-        <div class="overflow-x-auto">
-          <table class="table table-zebra">
-            <thead>
-              <tr>
-                <th>メールアドレス</th>
-                <th>名前</th>
-                <th>権限</th>
-                <th>登録日</th>
-                <th>操作</th>
+  <div class="bg-white shadow-sm rounded-lg overflow-hidden">
+    <% if @users.any? %>
+      <div class="overflow-x-auto">
+        <table class="min-w-full divide-y divide-gray-200" role="table" aria-label="ユーザー一覧">
+          <caption class="sr-only">ユーザー管理テーブル</caption>
+          <thead class="bg-gray-50">
+            <tr>
+              <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                メールアドレス
+              </th>
+              <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                名前
+              </th>
+              <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                権限
+              </th>
+              <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                登録日
+              </th>
+              <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+                操作
+              </th>
+            </tr>
+          </thead>
+          <tbody class="bg-white divide-y divide-gray-200">
+            <% @users.each do |user| %>
+              <tr class="hover:bg-gray-50">
+                <td class="px-6 py-4 whitespace-nowrap">
+                  <%= link_to user.email, admin_user_path(user), class: "text-sm text-blue-600 hover:text-blue-700 font-medium" %>
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                  <%= user.name || '-' %>
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap">
+                  <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium <%= user.admin? ? 'bg-red-100 text-red-800' : 'bg-blue-100 text-blue-800' %>">
+                    <%= user.admin? ? '管理者' : 'ユーザー' %>
+                  </span>
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                  <%= user.created_at.strftime('%Y/%m/%d') %>
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                  <%= link_to "詳細", admin_user_path(user), class: "inline-flex items-center px-3 py-1 border border-gray-300 rounded-md text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500" %>
+                </td>
               </tr>
-            </thead>
-            <tbody>
-              <% @users.each do |user| %>
-                <tr>
-                  <td>
-                    <%= link_to user.email, admin_user_path(user), class: "link link-primary" %>
-                  </td>
-                  <td><%= user.name || '-' %></td>
-                  <td>
-                    <span class="badge <%= user.admin? ? 'badge-error' : 'badge-info' %> badge-lg">
-                      <%= user.admin? ? '管理者' : 'ユーザー' %>
-                    </span>
-                  </td>
-                  <td><%= user.created_at.strftime('%Y/%m/%d') %></td>
-                  <td>
-                    <%= link_to "詳細", admin_user_path(user), class: "btn btn-sm btn-outline" %>
-                  </td>
-                </tr>
-              <% end %>
-            </tbody>
-          </table>
-        </div>
+            <% end %>
+          </tbody>
+        </table>
+      </div>
 
-        <!-- ページネーション -->
-        <div class="mt-4">
-          <%= paginate @users %>
-        </div>
-      <% else %>
-        <p class="text-gray-500">ユーザーがいません</p>
-      <% end %>
-    </div>
+      <!-- ページネーション -->
+      <div class="px-6 py-4 bg-gray-50 border-t border-gray-200">
+        <%= paginate @users %>
+      </div>
+    <% else %>
+      <div class="px-6 py-12 text-center">
+        <p class="text-sm text-gray-500">ユーザーがいません</p>
+      </div>
+    <% end %>
   </div>
 </div>
