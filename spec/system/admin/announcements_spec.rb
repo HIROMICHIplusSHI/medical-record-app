@@ -274,4 +274,59 @@ RSpec.describe 'Admin Announcements Management', type: :system do
       expect(page).to have_content('お知らせをアーカイブしました')
     end
   end
+
+  describe '削除機能' do
+    let!(:announcement) { create(:announcement, author: admin_user, title: '削除対象のお知らせ') }
+
+    it 'お知らせを削除できる', js: true do
+      visit admin_announcement_path(announcement)
+
+      # Cuprite用のダイアログハンドラー
+      page.driver.browser.on(:dialog) do |dialog|
+        expect(dialog.message).to include('削除')
+        dialog.accept
+      end
+
+      click_button '削除'
+
+      expect(page).to have_content('お知らせを削除しました')
+      expect(page).to have_current_path(admin_announcements_path)
+    end
+  end
+
+  describe '検索・フィルタリング機能' do
+    let!(:important_announcement) { create(:announcement, title: '重要なお知らせ', author: admin_user, severity: :critical) }
+    let!(:normal_announcement) { create(:announcement, title: '通常のお知らせ', author: admin_user, severity: :info) }
+    let!(:draft) { create(:announcement, title: '下書きのお知らせ', author: admin_user, status: :draft) }
+
+    it 'タイトルで検索できる', js: true do
+      visit admin_announcements_path
+
+      fill_in 'q[title_cont]', with: '重要'
+      click_button '検索'
+
+      expect(page).to have_content('重要なお知らせ')
+      expect(page).not_to have_content('通常のお知らせ')
+    end
+
+    it 'ステータスでフィルタできる', js: true do
+      visit admin_announcements_path
+
+      select '下書き', from: 'q[status_eq]'
+      click_button '検索'
+
+      expect(page).to have_content('下書きのお知らせ')
+      expect(page).not_to have_content('通常のお知らせ')
+    end
+
+    it '重要度でフィルタできる', js: true do
+      visit admin_announcements_path
+
+      select '重要（赤）', from: 'q[severity_eq]'
+      click_button '検索'
+
+      expect(page).to have_content('重要なお知らせ')
+      expect(page).not_to have_content('通常のお知らせ')
+    end
+  end
 end

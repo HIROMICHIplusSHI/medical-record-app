@@ -30,8 +30,13 @@
         <!-- ユーザードロップダウン -->
         <div class="relative" data-controller="dropdown">
           <button
+            id="user-menu-button"
             type="button"
+            aria-haspopup="true"
+            aria-expanded="false"
+            aria-controls="user-menu"
             data-action="click->dropdown#toggle click@window->dropdown#hide"
+            data-dropdown-target="button"
             class="flex items-center space-x-1 p-2 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-white"
           >
             <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -45,13 +50,16 @@
 
           <!-- ドロップダウンメニュー -->
           <div
+            id="user-menu"
+            role="menu"
+            aria-labelledby="user-menu-button"
             data-dropdown-target="menu"
             class="hidden absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 z-50"
           >
-            <%= link_to mypage_path, class: 'block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100' do %>
+            <%= link_to mypage_path, role: 'menuitem', class: 'block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100' do %>
               マイページ設定
             <% end %>
-            <%= link_to destroy_user_session_path, method: :delete, data: { turbo_method: :delete }, class: 'block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100' do %>
+            <%= link_to destroy_user_session_path, method: :delete, role: 'menuitem', data: { turbo_method: :delete }, class: 'block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100' do %>
               ログアウト
             <% end %>
           </div>
