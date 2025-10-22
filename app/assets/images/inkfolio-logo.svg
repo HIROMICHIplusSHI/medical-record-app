@@ -1,0 +1,28 @@
+<svg viewBox="0 0 240 80" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="inkGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#8B7355;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#5D4E37;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+  
+  <!-- 3つのドット（Inkの上） -->
+  <g>
+    <circle cx="65" cy="18" r="2" fill="url(#inkGradient)" opacity="0.7"/>
+    <circle cx="75" cy="15" r="2.5" fill="url(#inkGradient)" opacity="0.8"/>
+    <circle cx="85" cy="18" r="2" fill="url(#inkGradient)" opacity="0.7"/>
+  </g>
+  
+  <!-- テキスト部分 -->
+  <text x="55" y="48" font-family="'Georgia', serif" font-size="32" font-weight="300" fill="#5D4E37" letter-spacing="1">
+    Ink
+  </text>
+  <text x="103" y="48" font-family="'Georgia', serif" font-size="32" font-weight="300" fill="#8B7355" letter-spacing="1">
+    Folio
+  </text>
+  
+  <!-- サブタイトル（中央揃え） -->
+  <text x="120" y="62" font-family="'Arial', sans-serif" font-size="9" fill="#A0826D" letter-spacing="2" text-anchor="middle">
+    ARTIST PORTFOLIO
+  </text>
+</svg>
