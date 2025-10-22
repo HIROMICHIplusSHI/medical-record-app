@@ -116,6 +116,21 @@ RSpec.describe 'Inquiries', type: :request do
         expect(response.body).to include('件名を入力してください')
       end
     end
+
+    context 'トランザクション失敗時' do
+      it 'ユーザーフレンドリーなエラーメッセージが表示される' do
+        allow_any_instance_of(InquiryMessage).to receive(:save!).and_raise(
+          ActiveRecord::RecordInvalid.new
+        )
+
+        post inquiries_path, params: valid_attributes
+
+        expect(response).to have_http_status(:unprocessable_entity)
+        expect(response.body).to include('お問い合わせの送信に失敗しました')
+        expect(response.body).not_to include('ActiveRecord')
+        expect(response.body).not_to include('RecordInvalid')
+      end
+    end
   end
 
   describe '認証なしの場合' do

@@ -6,7 +6,11 @@ module Admin
 
     def index
       @inquiries = Inquiry.recent.page(params[:page])
-      @inquiries = @inquiries.by_status(params[:status]) if params[:status].present?
+
+      # 有効なステータス値のみ受け付ける
+      if params[:status].present? && Inquiry.statuses.key?(params[:status])
+        @inquiries = @inquiries.by_status(params[:status])
+      end
     end
 
     def show

@@ -33,6 +33,14 @@ RSpec.describe 'Admin::Inquiries', type: :request do
           expect(response.body).to include(open_inquiry.subject)
           expect(response.body).not_to include(closed_inquiry.subject)
         end
+
+        it '無効なステータス値の場合、すべてのお問い合わせが表示される' do
+          get admin_inquiries_path, params: { status: 'invalid_status' }
+
+          expect(response).to have_http_status(:success)
+          expect(response.body).to include(open_inquiry.subject)
+          expect(response.body).to include(closed_inquiry.subject)
+        end
       end
     end
 

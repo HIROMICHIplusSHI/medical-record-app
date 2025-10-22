@@ -43,4 +43,21 @@ RSpec.describe Inquiry, type: :model do
       end
     end
   end
+
+  describe '#status_i18n' do
+    it 'openの場合、"未対応"を返す' do
+      inquiry = build(:inquiry, status: :open)
+      expect(inquiry.status_i18n).to eq('未対応')
+    end
+
+    it 'in_progressの場合、"対応中"を返す' do
+      inquiry = build(:inquiry, status: :in_progress)
+      expect(inquiry.status_i18n).to eq('対応中')
+    end
+
+    it 'closedの場合、"対応完了"を返す' do
+      inquiry = build(:inquiry, status: :closed)
+      expect(inquiry.status_i18n).to eq('対応完了')
+    end
+  end
 end
