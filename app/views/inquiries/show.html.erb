@@ -20,13 +20,13 @@
   <div class="space-y-4 mb-6">
     <h2 class="text-xl font-bold">メッセージ履歴</h2>
     <% @inquiry_messages.each do |message| %>
-      <div class="card <%= message.user.admin? ? 'bg-accent/10 border-accent' : 'bg-base-200' %> shadow mb-4">
+      <div class="card <%= message.user.admin? ? 'bg-accent/20 border-2 border-accent' : 'bg-base-200' %> shadow mb-4">
         <div class="card-body">
           <div class="flex items-start gap-3">
             <!-- アバター -->
-            <div class="avatar placeholder">
+            <div class="avatar placeholder" role="img" aria-label="<%= message.user.admin? ? '管理者' : 'ユーザー' %>">
               <div class="<%= message.user.admin? ? 'bg-accent text-accent-content' : 'bg-neutral text-neutral-content' %> rounded-full w-10">
-                <span class="text-xl">
+                <span class="text-xl" aria-hidden="true">
                   <%= message.user.admin? ? '🛡️' : '👤' %>
                 </span>
               </div>
