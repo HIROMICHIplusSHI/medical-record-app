@@ -48,9 +48,10 @@ class Inquiry < ApplicationRecord
 
   # お問い合わせの作成・更新・削除時に未読件数キャッシュをクリア
   def clear_unread_count_cache
-    # 管理者のキャッシュをクリア
-    User.where(role: :admin).find_each do |admin|
-      Rails.cache.delete("unread_inquiry_count_user_#{admin.id}")
+    # 管理者のキャッシュをクリア（pluckでメモリ効率化）
+    admin_ids = User.where(role: :admin).pluck(:id)
+    admin_ids.each do |admin_id|
+      Rails.cache.delete("unread_inquiry_count_user_#{admin_id}")
     end
 
     # お問い合わせ作成者（ユーザー）のキャッシュをクリア
