@@ -131,6 +131,33 @@ RSpec.describe 'Inquiries', type: :request do
         expect(response.body).not_to include('RecordInvalid')
       end
     end
+
+    context 'Mass Assignment対策' do
+      it 'statusパラメータは無視される' do
+        mass_assignment_params = valid_attributes.deep_merge(
+          inquiry: { status: 'closed' }
+        )
+
+        post inquiries_path, params: mass_assignment_params
+
+        created_inquiry = Inquiry.last
+        expect(created_inquiry.status).to eq('open') # デフォルト値
+        expect(created_inquiry.status).not_to eq('closed')
+      end
+
+      it 'user_idパラメータは無視される' do
+        other_user = create(:user)
+        mass_assignment_params = valid_attributes.deep_merge(
+          inquiry: { user_id: other_user.id }
+        )
+
+        post inquiries_path, params: mass_assignment_params
+
+        created_inquiry = Inquiry.last
+        expect(created_inquiry.user_id).to eq(user.id) # ログインユーザー
+        expect(created_inquiry.user_id).not_to eq(other_user.id)
+      end
+    end
   end
 
   describe '認証なしの場合' do
