@@ -41,6 +41,32 @@ RSpec.describe 'Admin::Inquiries', type: :request do
           expect(response.body).to include(open_inquiry.subject)
           expect(response.body).to include(closed_inquiry.subject)
         end
+
+        context 'エッジケース' do
+          it '空文字列の場合、すべてのお問い合わせが表示される' do
+            get admin_inquiries_path, params: { status: '' }
+
+            expect(response).to have_http_status(:success)
+            expect(response.body).to include(open_inquiry.subject)
+            expect(response.body).to include(closed_inquiry.subject)
+          end
+
+          it 'nilの場合、すべてのお問い合わせが表示される' do
+            get admin_inquiries_path, params: { status: nil }
+
+            expect(response).to have_http_status(:success)
+            expect(response.body).to include(open_inquiry.subject)
+            expect(response.body).to include(closed_inquiry.subject)
+          end
+
+          it 'SQLインジェクション試行値の場合、すべてのお問い合わせが表示される' do
+            get admin_inquiries_path, params: { status: "'; DROP TABLE inquiries; --" }
+
+            expect(response).to have_http_status(:success)
+            expect(response.body).to include(open_inquiry.subject)
+            expect(response.body).to include(closed_inquiry.subject)
+          end
+        end
       end
     end
 
