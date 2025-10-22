@@ -1,1 +1,30 @@
 @import "tailwindcss";
+
+/* InkFolio Custom Theme */
+@theme {
+  /* InkFolio Brand Colors (from logo) */
+  --color-ink-light: #8B7355;    /* Ink gradient start - lighter brown */
+  --color-ink-dark: #5D4E37;     /* Ink gradient end - darker brown */
+  --color-ink-subtitle: #A0826D; /* Subtitle text color */
+  --color-ink-bg: #F5F3F0;       /* Background beige */
+
+  /* Greige Color Palette */
+  --color-greige-50: #faf9f7;    /* Lightest - backgrounds */
+  --color-greige-100: #f5f3f0;   /* Very light - cards, surfaces */
+  --color-greige-200: #e8e4df;   /* Light - borders, dividers */
+  --color-greige-300: #d4cec5;   /* Light-medium - disabled states */
+  --color-greige-400: #b8b0a3;   /* Medium - secondary text */
+  --color-greige-500: #9c9180;   /* Base greige */
+  --color-greige-600: #7d746a;   /* Medium-dark - buttons, accents */
+  --color-greige-700: #5e5851;   /* Dark - text */
+  --color-greige-800: #3f3c38;   /* Darker - headings */
+  --color-greige-900: #2a2825;   /* Darkest - header, footer */
+
+  /* Accent Colors (for actions and states) */
+  --color-accent-primary: #8b7355;   /* Primary actions (ink-light) */
+  --color-accent-secondary: #b5a188; /* Secondary actions */
+  --color-accent-success: #7a9b76;   /* Success states */
+  --color-accent-warning: #d4a574;   /* Warning states */
+  --color-accent-danger: #c17b7b;    /* Error/danger states */
+  --color-accent-info: #7b9bc1;      /* Info states */
+}
