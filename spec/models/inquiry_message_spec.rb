@@ -22,6 +22,31 @@ RSpec.describe InquiryMessage, type: :model do
     end
   end
 
+  describe 'update inquiry last_message_by' do
+    let(:user) { create(:user) }
+    let(:admin) { create(:user, role: :admin) }
+
+    context 'ユーザーがメッセージを作成した場合' do
+      it 'inquiry.last_message_byがuserになる' do
+        inquiry = create(:inquiry, user: user, last_message_by: :admin)
+
+        create(:inquiry_message, inquiry: inquiry, user: user)
+
+        expect(inquiry.reload.last_message_by).to eq('user')
+      end
+    end
+
+    context '管理者がメッセージを作成した場合' do
+      it 'inquiry.last_message_byがadminになる' do
+        inquiry = create(:inquiry, user: user, last_message_by: :user)
+
+        create(:inquiry_message, inquiry: inquiry, user: admin)
+
+        expect(inquiry.reload.last_message_by).to eq('admin')
+      end
+    end
+  end
+
   describe 'scopes' do
     let(:user) { create(:user) }
     let(:inquiry) { create(:inquiry, user: user) }

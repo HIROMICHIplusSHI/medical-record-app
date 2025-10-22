@@ -42,6 +42,24 @@ RSpec.describe 'Inquiries', type: :request do
       expect(response.body.index(messages.first.body)).to be < response.body.index(messages.last.body)
     end
 
+    context '既読処理' do
+      it '管理者が最後に返信していた場合、ユーザーが既読にする' do
+        inquiry.update(last_message_by: :admin)
+
+        get inquiry_path(inquiry)
+
+        expect(inquiry.reload.last_message_by).to eq('user')
+      end
+
+      it 'ユーザーが最後に返信していた場合、既読処理は行わない' do
+        inquiry.update(last_message_by: :user)
+
+        expect do
+          get inquiry_path(inquiry)
+        end.not_to(change { inquiry.reload.last_message_by })
+      end
+    end
+
     context '他のユーザーのお問い合わせの場合' do
       let(:other_inquiry) { create(:inquiry) }
 
@@ -66,6 +84,7 @@ RSpec.describe 'Inquiries', type: :request do
         inquiry: {
           subject: 'テストお問い合わせ',
           body: 'お問い合わせ内容です。',
+          category: 'general',
         },
       }
     end

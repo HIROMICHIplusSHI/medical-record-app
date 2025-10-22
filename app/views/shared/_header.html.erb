@@ -11,16 +11,18 @@
       <!-- デスクトップナビゲーション（md以上で表示） -->
       <nav class="hidden md:flex items-center space-x-1" role="navigation">
         <% if current_user.admin? %>
+          <% badge_count = unread_inquiry_count(current_user) %>
           <%= link_to_nav_item('ダッシュボード', admin_root_path) %>
           <%= link_to_nav_item('ユーザー管理', admin_users_path) %>
           <%= link_to_nav_item('お知らせ管理', admin_announcements_path) %>
-          <%= link_to_nav_item('お問い合わせ', admin_inquiries_path) do %>
+          <%= link_to admin_inquiries_path, class: "px-3 py-2 rounded-md text-sm font-medium transition-colors #{current_page?(admin_inquiries_path) ? 'bg-blue-700' : 'hover:bg-blue-700'}" do %>
             お問い合わせ
-            <% if (count = unread_inquiry_count(current_user)) > 0 %>
-              <span class="badge badge-sm badge-primary ml-1" aria-label="<%= count %>件の未対応お問い合わせ"><%= count %></span>
+            <% if badge_count > 0 %>
+              <span class="ml-1 px-2 py-0.5 text-xs font-semibold rounded-full bg-red-500 text-white" aria-label="<%= badge_count %>件の未対応お問い合わせ"><%= badge_count %></span>
             <% end %>
           <% end %>
         <% else %>
+          <% user_badge_count = unread_inquiry_count(current_user) %>
           <%= link_to_nav_item('ダッシュボード', dashboard_path) %>
           <%= link_to_nav_item('カルテ', medical_records_path) %>
           <%= link_to_nav_item('患者', patients_path) %>
@@ -28,7 +30,12 @@
           <%= link_to_nav_item('コストシート', cost_sheets_path) %>
           <%= link_to_nav_item('同意書', consent_form_templates_path) %>
           <%= link_to_nav_item('請求書', invoices_path) %>
-          <%= link_to_nav_item('お問い合わせ', inquiries_path) %>
+          <%= link_to inquiries_path, class: "px-3 py-2 rounded-md text-sm font-medium transition-colors #{current_page?(inquiries_path) ? 'bg-blue-700' : 'hover:bg-blue-700'}" do %>
+            お問い合わせ
+            <% if user_badge_count > 0 %>
+              <span class="ml-1 px-2 py-0.5 text-xs font-semibold rounded-full bg-red-500 text-white" aria-label="<%= user_badge_count %>件の未読お問い合わせ"><%= user_badge_count %></span>
+            <% end %>
+          <% end %>
         <% end %>
       </nav>
 
@@ -94,18 +101,20 @@
   >
     <div class="px-2 pt-2 pb-3 space-y-1">
       <% if current_user.admin? %>
+        <% mobile_badge_count = unread_inquiry_count(current_user) %>
         <%= link_to_mobile_nav_item('ダッシュボード', admin_root_path) %>
         <%= link_to_mobile_nav_item('ユーザー管理', admin_users_path) %>
         <%= link_to_mobile_nav_item('お知らせ管理', admin_announcements_path) %>
-        <%= link_to_mobile_nav_item('お問い合わせ', admin_inquiries_path) do %>
+        <%= link_to admin_inquiries_path, class: "block px-3 py-2 rounded-md text-base font-medium transition-colors #{current_page?(admin_inquiries_path) ? 'bg-blue-700' : 'hover:bg-blue-700'}" do %>
           お問い合わせ
-          <% if (count = unread_inquiry_count(current_user)) > 0 %>
-            <span class="badge badge-sm badge-primary ml-1" aria-label="<%= count %>件の未対応お問い合わせ">
-              <%= count %>
+          <% if mobile_badge_count > 0 %>
+            <span class="ml-1 px-2 py-0.5 text-xs font-semibold rounded-full bg-red-500 text-white" aria-label="<%= mobile_badge_count %>件の未対応お問い合わせ">
+              <%= mobile_badge_count %>
             </span>
           <% end %>
         <% end %>
       <% else %>
+        <% mobile_user_badge_count = unread_inquiry_count(current_user) %>
         <%= link_to_mobile_nav_item('ダッシュボード', dashboard_path) %>
         <%= link_to_mobile_nav_item('カルテ', medical_records_path) %>
         <%= link_to_mobile_nav_item('患者', patients_path) %>
@@ -113,7 +122,14 @@
         <%= link_to_mobile_nav_item('コストシート', cost_sheets_path) %>
         <%= link_to_mobile_nav_item('同意書', consent_form_templates_path) %>
         <%= link_to_mobile_nav_item('請求書', invoices_path) %>
-        <%= link_to_mobile_nav_item('お問い合わせ', inquiries_path) %>
+        <%= link_to inquiries_path, class: "block px-3 py-2 rounded-md text-base font-medium transition-colors #{current_page?(inquiries_path) ? 'bg-blue-700' : 'hover:bg-blue-700'}" do %>
+          お問い合わせ
+          <% if mobile_user_badge_count > 0 %>
+            <span class="ml-1 px-2 py-0.5 text-xs font-semibold rounded-full bg-red-500 text-white" aria-label="<%= mobile_user_badge_count %>件の未読お問い合わせ">
+              <%= mobile_user_badge_count %>
+            </span>
+          <% end %>
+        <% end %>
       <% end %>
     </div>
   </nav>

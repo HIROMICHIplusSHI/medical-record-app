@@ -5,15 +5,19 @@ module Admin
     before_action :set_inquiry, only: %i[show update]
 
     def index
-      @inquiries = Inquiry.includes(:user).recent.page(params[:page])
-
-      # 有効なステータス値のみ受け付ける
-      return unless params[:status].present? && Inquiry.statuses.key?(params[:status])
-
-      @inquiries = @inquiries.by_status(params[:status])
+      @inquiries = Inquiry.includes(:user).recent
+      @inquiries = @inquiries.by_status(params[:status]) if valid_status?
+      @inquiries = @inquiries.by_category(params[:category]) if valid_category?
+      @inquiries = @inquiries.page(params[:page])
     end
 
     def show
+      # 既読処理：ユーザーが最後に返信していたら、管理者が既読にする
+      @inquiry.update(last_message_by: :admin) if @inquiry.user?
+
+      # 未対応の場合は対応中に変更
+      @inquiry.update(status: :in_progress) if @inquiry.open?
+
       @inquiry_messages = @inquiry.inquiry_messages.chronological
       @inquiry_message = @inquiry.inquiry_messages.build
     end
@@ -40,6 +44,14 @@ module Admin
       return if current_user&.admin?
 
       redirect_to user_root_path, alert: '管理者権限が必要です。'
+    end
+
+    def valid_status?
+      params[:status].present? && Inquiry.statuses.key?(params[:status])
+    end
+
+    def valid_category?
+      params[:category].present? && Inquiry.categories.key?(params[:category])
     end
   end
 end

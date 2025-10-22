@@ -19,7 +19,7 @@ RSpec.describe 'Admin Inquiries Management', type: :system do
       visit admin_inquiries_path
 
       expect(page).to have_content('お問い合わせ管理')
-      expect(page).to have_selector('.card', count: 3)
+      expect(page).to have_selector('tbody tr', count: 3)
     end
 
     it 'お問い合わせ情報が正しく表示される', js: true do
@@ -30,10 +30,10 @@ RSpec.describe 'Admin Inquiries Management', type: :system do
       expect(page).to have_content(in_progress_inquiry.subject)
       expect(page).to have_content(closed_inquiry.subject)
 
-      # ステータスバッジ（badge-primary, badge-warning, badge-ghostクラスを使用）
-      expect(page).to have_selector('.badge-primary', text: '未対応')
-      expect(page).to have_selector('.badge-warning', text: '対応中')
-      expect(page).to have_selector('.badge-ghost', text: '対応完了')
+      # ステータスバッジ（Tailwindクラスを使用）
+      expect(page).to have_selector('.bg-blue-100.text-blue-800', text: '未対応')
+      expect(page).to have_selector('.bg-yellow-100.text-yellow-800', text: '対応中')
+      expect(page).to have_selector('.bg-gray-100.text-gray-800', text: '対応完了')
     end
 
     it 'ユーザー情報が表示される', js: true do
@@ -93,12 +93,11 @@ RSpec.describe 'Admin Inquiries Management', type: :system do
       expect(page).to have_content('ユーザーからの質問')
     end
 
-    it 'ステータスバッジが表示される', js: true do
+    it 'ステータス選択フォームに現在のステータスが表示される', js: true do
       visit admin_inquiry_path(inquiry)
 
-      # 未対応バッジの確認（badge-primaryクラス）
-      status_badge = page.find('.badge-primary', text: '未対応')
-      expect(status_badge).to be_present
+      # 管理者がアクセスすると未対応→対応中に自動変更される
+      expect(page).to have_select('inquiry[status]', selected: '対応中')
     end
 
     it 'ステータス更新フォームが表示される', js: true do
@@ -125,7 +124,7 @@ RSpec.describe 'Admin Inquiries Management', type: :system do
       click_button '更新'
 
       expect(page).to have_content('ステータスを更新しました')
-      expect(page).to have_selector('.badge-warning', text: '対応中')
+      expect(page).to have_select('inquiry[status]', selected: '対応中')
     end
 
     it 'ステータスを対応完了に更新できる', js: true do
@@ -135,7 +134,7 @@ RSpec.describe 'Admin Inquiries Management', type: :system do
       click_button '更新'
 
       expect(page).to have_content('ステータスを更新しました')
-      expect(page).to have_selector('.badge-ghost', text: '対応完了')
+      expect(page).to have_select('inquiry[status]', selected: '対応完了')
     end
   end
 
@@ -158,12 +157,12 @@ RSpec.describe 'Admin Inquiries Management', type: :system do
 
       visit admin_inquiry_path(inquiry)
 
-      # 管理者メッセージはbg-accent/20背景を持つカード
-      admin_message_card = page.find('.card.bg-accent\\/20', text: '管理者メッセージ')
-      expect(admin_message_card).to be_present
+      # 管理者メッセージはbg-blue-50背景を持つ
+      admin_message = page.find('.bg-blue-50', text: '管理者メッセージ')
+      expect(admin_message).to be_present
 
       # 管理者バッジも確認
-      expect(admin_message_card).to have_selector('.badge-accent', text: '管理者')
+      expect(admin_message).to have_selector('.bg-blue-100.text-blue-800', text: '管理者')
     end
 
     it 'バリデーションエラーが表示される', js: true do
@@ -191,14 +190,14 @@ RSpec.describe 'Admin Inquiries Management', type: :system do
     it 'メッセージが古い順に表示される', js: true do
       visit admin_inquiry_path(inquiry)
 
-      # メッセージ履歴セクション内のカードを取得
+      # メッセージ履歴セクション内のメッセージ本文を取得
       message_section = page.find('h2', text: 'メッセージ履歴').find(:xpath, '..')
-      message_cards = message_section.all('.card .whitespace-pre-wrap')
+      message_bodies = message_section.all('div.whitespace-pre-wrap')
 
       # 古い順に表示されることを確認
-      expect(message_cards[0].text).to include('最初のメッセージ')
-      expect(message_cards[1].text).to include('2番目のメッセージ')
-      expect(message_cards[2].text).to include('3番目のメッセージ')
+      expect(message_bodies[0].text).to include('最初のメッセージ')
+      expect(message_bodies[1].text).to include('2番目のメッセージ')
+      expect(message_bodies[2].text).to include('3番目のメッセージ')
     end
   end
 

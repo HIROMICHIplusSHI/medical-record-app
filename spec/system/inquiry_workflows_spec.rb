@@ -13,7 +13,7 @@ RSpec.describe 'お問い合わせワークフロー', type: :system do
         visit inquiries_path
 
         expect(page).to have_content('お問い合わせ')
-        expect(page).to have_content('お問い合わせはまだありません')
+        expect(page).to have_content('まだお問い合わせはありません。')
       end
     end
 
@@ -24,7 +24,7 @@ RSpec.describe 'お問い合わせワークフロー', type: :system do
         visit inquiries_path
 
         expect(page).to have_content('お問い合わせ')
-        expect(page).to have_selector('.card', count: 3)
+        expect(page).to have_selector('tbody tr', count: 3)
       end
 
       it 'ステータスバッジが表示される', js: true do
@@ -56,7 +56,7 @@ RSpec.describe 'お問い合わせワークフロー', type: :system do
       expect(page).to have_content('新規お問い合わせ')
 
       fill_in '件名', with: 'システムに関する質問'
-      fill_in '本文', with: 'ログイン機能について教えてください。'
+      fill_in 'お問い合わせ内容', with: 'ログイン機能について教えてください。'
 
       click_button '送信'
 
@@ -69,7 +69,7 @@ RSpec.describe 'お問い合わせワークフロー', type: :system do
       visit new_inquiry_path
 
       fill_in '件名', with: ''
-      fill_in '本文', with: ''
+      fill_in 'お問い合わせ内容', with: ''
 
       click_button '送信'
 
@@ -88,19 +88,19 @@ RSpec.describe 'お問い合わせワークフロー', type: :system do
 
       expect(page).to have_content(inquiry.subject)
       expect(page).to have_content('未対応')
-      # ヘッダーカード1つ + メッセージカード3つ + 返信フォームカード1つ = 5つ
-      expect(page).to have_selector('.card', minimum: 3)
+      # 詳細情報セクション、メッセージ履歴セクション、返信フォームセクション
+      expect(page).to have_selector('div.bg-white.shadow-md.rounded', minimum: 3)
     end
 
     it 'メッセージが古い順に表示される', js: true do
       visit inquiry_path(inquiry)
 
-      # メッセージ履歴セクション内のカードを取得
+      # メッセージ履歴セクション内のメッセージを取得
       message_section = page.find('h2', text: 'メッセージ履歴').find(:xpath, '..')
-      message_cards = message_section.all('.card .whitespace-pre-wrap')
+      message_bodies = message_section.all('div.whitespace-pre-wrap')
 
       # 最初のメッセージが最初に表示される
-      expect(message_cards.first.text).to include(messages.first.body)
+      expect(message_bodies.first.text).to include(messages.first.body)
     end
 
     it '一覧に戻るボタンが表示される', js: true do
