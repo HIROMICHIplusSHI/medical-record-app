@@ -1,0 +1,52 @@
+class InquiriesController < ApplicationController
+  before_action :authenticate_user!
+  before_action :set_inquiry, only: [:show]
+
+  def index
+    @inquiries = current_user.inquiries.recent.page(params[:page])
+  end
+
+  def show
+    @inquiry_messages = @inquiry.inquiry_messages.chronological
+    @inquiry_message = @inquiry.inquiry_messages.build
+  end
+
+  def new
+    @inquiry = current_user.inquiries.build
+  end
+
+  def create
+    @inquiry = current_user.inquiries.build(inquiry_params.except(:body))
+
+    ActiveRecord::Base.transaction do
+      if @inquiry.save
+        # 初回メッセージを作成
+        @inquiry.inquiry_messages.create!(
+          user: current_user,
+          body: inquiry_params[:body]
+        )
+
+        redirect_to @inquiry, notice: 'お問い合わせを送信しました。'
+      else
+        render :new, status: :unprocessable_entity
+      end
+    end
+  rescue ActiveRecord::RecordInvalid => e
+    @inquiry.errors.add(:base, e.message)
+    render :new, status: :unprocessable_entity
+  end
+
+  private
+
+  def set_inquiry
+    @inquiry = current_user.inquiries.find_by(id: params[:id])
+
+    return if @inquiry
+
+    redirect_to inquiries_path, alert: 'お問い合わせが見つかりません。'
+  end
+
+  def inquiry_params
+    params.require(:inquiry).permit(:subject, :body)
+  end
+end

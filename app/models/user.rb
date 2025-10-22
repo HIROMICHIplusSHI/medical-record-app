@@ -27,6 +27,8 @@ class User < ApplicationRecord
   has_many :consent_form_templates, dependent: :destroy
   has_many :patient_consents, dependent: :destroy
   has_many :announcements, foreign_key: :author_id, dependent: :destroy, inverse_of: :author
+  has_many :inquiries, dependent: :destroy
+  has_many :inquiry_messages, dependent: :destroy
 
   # Validations
   validates :company_email, format: { with: URI::MailTo::EMAIL_REGEXP, allow_blank: true }

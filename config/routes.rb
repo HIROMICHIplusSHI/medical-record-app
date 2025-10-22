@@ -17,6 +17,10 @@ Rails.application.routes.draw do
         patch :toggle_role
       end
     end
+
+    resources :inquiries, only: [:index, :show, :update] do
+      resources :inquiry_messages, only: [:create]
+    end
   end
 
   # ユーザー（施術者）専用ルート
@@ -69,6 +73,11 @@ Rails.application.routes.draw do
       get :preview_pdf
       post :refresh_items
     end
+  end
+
+  # お問い合わせ
+  resources :inquiries, only: [:index, :show, :new, :create] do
+    resources :inquiry_messages, only: [:create]
   end
 
   # 未認証ユーザー用のroot（ログインページにリダイレクト）

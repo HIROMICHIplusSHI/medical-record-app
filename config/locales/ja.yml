@@ -54,6 +54,8 @@ ja:
       cost_item: コスト項目
       invoice: 請求書
       invoice_item: 請求明細
+      inquiry: お問い合わせ
+      inquiry_message: お問い合わせメッセージ
     attributes:
       patient:
         name: 氏名
@@ -141,3 +143,18 @@ ja:
           info: 情報
           warning: 警告
           critical: 重要
+      inquiry:
+        user: ユーザー
+        user_id: ユーザー
+        subject: 件名
+        status: ステータス
+        statuses:
+          open: 未対応
+          in_progress: 対応中
+          closed: 対応完了
+      inquiry_message:
+        inquiry: お問い合わせ
+        inquiry_id: お問い合わせ
+        user: ユーザー
+        user_id: ユーザー
+        body: 本文

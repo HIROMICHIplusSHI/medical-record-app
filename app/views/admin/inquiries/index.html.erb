@@ -1,0 +1,55 @@
+<div class="container mx-auto px-4 py-8">
+  <div class="flex justify-between items-center mb-6">
+    <h1 class="text-2xl font-bold">お問い合わせ管理</h1>
+  </div>
+
+  <div class="mb-4">
+    <%= form_with url: admin_inquiries_path, method: :get, local: true, class: 'flex gap-2' do |f| %>
+      <%= f.select :status,
+        options_for_select([
+          ['全て', ''],
+          ['未対応', 'open'],
+          ['対応中', 'in_progress'],
+          ['対応完了', 'closed']
+        ], params[:status]),
+        {},
+        class: 'select select-bordered' %>
+      <%= f.submit 'フィルター', class: 'btn btn-primary' %>
+    <% end %>
+  </div>
+
+  <% if @inquiries.any? %>
+    <div class="space-y-4">
+      <% @inquiries.each do |inquiry| %>
+        <div class="card bg-base-100 shadow-md">
+          <div class="card-body">
+            <div class="flex justify-between items-start">
+              <div class="flex-1">
+                <h2 class="card-title">
+                  <%= link_to inquiry.subject, admin_inquiry_path(inquiry), class: 'link link-hover' %>
+                </h2>
+                <p class="text-sm text-base-content/70">
+                  投稿者: <%= inquiry.user.name %>
+                </p>
+              </div>
+              <span class="badge <%= inquiry.open? ? 'badge-primary' : inquiry.in_progress? ? 'badge-warning' : 'badge-ghost' %>">
+                <%= inquiry.status_i18n %>
+              </span>
+            </div>
+            <div class="text-sm text-base-content/70">
+              更新: <%= l(inquiry.updated_at, format: :short) %>
+            </div>
+          </div>
+        </div>
+      <% end %>
+    </div>
+
+    <div class="mt-6">
+      <%= paginate @inquiries %>
+    </div>
+  <% else %>
+    <div class="alert alert-info">
+      <span>お問い合わせはありません。</span>
+    </div>
+  <% end %>
+</div>
