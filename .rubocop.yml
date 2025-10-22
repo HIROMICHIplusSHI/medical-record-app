@@ -68,6 +68,7 @@ Metrics/AbcSize:
   AllowedMethods:
     - 'set_date_range'
     - 'dismiss_announcement'  # セッション管理・バリデーション・エラーハンドリングを含むため
+    - 'index'  # Admin::InquiriesController#index - 複数フィルター処理のため
 
 Metrics/CyclomaticComplexity:
   Max: 8
