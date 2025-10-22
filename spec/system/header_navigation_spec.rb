@@ -13,7 +13,7 @@ RSpec.describe 'Header Navigation', type: :system do
     it '全ページでヘッダーが表示される' do
       visit user_root_path
       expect(page).to have_selector('header')
-      expect(page).to have_content('電子カルテ')
+      expect(page).to have_content('InkFolio')
     end
 
     it 'ナビゲーションメニューが表示される' do
