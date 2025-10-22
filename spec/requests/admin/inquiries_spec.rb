@@ -68,6 +68,25 @@ RSpec.describe 'Admin::Inquiries', type: :request do
           end
         end
       end
+
+      context 'カテゴリフィルタ' do
+        let!(:general_inquiry) { create(:inquiry, category: :general, subject: '一般的な質問') }
+        let!(:bug_inquiry) { create(:inquiry, category: :bug_report, subject: '不具合報告') }
+
+        it 'カテゴリでフィルタリングできる' do
+          get admin_inquiries_path, params: { category: 'general' }
+          expect(response.body).to include(general_inquiry.subject)
+          expect(response.body).not_to include(bug_inquiry.subject)
+        end
+
+        it '無効なカテゴリ値の場合、すべてのお問い合わせが表示される' do
+          get admin_inquiries_path, params: { category: 'invalid_category' }
+
+          expect(response).to have_http_status(:success)
+          expect(response.body).to include(general_inquiry.subject)
+          expect(response.body).to include(bug_inquiry.subject)
+        end
+      end
     end
 
     describe 'GET /admin/inquiries/:id' do
@@ -82,6 +101,50 @@ RSpec.describe 'Admin::Inquiries', type: :request do
         get admin_inquiry_path(inquiry)
         inquiry.inquiry_messages.each do |message|
           expect(response.body).to include(message.body)
+        end
+      end
+
+      context '既読処理' do
+        it 'ユーザーが最後に返信していた場合、管理者が既読にする' do
+          inquiry.update(last_message_by: :user)
+
+          get admin_inquiry_path(inquiry)
+
+          expect(inquiry.reload.last_message_by).to eq('admin')
+        end
+
+        it '管理者が最後に返信していた場合、既読処理は行わない' do
+          inquiry.update(last_message_by: :admin)
+
+          expect do
+            get admin_inquiry_path(inquiry)
+          end.not_to(change { inquiry.reload.last_message_by })
+        end
+      end
+
+      context 'ステータス自動更新' do
+        it 'openステータスの場合、in_progressに変更される' do
+          inquiry.update(status: :open)
+
+          get admin_inquiry_path(inquiry)
+
+          expect(inquiry.reload.status).to eq('in_progress')
+        end
+
+        it 'in_progressステータスの場合、変更されない' do
+          inquiry.update(status: :in_progress)
+
+          expect do
+            get admin_inquiry_path(inquiry)
+          end.not_to(change { inquiry.reload.status })
+        end
+
+        it 'closedステータスの場合、変更されない' do
+          inquiry.update(status: :closed)
+
+          expect do
+            get admin_inquiry_path(inquiry)
+          end.not_to(change { inquiry.reload.status })
         end
       end
     end
