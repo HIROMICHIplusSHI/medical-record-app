@@ -2,11 +2,11 @@ module ApplicationHelper
   def flash_class(type)
     case type.to_sym
     when :notice, :success
-      'bg-green-100 border border-green-400 text-green-700'
+      'bg-accent-success/10 border border-accent-success text-accent-success'
     when :alert, :error
-      'bg-red-100 border border-red-400 text-red-700'
+      'bg-accent-danger/10 border border-accent-danger text-accent-danger'
     else
-      'bg-blue-100 border border-blue-400 text-blue-700'
+      'bg-accent-info/10 border border-accent-info text-accent-info'
     end
   end
 
@@ -39,7 +39,7 @@ module ApplicationHelper
   def link_to_nav_item(text, path, &block)
     is_active = current_page?(path)
     classes = "px-3 py-2 rounded-md text-sm font-medium transition-colors #{
-      is_active ? 'bg-blue-700' : 'hover:bg-blue-700'
+      is_active ? 'bg-greige-800' : 'hover:bg-greige-800'
     }"
 
     if block_given?
@@ -54,7 +54,7 @@ module ApplicationHelper
   def link_to_mobile_nav_item(text, path, &block)
     is_active = current_page?(path)
     classes = "block px-3 py-2 rounded-md text-base font-medium transition-colors #{
-      is_active ? 'bg-blue-700' : 'hover:bg-blue-700'
+      is_active ? 'bg-greige-700' : 'hover:bg-greige-700'
     }"
 
     if block_given?
@@ -77,7 +77,7 @@ module ApplicationHelper
 
     return unless show_unread
 
-    content_tag(:span, 'NEW', class: 'inline-block px-2 py-0.5 text-xs font-semibold rounded bg-red-500 text-white',
+    content_tag(:span, 'NEW', class: 'inline-block px-2 py-0.5 text-xs font-semibold rounded bg-accent-danger text-white',
                               title: '未読', 'aria-label': '未読')
   end
 end

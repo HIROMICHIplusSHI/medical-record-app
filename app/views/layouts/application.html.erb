@@ -1,22 +1,27 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>App</title>
+    <title>InkFolio - アートメイク施術者向け電子カルテ</title>
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <%= csrf_meta_tags %>
     <%= csp_meta_tag %>
-    <%= stylesheet_link_tag "tailwind", "data-turbo-track": "reload" %>
 
+    <!-- Favicon -->
+    <%= favicon_link_tag "inkfolio-favicon.svg", type: "image/svg+xml" %>
+
+    <%= stylesheet_link_tag "tailwind", "data-turbo-track": "reload" %>
     <%= stylesheet_link_tag "application", "data-turbo-track": "reload" %>
     <%= javascript_importmap_tags %>
   </head>
 
-  <body class="bg-gray-50">
+  <body class="bg-greige-50 min-h-screen flex flex-col">
     <%= render 'shared/header' if user_signed_in? %>
 
-    <main class="<%= user_signed_in? ? 'mt-4' : 'mt-28' %> container mx-auto px-5">
+    <main class="<%= user_signed_in? ? 'mt-4' : 'mt-28' %> container mx-auto px-5 flex-grow">
       <%= render 'shared/flash' %>
       <%= yield %>
     </main>
+
+    <%= render 'shared/footer' if user_signed_in? %>
   </body>
 </html>

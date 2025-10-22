@@ -1,0 +1,20 @@
+<footer class="bg-greige-900 text-greige-50 mt-auto">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+    <div class="flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0">
+      <!-- InkFolioロゴとコピーライト -->
+      <div class="flex flex-col items-center md:items-start space-y-2">
+        <%= image_tag 'inkfolio-logo.svg', alt: 'InkFolio', class: 'h-8 w-auto' %>
+        <p class="text-sm text-greige-400">
+          &copy; <%= Time.current.year %> InkFolio. All rights reserved.
+        </p>
+      </div>
+
+      <!-- リンク -->
+      <div class="flex space-x-6 text-sm">
+        <%= link_to '利用規約', '#', class: 'text-greige-300 hover:text-greige-100 transition-colors' %>
+        <%= link_to 'プライバシーポリシー', '#', class: 'text-greige-300 hover:text-greige-100 transition-colors' %>
+        <%= link_to 'お問い合わせ', inquiries_path, class: 'text-greige-300 hover:text-greige-100 transition-colors' %>
+      </div>
+    </div>
+  </div>
+</footer>
