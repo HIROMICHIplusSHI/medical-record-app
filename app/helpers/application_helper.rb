@@ -46,4 +46,19 @@ module ApplicationHelper
       link_to text, path, class: classes
     end
   end
+
+  def link_to_mobile_nav_item(text, path, &block)
+    is_active = current_page?(path)
+    classes = "block px-3 py-2 rounded-md text-base font-medium transition-colors #{
+      is_active ? 'bg-blue-700' : 'hover:bg-blue-700'
+    }"
+
+    if block_given?
+      link_to path, class: classes do
+        capture(&block)
+      end
+    else
+      link_to text, path, class: classes
+    end
+  end
 end
