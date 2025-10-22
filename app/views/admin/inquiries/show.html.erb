@@ -1,0 +1,97 @@
+<div class="container mx-auto px-4 py-8">
+  <div class="mb-6">
+    <%= link_to '← 一覧に戻る', admin_inquiries_path, class: 'btn btn-sm btn-ghost' %>
+  </div>
+
+  <div class="card bg-base-100 shadow-lg mb-6">
+    <div class="card-body">
+      <div class="flex justify-between items-start">
+        <div class="flex-1">
+          <h1 class="card-title text-2xl"><%= @inquiry.subject %></h1>
+          <p class="text-sm text-base-content/70">
+            投稿者: <%= @inquiry.user.name %> | <%= @inquiry.user.email %>
+          </p>
+        </div>
+        <span class="badge <%= @inquiry.open? ? 'badge-primary' : @inquiry.in_progress? ? 'badge-warning' : 'badge-ghost' %>">
+          <%= @inquiry.status_i18n %>
+        </span>
+      </div>
+      <p class="text-sm text-base-content/70">
+        作成: <%= l(@inquiry.created_at, format: :long) %>
+      </p>
+
+      <div class="mt-4">
+        <%= form_with model: @inquiry, url: admin_inquiry_path(@inquiry), method: :patch, local: true do |f| %>
+          <div class="form-control">
+            <%= f.label :status, 'ステータス変更', class: 'label' %>
+            <div class="flex gap-2">
+              <%= f.select :status,
+                options_for_select([
+                  ['未対応', 'open'],
+                  ['対応中', 'in_progress'],
+                  ['対応完了', 'closed']
+                ], @inquiry.status),
+                {},
+                class: 'select select-bordered' %>
+              <%= f.submit '更新', class: 'btn btn-primary' %>
+            </div>
+          </div>
+        <% end %>
+      </div>
+    </div>
+  </div>
+
+  <div class="space-y-4 mb-6">
+    <h2 class="text-xl font-bold">メッセージ履歴</h2>
+    <% @inquiry_messages.each do |message| %>
+      <div class="card <%= message.user.admin? ? 'bg-accent/10' : 'bg-base-200' %> shadow">
+        <div class="card-body">
+          <div class="flex justify-between items-center mb-2">
+            <span class="font-semibold">
+              <%= message.user.name %>
+              <% if message.user.admin? %>
+                <span class="badge badge-sm badge-accent">管理者</span>
+              <% end %>
+            </span>
+            <span class="text-sm text-base-content/70">
+              <%= l(message.created_at, format: :short) %>
+            </span>
+          </div>
+          <div class="whitespace-pre-wrap"><%= message.body %></div>
+        </div>
+      </div>
+    <% end %>
+  </div>
+
+  <% unless @inquiry.closed? %>
+    <div class="card bg-base-100 shadow-lg">
+      <div class="card-body">
+        <h3 class="card-title">管理者として返信する</h3>
+        <%= form_with model: [@inquiry, @inquiry_message], url: admin_inquiry_inquiry_messages_path(@inquiry), local: true do |f| %>
+          <% if @inquiry_message.errors.any? %>
+            <div class="alert alert-error mb-4">
+              <ul>
+                <% @inquiry_message.errors.full_messages.each do |message| %>
+                  <li><%= message %></li>
+                <% end %>
+              </ul>
+            </div>
+          <% end %>
+
+          <div class="form-control mb-4">
+            <%= f.label :body, '本文', class: 'label' %>
+            <%= f.text_area :body, rows: 5, class: 'textarea textarea-bordered w-full', placeholder: '返信内容を入力してください' %>
+          </div>
+
+          <div class="form-control">
+            <%= f.submit '返信', class: 'btn btn-primary' %>
+          </div>
+        <% end %>
+      </div>
+    </div>
+  <% else %>
+    <div class="alert alert-info">
+      <span>このお問い合わせは閉じられています。</span>
+    </div>
+  <% end %>
+</div>

@@ -1,0 +1,36 @@
+<div class="container mx-auto px-4 py-8">
+  <div class="flex justify-between items-center mb-6">
+    <h1 class="text-2xl font-bold">お問い合わせ一覧</h1>
+    <%= link_to '新規お問い合わせ', new_inquiry_path, class: 'btn btn-primary' %>
+  </div>
+
+  <% if @inquiries.any? %>
+    <div class="space-y-4">
+      <% @inquiries.each do |inquiry| %>
+        <div class="card bg-base-100 shadow-md">
+          <div class="card-body">
+            <h2 class="card-title">
+              <%= link_to inquiry.subject, inquiry_path(inquiry), class: 'link link-hover' %>
+            </h2>
+            <div class="flex items-center gap-4 text-sm">
+              <span class="badge <%= inquiry.open? ? 'badge-primary' : inquiry.in_progress? ? 'badge-warning' : 'badge-ghost' %>">
+                <%= inquiry.status_i18n %>
+              </span>
+              <span class="text-base-content/70">
+                更新: <%= l(inquiry.updated_at, format: :short) %>
+              </span>
+            </div>
+          </div>
+        </div>
+      <% end %>
+    </div>
+
+    <div class="mt-6">
+      <%= paginate @inquiries %>
+    </div>
+  <% else %>
+    <div class="alert alert-info">
+      <span>お問い合わせはまだありません。</span>
+    </div>
+  <% end %>
+</div>

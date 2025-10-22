@@ -1,0 +1,39 @@
+<div class="container mx-auto px-4 py-8">
+  <div class="mb-6">
+    <%= link_to '← 一覧に戻る', inquiries_path, class: 'btn btn-sm btn-ghost' %>
+  </div>
+
+  <div class="card bg-base-100 shadow-lg max-w-2xl mx-auto">
+    <div class="card-body">
+      <h1 class="card-title text-2xl mb-4">新規お問い合わせ</h1>
+
+      <%= form_with model: @inquiry, local: true do |f| %>
+        <% if @inquiry.errors.any? %>
+          <div class="alert alert-error mb-4">
+            <ul>
+              <% @inquiry.errors.full_messages.each do |message| %>
+                <li><%= message %></li>
+              <% end %>
+            </ul>
+          </div>
+        <% end %>
+
+        <div class="form-control mb-4">
+          <%= f.label :subject, '件名', class: 'label' %>
+          <span class="label-text-alt text-base-content/70 mb-2">お問い合わせの内容を簡潔にご入力ください</span>
+          <%= f.text_field :subject, class: 'input input-bordered w-full', placeholder: '例: ログインできない', maxlength: 100 %>
+        </div>
+
+        <div class="form-control mb-6">
+          <%= f.label :body, '本文', class: 'label' %>
+          <span class="label-text-alt text-base-content/70 mb-2">詳細な内容をご入力ください</span>
+          <%= f.text_area :body, rows: 10, class: 'textarea textarea-bordered w-full', placeholder: 'お問い合わせ内容の詳細を入力してください', maxlength: 2000 %>
+        </div>
+
+        <div class="form-control">
+          <%= f.submit '送信', class: 'btn btn-primary btn-block' %>
+        </div>
+      <% end %>
+    </div>
+  </div>
+</div>

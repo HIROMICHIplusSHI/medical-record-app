@@ -1,0 +1,68 @@
+<div class="container mx-auto px-4 py-8">
+  <div class="mb-6">
+    <%= link_to '← 一覧に戻る', inquiries_path, class: 'btn btn-sm btn-ghost' %>
+  </div>
+
+  <div class="card bg-base-100 shadow-lg mb-6">
+    <div class="card-body">
+      <div class="flex justify-between items-start">
+        <h1 class="card-title text-2xl"><%= @inquiry.subject %></h1>
+        <span class="badge <%= @inquiry.open? ? 'badge-primary' : @inquiry.in_progress? ? 'badge-warning' : 'badge-ghost' %>">
+          <%= @inquiry.status_i18n %>
+        </span>
+      </div>
+      <p class="text-sm text-base-content/70">
+        作成: <%= l(@inquiry.created_at, format: :long) %>
+      </p>
+    </div>
+  </div>
+
+  <div class="space-y-4 mb-6">
+    <h2 class="text-xl font-bold">メッセージ履歴</h2>
+    <% @inquiry_messages.each do |message| %>
+      <div class="card bg-base-200 shadow">
+        <div class="card-body">
+          <div class="flex justify-between items-center mb-2">
+            <span class="font-semibold"><%= message.user.name %></span>
+            <span class="text-sm text-base-content/70">
+              <%= l(message.created_at, format: :short) %>
+            </span>
+          </div>
+          <div class="whitespace-pre-wrap"><%= message.body %></div>
+        </div>
+      </div>
+    <% end %>
+  </div>
+
+  <% unless @inquiry.closed? %>
+    <div class="card bg-base-100 shadow-lg">
+      <div class="card-body">
+        <h3 class="card-title">返信する</h3>
+        <%= form_with model: [@inquiry, @inquiry_message], local: true do |f| %>
+          <% if @inquiry_message.errors.any? %>
+            <div class="alert alert-error mb-4">
+              <ul>
+                <% @inquiry_message.errors.full_messages.each do |message| %>
+                  <li><%= message %></li>
+                <% end %>
+              </ul>
+            </div>
+          <% end %>
+
+          <div class="form-control mb-4">
+            <%= f.label :body, '本文', class: 'label' %>
+            <%= f.text_area :body, rows: 5, class: 'textarea textarea-bordered w-full', placeholder: '返信内容を入力してください' %>
+          </div>
+
+          <div class="form-control">
+            <%= f.submit '送信', class: 'btn btn-primary' %>
+          </div>
+        <% end %>
+      </div>
+    </div>
+  <% else %>
+    <div class="alert alert-info">
+      <span>このお問い合わせは閉じられています。</span>
+    </div>
+  <% end %>
+</div>
