@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2025_10_20_111948) do
+ActiveRecord::Schema[7.2].define(version: 2025_10_22_073409) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -145,6 +145,28 @@ ActiveRecord::Schema[7.2].define(version: 2025_10_20_111948) do
     t.datetime "updated_at", null: false
     t.index ["facility_id", "medical_license_number"], name: "index_facility_doctors_on_facility_and_license", unique: true
     t.index ["facility_id"], name: "index_facility_doctors_on_facility_id"
+  end
+
+  create_table "inquiries", force: :cascade do |t|
+    t.bigint "user_id", null: false
+    t.string "subject", limit: 100, null: false
+    t.integer "status", default: 0, null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["status"], name: "index_inquiries_on_status"
+    t.index ["updated_at"], name: "index_inquiries_on_updated_at"
+    t.index ["user_id"], name: "index_inquiries_on_user_id"
+  end
+
+  create_table "inquiry_messages", force: :cascade do |t|
+    t.bigint "inquiry_id", null: false
+    t.bigint "user_id", null: false
+    t.text "body", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["created_at"], name: "index_inquiry_messages_on_created_at"
+    t.index ["inquiry_id"], name: "index_inquiry_messages_on_inquiry_id"
+    t.index ["user_id"], name: "index_inquiry_messages_on_user_id"
   end
 
   create_table "invoice_items", force: :cascade do |t|
@@ -325,6 +347,9 @@ ActiveRecord::Schema[7.2].define(version: 2025_10_20_111948) do
   add_foreign_key "cost_sheets", "users"
   add_foreign_key "facilities", "users"
   add_foreign_key "facility_doctors", "facilities"
+  add_foreign_key "inquiries", "users"
+  add_foreign_key "inquiry_messages", "inquiries"
+  add_foreign_key "inquiry_messages", "users"
   add_foreign_key "invoice_items", "invoices"
   add_foreign_key "invoice_items", "medical_records"
   add_foreign_key "invoices", "facilities"
