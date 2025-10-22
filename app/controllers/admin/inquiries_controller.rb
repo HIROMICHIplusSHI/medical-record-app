@@ -5,15 +5,28 @@ module Admin
     before_action :set_inquiry, only: %i[show update]
 
     def index
-      @inquiries = Inquiry.includes(:user).recent.page(params[:page])
+      @inquiries = Inquiry.includes(:user).recent
 
       # 有効なステータス値のみ受け付ける
-      return unless params[:status].present? && Inquiry.statuses.key?(params[:status])
+      if params[:status].present? && Inquiry.statuses.key?(params[:status])
+        @inquiries = @inquiries.by_status(params[:status])
+      end
 
-      @inquiries = @inquiries.by_status(params[:status])
+      # 有効なカテゴリ値のみ受け付ける
+      if params[:category].present? && Inquiry.categories.key?(params[:category])
+        @inquiries = @inquiries.by_category(params[:category])
+      end
+
+      @inquiries = @inquiries.page(params[:page])
     end
 
     def show
+      # 既読処理：ユーザーが最後に返信していたら、管理者が既読にする
+      @inquiry.update(last_message_by: :admin) if @inquiry.user?
+
+      # 未対応の場合は対応中に変更
+      @inquiry.update(status: :in_progress) if @inquiry.open?
+
       @inquiry_messages = @inquiry.inquiry_messages.chronological
       @inquiry_message = @inquiry.inquiry_messages.build
     end

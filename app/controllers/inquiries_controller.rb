@@ -7,6 +7,9 @@ class InquiriesController < ApplicationController
   end
 
   def show
+    # 既読処理：管理者が最後に返信していたら、ユーザーが既読にする
+    @inquiry.update(last_message_by: :user) if @inquiry.admin?
+
     @inquiry_messages = @inquiry.inquiry_messages.chronological
     @inquiry_message = @inquiry.inquiry_messages.build
   end
@@ -52,6 +55,6 @@ class InquiriesController < ApplicationController
   end
 
   def inquiry_params
-    params.require(:inquiry).permit(:subject, :body)
+    params.require(:inquiry).permit(:subject, :body, :category)
   end
 end
