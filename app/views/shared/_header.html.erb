@@ -14,7 +14,12 @@
           <%= link_to_nav_item('ダッシュボード', admin_root_path) %>
           <%= link_to_nav_item('ユーザー管理', admin_users_path) %>
           <%= link_to_nav_item('お知らせ管理', admin_announcements_path) %>
-          <%= link_to_nav_item('お問い合わせ', admin_inquiries_path) %>
+          <%= link_to_nav_item('お問い合わせ', admin_inquiries_path) do %>
+            お問い合わせ
+            <% if (count = unread_inquiry_count(current_user)) > 0 %>
+              <span class="badge badge-sm badge-primary ml-1" aria-label="<%= count %>件の未対応お問い合わせ"><%= count %></span>
+            <% end %>
+          <% end %>
         <% else %>
           <%= link_to_nav_item('ダッシュボード', dashboard_path) %>
           <%= link_to_nav_item('カルテ', medical_records_path) %>

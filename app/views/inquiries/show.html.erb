@@ -20,15 +20,33 @@
   <div class="space-y-4 mb-6">
     <h2 class="text-xl font-bold">メッセージ履歴</h2>
     <% @inquiry_messages.each do |message| %>
-      <div class="card bg-base-200 shadow">
+      <div class="card <%= message.user.admin? ? 'bg-accent/20 border-2 border-accent' : 'bg-base-200' %> shadow mb-4">
         <div class="card-body">
-          <div class="flex justify-between items-center mb-2">
-            <span class="font-semibold"><%= message.user.name %></span>
-            <span class="text-sm text-base-content/70">
-              <%= l(message.created_at, format: :short) %>
-            </span>
+          <div class="flex items-start gap-3">
+            <!-- アバター -->
+            <div class="avatar placeholder" role="img" aria-label="<%= message.user.admin? ? '管理者' : 'ユーザー' %>">
+              <div class="<%= message.user.admin? ? 'bg-accent text-accent-content' : 'bg-neutral text-neutral-content' %> rounded-full w-10">
+                <span class="text-xl" aria-hidden="true">
+                  <%= message.user.admin? ? '🛡️' : '👤' %>
+                </span>
+              </div>
+            </div>
+
+            <div class="flex-1">
+              <div class="flex justify-between items-center mb-2">
+                <div class="flex items-center gap-2">
+                  <span class="font-semibold"><%= message.user.name %></span>
+                  <% if message.user.admin? %>
+                    <span class="badge badge-sm badge-accent">管理者</span>
+                  <% end %>
+                </div>
+                <span class="text-sm text-base-content/70">
+                  <%= l(message.created_at, format: :short) %>
+                </span>
+              </div>
+              <div class="whitespace-pre-wrap"><%= message.body %></div>
+            </div>
           </div>
-          <div class="whitespace-pre-wrap"><%= message.body %></div>
         </div>
       </div>
     <% end %>

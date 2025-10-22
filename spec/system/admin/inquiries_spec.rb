@@ -158,8 +158,8 @@ RSpec.describe 'Admin Inquiries Management', type: :system do
 
       visit admin_inquiry_path(inquiry)
 
-      # 管理者メッセージはbg-accent/10背景を持つカード
-      admin_message_card = page.find('.card.bg-accent\\/10', text: '管理者メッセージ')
+      # 管理者メッセージはbg-accent/20背景を持つカード
+      admin_message_card = page.find('.card.bg-accent\\/20', text: '管理者メッセージ')
       expect(admin_message_card).to be_present
 
       # 管理者バッジも確認

@@ -5,8 +5,12 @@ module Admin
     before_action :set_inquiry, only: %i[show update]
 
     def index
-      @inquiries = Inquiry.recent.page(params[:page])
-      @inquiries = @inquiries.by_status(params[:status]) if params[:status].present?
+      @inquiries = Inquiry.includes(:user).recent.page(params[:page])
+
+      # 有効なステータス値のみ受け付ける
+      return unless params[:status].present? && Inquiry.statuses.key?(params[:status])
+
+      @inquiries = @inquiries.by_status(params[:status])
     end
 
     def show

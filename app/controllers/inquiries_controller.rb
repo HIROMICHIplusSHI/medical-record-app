@@ -32,7 +32,12 @@ class InquiriesController < ApplicationController
       end
     end
   rescue ActiveRecord::RecordInvalid => e
-    @inquiry.errors.add(:base, e.message)
+    # ユーザーには一般的なメッセージを表示
+    @inquiry.errors.add(:base, 'お問い合わせの送信に失敗しました。入力内容をご確認ください。')
+
+    # 詳細はログに記録
+    Rails.logger.error("Inquiry creation failed for user #{current_user.id}: #{e.message}")
+
     render :new, status: :unprocessable_entity
   end
 
