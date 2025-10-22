@@ -28,9 +28,9 @@ RSpec.describe 'お問い合わせワークフロー', type: :system do
       end
 
       it 'ステータスバッジが表示される', js: true do
-        open_inquiry = create(:inquiry, user: user, status: :open)
-        in_progress_inquiry = create(:inquiry, :in_progress, user: user)
-        closed_inquiry = create(:inquiry, :closed, user: user)
+        create(:inquiry, user: user, status: :open)
+        create(:inquiry, :in_progress, user: user)
+        create(:inquiry, :closed, user: user)
 
         visit inquiries_path
 

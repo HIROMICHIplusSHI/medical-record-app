@@ -58,14 +58,14 @@ RSpec.describe 'Admin::Inquiries', type: :request do
       context '正常なパラメータの場合' do
         it 'ステータスを更新できる' do
           patch admin_inquiry_path(inquiry), params: {
-            inquiry: { status: 'in_progress' }
+            inquiry: { status: 'in_progress' },
           }
           expect(inquiry.reload.status).to eq('in_progress')
         end
 
         it 'お問い合わせ詳細ページにリダイレクトされる' do
           patch admin_inquiry_path(inquiry), params: {
-            inquiry: { status: 'closed' }
+            inquiry: { status: 'closed' },
           }
           expect(response).to have_http_status(:redirect)
           expect(response).to redirect_to(admin_inquiry_path(inquiry))
@@ -73,7 +73,7 @@ RSpec.describe 'Admin::Inquiries', type: :request do
 
         it '成功メッセージが表示される' do
           patch admin_inquiry_path(inquiry), params: {
-            inquiry: { status: 'closed' }
+            inquiry: { status: 'closed' },
           }
           follow_redirect!
           expect(response.body).to include('ステータスを更新しました')
@@ -103,7 +103,7 @@ RSpec.describe 'Admin::Inquiries', type: :request do
     it 'ステータス更新ができない' do
       inquiry = create(:inquiry, status: :open)
       patch admin_inquiry_path(inquiry), params: {
-        inquiry: { status: 'closed' }
+        inquiry: { status: 'closed' },
       }
       expect(response).to have_http_status(:redirect)
       expect(inquiry.reload.status).to eq('open')

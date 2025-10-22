@@ -12,24 +12,24 @@ RSpec.describe 'InquiryMessages', type: :request do
     let(:valid_attributes) do
       {
         inquiry_message: {
-          body: '返信メッセージです。'
-        }
+          body: '返信メッセージです。',
+        },
       }
     end
 
     let(:invalid_attributes) do
       {
         inquiry_message: {
-          body: ''
-        }
+          body: '',
+        },
       }
     end
 
     context '正常なパラメータの場合' do
       it 'メッセージが作成される' do
-        expect {
+        expect do
           post inquiry_inquiry_messages_path(inquiry), params: valid_attributes
-        }.to change(InquiryMessage, :count).by(1)
+        end.to change(InquiryMessage, :count).by(1)
       end
 
       it 'お問い合わせ詳細ページにリダイレクトされる' do
@@ -45,17 +45,17 @@ RSpec.describe 'InquiryMessages', type: :request do
       end
 
       it 'inquiryのupdated_atが更新される' do
-        expect {
+        expect do
           post inquiry_inquiry_messages_path(inquiry), params: valid_attributes
-        }.to change { inquiry.reload.updated_at }
+        end.to(change { inquiry.reload.updated_at })
       end
     end
 
     context '不正なパラメータの場合' do
       it 'メッセージが作成されない' do
-        expect {
+        expect do
           post inquiry_inquiry_messages_path(inquiry), params: invalid_attributes
-        }.not_to change(InquiryMessage, :count)
+        end.not_to change(InquiryMessage, :count)
       end
 
       it 'お問い合わせ詳細ページが再表示される' do
@@ -73,9 +73,9 @@ RSpec.describe 'InquiryMessages', type: :request do
       let(:other_inquiry) { create(:inquiry) }
 
       it 'メッセージが作成されない' do
-        expect {
+        expect do
           post inquiry_inquiry_messages_path(other_inquiry), params: valid_attributes
-        }.not_to change(InquiryMessage, :count)
+        end.not_to change(InquiryMessage, :count)
       end
 
       it 'お問い合わせ一覧にリダイレクトされる' do
@@ -93,7 +93,7 @@ RSpec.describe 'InquiryMessages', type: :request do
 
     it 'ログインページにリダイレクトされる' do
       post inquiry_inquiry_messages_path(inquiry), params: {
-        inquiry_message: { body: 'テスト' }
+        inquiry_message: { body: 'テスト' },
       }
       expect(response).to have_http_status(:redirect)
       expect(response).to redirect_to(new_user_session_path)

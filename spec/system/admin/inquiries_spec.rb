@@ -154,7 +154,7 @@ RSpec.describe 'Admin Inquiries Management', type: :system do
     end
 
     it '管理者メッセージは視覚的に区別される', js: true do
-      admin_message = create(:inquiry_message, inquiry: inquiry, user: admin_user, body: '管理者メッセージ')
+      create(:inquiry_message, inquiry: inquiry, user: admin_user, body: '管理者メッセージ')
 
       visit admin_inquiry_path(inquiry)
 
@@ -178,9 +178,15 @@ RSpec.describe 'Admin Inquiries Management', type: :system do
 
   describe 'メッセージ表示順序' do
     let!(:inquiry) { create(:inquiry, user: normal_user) }
-    let!(:first_message) { create(:inquiry_message, inquiry: inquiry, user: normal_user, body: '最初のメッセージ', created_at: 1.hour.ago) }
-    let!(:second_message) { create(:inquiry_message, inquiry: inquiry, user: admin_user, body: '2番目のメッセージ', created_at: 30.minutes.ago) }
-    let!(:third_message) { create(:inquiry_message, inquiry: inquiry, user: normal_user, body: '3番目のメッセージ', created_at: Time.current) }
+    let!(:first_message) do
+      create(:inquiry_message, inquiry: inquiry, user: normal_user, body: '最初のメッセージ', created_at: 1.hour.ago)
+    end
+    let!(:second_message) do
+      create(:inquiry_message, inquiry: inquiry, user: admin_user, body: '2番目のメッセージ', created_at: 30.minutes.ago)
+    end
+    let!(:third_message) do
+      create(:inquiry_message, inquiry: inquiry, user: normal_user, body: '3番目のメッセージ', created_at: Time.current)
+    end
 
     it 'メッセージが古い順に表示される', js: true do
       visit admin_inquiry_path(inquiry)

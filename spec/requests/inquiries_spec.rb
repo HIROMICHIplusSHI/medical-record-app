@@ -65,8 +65,8 @@ RSpec.describe 'Inquiries', type: :request do
       {
         inquiry: {
           subject: 'テストお問い合わせ',
-          body: 'お問い合わせ内容です。'
-        }
+          body: 'お問い合わせ内容です。',
+        },
       }
     end
 
@@ -74,16 +74,16 @@ RSpec.describe 'Inquiries', type: :request do
       {
         inquiry: {
           subject: '',
-          body: ''
-        }
+          body: '',
+        },
       }
     end
 
     context '正常なパラメータの場合' do
       it 'お問い合わせが作成される' do
-        expect {
+        expect do
           post inquiries_path, params: valid_attributes
-        }.to change(Inquiry, :count).by(1).and change(InquiryMessage, :count).by(1)
+        end.to change(Inquiry, :count).by(1).and change(InquiryMessage, :count).by(1)
       end
 
       it 'お問い合わせ詳細ページにリダイレクトされる' do
@@ -101,9 +101,9 @@ RSpec.describe 'Inquiries', type: :request do
 
     context '不正なパラメータの場合' do
       it 'お問い合わせが作成されない' do
-        expect {
+        expect do
           post inquiries_path, params: invalid_attributes
-        }.not_to change(Inquiry, :count)
+        end.not_to change(Inquiry, :count)
       end
 
       it '新規作成フォームが再表示される' do
