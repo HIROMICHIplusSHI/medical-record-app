@@ -11,19 +11,49 @@ class Inquiry < ApplicationRecord
     closed: 2,
   }
 
+  enum :category, {
+    general: 0,
+    bug_report: 1,
+    feature_request: 2,
+    other: 3,
+  }
+
+  enum :last_message_by, {
+    user: 0,
+    admin: 1,
+  }
+
   scope :recent, -> { order(updated_at: :desc) }
   scope :by_status, ->(status) { where(status: status) if status.present? }
+  scope :by_category, ->(category) { where(category: category) if category.present? }
 
-  after_save :clear_unread_count_cache, if: :saved_change_to_status?
+  after_create :clear_unread_count_cache
+  after_save :clear_unread_count_cache, if: :saved_change_to_status_or_last_message_by?
+  after_destroy :clear_unread_count_cache
 
   def status_i18n
     I18n.t("activerecord.attributes.inquiry.statuses.#{status}")
   end
 
+  def category_i18n
+    I18n.t("activerecord.attributes.inquiry.categories.#{category}")
+  end
+
   private
 
-  # ステータス変更時に未読件数キャッシュをクリア
+  # ステータスまたは最後のメッセージ送信者が変更されたかチェック
+  def saved_change_to_status_or_last_message_by?
+    saved_change_to_status? || saved_change_to_last_message_by?
+  end
+
+  # お問い合わせの作成・更新・削除時に未読件数キャッシュをクリア
   def clear_unread_count_cache
-    Rails.cache.delete('admin_unread_inquiry_count')
+    # 管理者のキャッシュをクリア
+    User.where(role: :admin).find_each do |admin|
+      Rails.cache.delete("unread_inquiry_count_user_#{admin.id}")
+    end
+
+    # お問い合わせ作成者（ユーザー）のキャッシュをクリア
+    Rails.cache.delete("unread_inquiry_count_user_#{user_id}") if user_id.present?
   end
 end
