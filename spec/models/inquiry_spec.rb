@@ -60,4 +60,25 @@ RSpec.describe Inquiry, type: :model do
       expect(inquiry.status_i18n).to eq('対応完了')
     end
   end
+
+  describe 'cache invalidation' do
+    let(:user) { create(:user) }
+    let(:inquiry) { create(:inquiry, user: user, status: :open) }
+
+    it 'ステータス変更時にキャッシュがクリアされる' do
+      # キャッシュクリアのメソッドがコールされることを確認
+      expect(Rails.cache).to receive(:delete).with('admin_unread_inquiry_count')
+
+      # ステータス変更
+      inquiry.update(status: :in_progress)
+    end
+
+    it 'ステータス以外の変更時にはキャッシュがクリアされない' do
+      # キャッシュクリアのメソッドがコールされないことを確認
+      expect(Rails.cache).not_to receive(:delete).with('admin_unread_inquiry_count')
+
+      # 件名のみ変更
+      inquiry.update(subject: '新しい件名')
+    end
+  end
 end

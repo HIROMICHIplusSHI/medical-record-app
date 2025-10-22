@@ -22,8 +22,10 @@ module ApplicationHelper
     return 0 unless user
 
     if user.admin?
-      # 管理者：未対応のお問い合わせ数
-      Inquiry.where(status: :open).count
+      # 管理者：未対応のお問い合わせ数（5分キャッシュ）
+      Rails.cache.fetch('admin_unread_inquiry_count', expires_in: 5.minutes) do
+        Inquiry.where(status: :open).count
+      end
     else
       # ユーザー：現状では0（Phase 6-B-4で実装予定）
       0
