@@ -25,7 +25,7 @@
 
   <div>
     <%= f.label :item_name, "項目名", class: "block text-sm font-medium text-greige-700" %>
-    <%= f.text_field :item_name, class: "mt-1 block w-full rounded-md border-greige-300 shadow-sm focus:border-accent-primary focus:ring-accent-primary sm:text-sm", placeholder: "例: フェイシャル施術" %>
+    <%= f.text_field :item_name, class: "mt-1 block w-full rounded-md border-greige-300 shadow-sm focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-accent-primary sm:text-sm", placeholder: "例: フェイシャル施術" %>
   </div>
 
   <div>
@@ -34,7 +34,7 @@
       <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
         <span class="text-greige-500 sm:text-sm">¥</span>
       </div>
-      <%= f.number_field :standard_price, class: "block w-full pl-7 pr-12 rounded-md border-greige-300 focus:border-accent-primary focus:ring-accent-primary sm:text-sm", placeholder: "10000" %>
+      <%= f.number_field :standard_price, class: "block w-full pl-7 pr-12 rounded-md border-greige-300 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-accent-primary sm:text-sm", placeholder: "10000" %>
     </div>
   </div>
 
@@ -43,12 +43,12 @@
     <%= f.select :category,
                  options_for_select(CostSheet::CATEGORIES.map { |k, v| [v, k] }, cost_sheet.category),
                  { include_blank: "カテゴリを選択" },
-                 class: "mt-1 block w-full rounded-md border-greige-300 shadow-sm focus:border-accent-primary focus:ring-accent-primary sm:text-sm" %>
+                 class: "mt-1 block w-full rounded-md border-greige-300 shadow-sm focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-accent-primary sm:text-sm" %>
   </div>
 
   <div>
     <%= f.label :memo, "メモ", class: "block text-sm font-medium text-greige-700" %>
-    <%= f.text_area :memo, rows: 4, class: "mt-1 block w-full rounded-md border-greige-300 shadow-sm focus:border-accent-primary focus:ring-accent-primary sm:text-sm", placeholder: "施術に関する補足情報など" %>
+    <%= f.text_area :memo, rows: 4, class: "mt-1 block w-full rounded-md border-greige-300 shadow-sm focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-accent-primary sm:text-sm", placeholder: "施術に関する補足情報など" %>
   </div>
 
   <div class="flex items-center justify-between pt-4">
