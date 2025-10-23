@@ -26,7 +26,7 @@ export default class extends Controller {
       announcementElement.remove()
 
       // セッションに保存（サーバーサイド）
-      fetch('/home/dismiss_announcement', {
+      fetch('/dashboard/dismiss_announcement', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
