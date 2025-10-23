@@ -110,6 +110,14 @@
 - Critical Security Issues対応
 - セキュリティ強化（3層署名検証、Strong Parameters、認可チェック）
 
+#### 🔄 Phase 6-5-3: ボタンUIコンポーネント統一（進行中）
+- **ブランチ**: `feature/phase6.5-3-component-unification`
+- **状態**: 実装完了、PR作成準備中
+- ButtonHelperモジュール作成（8種類のボタンヘルパー）
+- 全ページボタン置換（一覧9ページ・詳細10ページ・フォーム12リソース）
+- InkFolioブランドデザイン準拠のUI統一
+- RuboCop準拠（行長制限対応）
+
 **Phase 5総合統計**:
 - PR数: 10件（#15〜#24）
 - 実装期間: 5日間（2025-10-15〜10-19）
@@ -121,11 +129,11 @@
 
 ### 現在の進捗
 
-**Phase**: Phase 6（権限管理・紹介制度・UI改善）
-**ブランチ**: `feature/phase6-rbac-invitation`
-**状態**: ドキュメント整備完了、実装準備中
-**品質スコア**: -（未実装）
-**テスト**: 700+ examples, 0 failures（Phase 5完了時点）
+**Phase**: Phase 6-5-3（ボタンUIコンポーネント統一）
+**ブランチ**: `feature/phase6.5-3-component-unification`
+**状態**: 実装完了、PR作成準備中
+**品質スコア**: RuboCop 0違反
+**変更ファイル**: 37ファイル（ヘルパー1 + ビュー36）
 
 ### 次のステップ
 
@@ -389,6 +397,65 @@ git pull origin main
 - **命名規則**: Rails規約（snake_case, CamelCase）
 - **コメント**: 日本語OK（わかりやすさ優先）
 - **行の長さ**: 120文字以内（`Layout/LineLength: Max: 120`）
+
+### ビューヘルパー規約
+
+**ButtonHelper モジュール**: InkFolioブランドデザインに準拠した統一ボタンUI
+
+すべてのボタンは `app/helpers/button_helper.rb` のヘルパーメソッドを使用してください。
+
+**利用可能なボタンヘルパー**:
+
+```ruby
+# 表示ボタン（詳細ページへのリンク）
+show_button "詳細", @patient  # => 茶色の塗りつぶしボタン（border付き）
+
+# 編集ボタン（編集ページへのリンク）
+edit_button "編集", edit_patient_path(@patient)  # => 白背景の枠線ボタン
+
+# 削除ボタン（DELETEリクエスト + 確認ダイアログ）
+delete_button "削除", @patient  # => 赤色の削除ボタン
+
+# 新規作成ボタン
+new_button "新規登録", new_patient_path  # => 茶色の太字ボタン
+
+# 一覧戻るボタン
+back_button "一覧に戻る", patients_path  # => グレー系の戻るボタン
+
+# キャンセルボタン（フォーム内）
+cancel_button "キャンセル", patients_path  # => グレー系のキャンセルボタン
+
+# 検索ボタン（フォーム送信）
+search_button "検索"  # => 茶色の検索ボタン
+
+# クリアボタン（検索条件クリア）
+clear_button "クリア", patients_path  # => グレー系のクリアボタン
+```
+
+**カスタマイズ**:
+
+```ruby
+# classやdata属性などのオプションを追加可能
+show_button "詳細", @patient, class: "custom-class", data: { turbo_frame: "modal" }
+
+# 削除確認メッセージのカスタマイズ
+delete_button "削除", @patient, data: { turbo_confirm: "本当に削除してもよろしいですか？" }
+```
+
+**使用禁止パターン**:
+
+```erb
+<%# ❌ 直接link_toやbutton_toでボタンを作成しない %>
+<%= link_to "詳細", @patient, class: "bg-accent-primary..." %>
+
+<%# ✅ ButtonHelperを使用する %>
+<%= show_button "詳細", @patient %>
+```
+
+**例外ケース**（特殊な機能を持つボタンはカスタムスタイル可）:
+- PDF生成/ダウンロードボタン（緑色）
+- ステータス変更ボタン（公開/アーカイブ等）
+- ロール切替ボタン（管理者機能）
 
 ### 特殊な設定・例外
 

@@ -1,7 +1,7 @@
 <div class="container mx-auto px-4 py-8">
   <div class="flex justify-between items-center mb-6">
     <h1 class="text-3xl font-bold text-greige-900">お問い合わせ一覧</h1>
-    <%= link_to "新規お問い合わせ", new_inquiry_path, class: "bg-accent-primary hover:bg-accent-primary/90 text-white font-bold py-2 px-4 rounded transition-colors" %>
+    <%= new_button "新規お問い合わせ", new_inquiry_path %>
   </div>
 
   <% if @inquiries.any? %>
@@ -40,7 +40,7 @@
                 <%= l(inquiry.updated_at, format: :short) %>
               </td>
               <td class="px-6 py-4 whitespace-nowrap text-sm">
-                <%= link_to "表示", inquiry_path(inquiry), class: "text-accent-primary hover:text-accent-primary/80 transition-colors" %>
+                <%= show_button "表示", inquiry_path(inquiry) %>
               </td>
             </tr>
           <% end %>
@@ -54,7 +54,7 @@
   <% else %>
     <div class="bg-white shadow-md rounded p-8 text-center">
       <p class="text-greige-600 mb-4">まだお問い合わせはありません。</p>
-      <%= link_to "最初のお問い合わせを作成する", new_inquiry_path, class: "bg-accent-primary hover:bg-accent-primary/90 text-white font-bold py-2 px-4 rounded transition-colors" %>
+      <%= new_button "最初のお問い合わせを作成する", new_inquiry_path %>
     </div>
   <% end %>
 </div>

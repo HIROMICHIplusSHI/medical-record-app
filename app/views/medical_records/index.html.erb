@@ -7,12 +7,7 @@
       </p>
     </div>
     <div class="mt-4 sm:mt-0">
-      <%= link_to new_medical_record_path, class: "inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-accent-primary hover:bg-accent-primary/90 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-accent-primary transition-colors" do %>
-        <svg class="-ml-1 mr-2 h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
-          <path fill-rule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clip-rule="evenodd" />
-        </svg>
-        新規作成
-      <% end %>
+      <%= new_button "新規作成", new_medical_record_path %>
     </div>
   </div>
 
@@ -27,8 +22,8 @@
             <%= f.search_field :patient_name_cont, class: 'block w-full rounded-md border-greige-300 shadow-sm focus:border-accent-primary focus:ring-accent-primary sm:text-sm', placeholder: '患者名を入力...' %>
           </div>
           <div class="flex items-end gap-2">
-            <%= f.submit '検索', class: 'inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-accent-primary hover:bg-accent-primary/90 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-accent-primary transition-colors cursor-pointer' %>
-            <%= link_to 'クリア', medical_records_path, class: 'inline-flex items-center px-4 py-2 border border-greige-300 rounded-md shadow-sm text-sm font-medium text-greige-700 bg-white hover:bg-greige-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-accent-primary transition-colors' %>
+            <%= search_button '検索', class: 'inline-flex items-center focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-accent-primary cursor-pointer' %>
+            <%= clear_button 'クリア', medical_records_path, class: 'inline-flex items-center focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-accent-primary' %>
             <button type="button" data-action="click->search-form#toggle" class="inline-flex items-center px-4 py-2 border border-greige-300 rounded-md shadow-sm text-sm font-medium text-greige-700 bg-white hover:bg-greige-50 transition-colors">
               <span data-search-form-target="toggleText">詳細検索</span>
             </button>
@@ -141,10 +136,10 @@
                   <% end %>
                 </div>
               </td>
-              <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                <%= link_to '詳細', record, class: "text-accent-primary hover:text-accent-primary/80 mr-4 transition-colors" %>
-                <%= link_to '編集', edit_medical_record_path(record), class: "text-accent-secondary hover:text-accent-secondary/80 mr-4 transition-colors" %>
-                <%= button_to '削除', record, method: :delete, form: { data: { turbo_confirm: 'カルテを削除してもよろしいですか？' } }, class: "text-accent-danger hover:text-accent-danger/80 transition-colors" %>
+              <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium space-x-2">
+                <%= show_button '詳細', record %>
+                <%= edit_button '編集', edit_medical_record_path(record) %>
+                <%= delete_button '削除', record, data: { turbo_confirm: 'カルテを削除してもよろしいですか？' } %>
               </td>
             </tr>
           <% end %>
@@ -179,12 +174,7 @@
       <h3 class="mt-2 text-sm font-medium text-greige-900">カルテがありません</h3>
       <p class="mt-1 text-sm text-greige-500">最初のカルテを作成してください。</p>
       <div class="mt-6">
-        <%= link_to new_medical_record_path, class: "inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-accent-primary hover:bg-accent-primary/90 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-accent-primary transition-colors" do %>
-          <svg class="-ml-1 mr-2 h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
-            <path fill-rule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clip-rule="evenodd" />
-          </svg>
-          新規作成
-        <% end %>
+        <%= new_button "新規作成", new_medical_record_path %>
       </div>
     </div>
   <% end %>

@@ -28,7 +28,7 @@
           {},
           class: 'rounded-md border-greige-300 shadow-sm focus:border-accent-primary focus:ring-accent-primary' %>
       </div>
-      <%= f.submit 'フィルター', class: 'bg-accent-primary hover:bg-accent-primary/90 text-white font-bold py-2 px-4 rounded' %>
+      <%= search_button 'フィルター' %>
     <% end %>
   </div>
 
@@ -72,7 +72,7 @@
                 <%= l(inquiry.updated_at, format: :short) %>
               </td>
               <td class="px-6 py-4 whitespace-nowrap text-sm">
-                <%= link_to "表示", admin_inquiry_path(inquiry), class: "text-accent-primary hover:text-accent-primary/80 transition-colors" %>
+                <%= show_button "表示", admin_inquiry_path(inquiry) %>
               </td>
             </tr>
           <% end %>

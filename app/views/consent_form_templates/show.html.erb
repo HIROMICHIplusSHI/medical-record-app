@@ -1,6 +1,6 @@
 <div class="container mx-auto px-4 py-8">
   <div class="mb-6">
-    <%= link_to '← 一覧に戻る', consent_form_templates_path, class: "text-accent-primary hover:text-accent-primary/90 transition-colors" %>
+    <%= back_button '← 一覧に戻る', consent_form_templates_path %>
   </div>
 
   <div class="bg-white rounded-lg shadow p-8">
@@ -41,8 +41,8 @@
     </div>
 
     <div class="flex space-x-3">
-      <%= link_to '編集', edit_consent_form_template_path(@consent_form_template), class: "bg-accent-success/50 hover:bg-green-700 text-white font-bold py-2 px-4 rounded" %>
-      <%= link_to '削除', @consent_form_template, method: :delete, data: { turbo_method: :delete, turbo_confirm: '本当に削除しますか？' }, class: "bg-accent-danger hover:bg-accent-danger/90 text-white font-bold py-2 px-4 rounded transition-colors" %>
+      <%= edit_button '編集', edit_consent_form_template_path(@consent_form_template) %>
+      <%= delete_button '削除', @consent_form_template, data: { turbo_confirm: '本当に削除しますか？' } %>
     </div>
   </div>
 </div>

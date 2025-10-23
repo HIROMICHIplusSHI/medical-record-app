@@ -3,12 +3,12 @@
     <h1 class="text-3xl font-bold text-greige-900">請求書詳細</h1>
     <div class="flex items-center gap-2">
       <% if @invoice.can_edit? %>
-        <%= link_to "編集", edit_invoice_path(@invoice), class: "bg-accent-primary hover:bg-accent-primary/90 text-white font-bold py-2 px-4 rounded transition-colors" %>
+        <%= edit_button "編集", edit_invoice_path(@invoice) %>
       <% end %>
       <% if @invoice.can_refresh_items? %>
         <%= button_to "明細を更新", refresh_items_invoice_path(@invoice), method: :post, class: "bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded", data: { turbo_confirm: "期間内のカルテから明細を再作成します。既存の明細は削除されますがよろしいですか？" } %>
       <% end %>
-      <%= link_to "一覧に戻る", invoices_path, class: "bg-greige-500 hover:bg-greige-700 text-white font-bold py-2 px-4 rounded" %>
+      <%= back_button "一覧に戻る", invoices_path %>
     </div>
   </div>
 
@@ -174,12 +174,10 @@
     </div>
 
     <div class="flex flex-wrap gap-2">
-      <%= link_to "PDFダウンロード", download_pdf_invoice_path(@invoice), class: "bg-accent-primary hover:bg-accent-primary/90 text-white font-bold py-2 px-4 rounded shadow inline-block transition-colors" %>
+      <%= show_button "PDFダウンロード", download_pdf_invoice_path(@invoice) %>
 
       <% if @invoice.can_delete? %>
-        <%= button_to "削除", @invoice, method: :delete,
-            data: { turbo_confirm: "本当に削除しますか？この操作は取り消せません。" },
-            class: "bg-accent-danger hover:bg-accent-danger/90 text-white font-bold py-2 px-4 rounded ml-auto transition-colors" %>
+        <%= delete_button "削除", @invoice, data: { turbo_confirm: "本当に削除しますか？この操作は取り消せません。" } %>
       <% end %>
     </div>
   </div>

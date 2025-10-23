@@ -3,7 +3,7 @@
   <div class="mb-8">
     <div class="flex justify-between items-center mb-4">
       <h1 class="text-3xl font-bold text-greige-900">同意書詳細</h1>
-      <%= link_to '戻る', medical_record_path(@medical_record), class: 'text-accent-primary hover:text-accent-primary/90' %>
+      <%= back_button '戻る', medical_record_path(@medical_record) %>
     </div>
   </div>
 
@@ -124,9 +124,7 @@
         <%= link_to 'PDFダウンロード', download_pdf_medical_record_patient_consent_path(@medical_record, @patient_consent),
             class: 'inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-md text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500' %>
 
-        <%= link_to 'PDFプレビュー', preview_pdf_medical_record_patient_consent_path(@medical_record, @patient_consent),
-            target: '_blank',
-            class: 'inline-flex items-center px-6 py-3 border border-greige-300 text-base font-medium rounded-md text-greige-700 bg-white hover:bg-greige-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-accent-primary' %>
+        <%= show_button 'PDFプレビュー', preview_pdf_medical_record_patient_consent_path(@medical_record, @patient_consent), target: '_blank' %>
       </div>
 
       <p class="mt-4 text-sm text-greige-500">
@@ -134,10 +132,7 @@
       </p>
 
       <div class="mt-8 pt-6 border-t border-greige-200">
-        <%= button_to '同意書を削除', medical_record_patient_consent_path(@medical_record, @patient_consent),
-            method: :delete,
-            data: { turbo_confirm: 'この同意書を削除してもよろしいですか？' },
-            class: 'inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-md text-white bg-accent-danger hover:bg-accent-danger/90 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500' %>
+        <%= delete_button '同意書を削除', medical_record_patient_consent_path(@medical_record, @patient_consent), data: { turbo_confirm: 'この同意書を削除してもよろしいですか？' } %>
       </div>
     </div>
   </div>
