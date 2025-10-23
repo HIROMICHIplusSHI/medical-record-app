@@ -1,27 +1,15 @@
-module HomeHelper
-  def announcement_alert_class(severity)
+module UserDashboardHelper
+  # カードスタイル用の左ボーダークラス
+  def announcement_border_class(severity)
     case severity.to_sym
     when :info
-      'bg-blue-50 border border-blue-200'
+      'border-blue-500'
     when :warning
-      'bg-yellow-50 border border-yellow-200'
+      'border-yellow-500'
     when :critical
-      'bg-red-50 border border-red-200'
+      'border-red-500'
     else
-      'bg-gray-50 border border-gray-200'
-    end
-  end
-
-  def announcement_text_class(severity)
-    case severity.to_sym
-    when :info
-      'text-blue-800'
-    when :warning
-      'text-yellow-800'
-    when :critical
-      'text-red-800'
-    else
-      'text-gray-800'
+      'border-gray-400'
     end
   end
 
@@ -38,10 +26,10 @@ module HomeHelper
 
   def announcement_icon_class(severity)
     case severity.to_sym
-    when :info then 'text-blue-400'
-    when :warning then 'text-yellow-400'
-    when :critical then 'text-red-400'
-    else 'text-gray-400'
+    when :info then 'text-blue-500'
+    when :warning then 'text-yellow-500'
+    when :critical then 'text-red-500'
+    else 'text-gray-500'
     end
   end
 
@@ -55,19 +43,6 @@ module HomeHelper
     else
       # critical および unknown の場合、alert アイコンを表示
       'M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z'
-    end
-  end
-
-  def announcement_dismiss_class(severity)
-    case severity.to_sym
-    when :info
-      'text-blue-500 hover:bg-blue-100 focus:ring-blue-600'
-    when :warning
-      'text-yellow-500 hover:bg-yellow-100 focus:ring-yellow-600'
-    when :critical
-      'text-red-500 hover:bg-red-100 focus:ring-red-600'
-    else
-      'text-gray-500 hover:bg-gray-100 focus:ring-gray-600'
     end
   end
 end
