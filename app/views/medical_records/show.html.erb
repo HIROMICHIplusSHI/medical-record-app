@@ -1,56 +1,56 @@
 <div class="w-full mx-auto px-4 py-8">
-  <div class="bg-white shadow overflow-hidden sm:rounded-lg">
+  <div class="bg-white shadow-sm border border-greige-200 overflow-hidden sm:rounded-lg">
     <div class="px-4 py-5 sm:px-6 flex justify-between items-center">
       <div>
-        <h1 class="text-2xl font-semibold text-gray-900">カルテ詳細</h1>
-        <p class="mt-1 text-sm text-gray-500">
+        <h1 class="text-2xl font-semibold text-greige-900">カルテ詳細</h1>
+        <p class="mt-1 text-sm text-greige-600">
           <%= l(@medical_record.visit_date, format: :long) %>
         </p>
       </div>
       <div class="flex space-x-3">
-        <%= link_to '編集', edit_medical_record_path(@medical_record), class: "inline-flex items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500" %>
-        <%= button_to '削除', @medical_record, method: :delete, form: { data: { turbo_confirm: 'カルテを削除してもよろしいですか？' } }, class: "inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500" %>
+        <%= link_to '編集', edit_medical_record_path(@medical_record), class: "inline-flex items-center px-4 py-2 border border-greige-300 rounded-md shadow-sm text-sm font-medium text-greige-700 bg-white hover:bg-greige-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-accent-primary transition-colors" %>
+        <%= button_to '削除', @medical_record, method: :delete, form: { data: { turbo_confirm: 'カルテを削除してもよろしいですか？' } }, class: "inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-accent-danger hover:bg-accent-danger/90 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-accent-danger transition-colors" %>
       </div>
     </div>
-    <div class="border-t border-gray-200 px-4 py-5 sm:p-0">
-      <dl class="sm:divide-y sm:divide-gray-200">
+    <div class="border-t border-greige-200 px-4 py-5 sm:p-0">
+      <dl class="sm:divide-y sm:divide-greige-200">
         <div class="py-4 sm:py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
-          <dt class="text-sm font-medium text-gray-500">患者名</dt>
-          <dd class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2"><%= @medical_record.patient.name %></dd>
+          <dt class="text-sm font-medium text-greige-600">患者名</dt>
+          <dd class="mt-1 text-sm text-greige-900 sm:mt-0 sm:col-span-2"><%= @medical_record.patient.name %></dd>
         </div>
         <div class="py-4 sm:py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
-          <dt class="text-sm font-medium text-gray-500">施術場所</dt>
-          <dd class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2"><%= @medical_record.facility.name %></dd>
+          <dt class="text-sm font-medium text-greige-600">施術場所</dt>
+          <dd class="mt-1 text-sm text-greige-900 sm:mt-0 sm:col-span-2"><%= @medical_record.facility.name %></dd>
         </div>
         <div class="py-4 sm:py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
-          <dt class="text-sm font-medium text-gray-500">来院日</dt>
-          <dd class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2"><%= l(@medical_record.visit_date, format: :long) %></dd>
+          <dt class="text-sm font-medium text-greige-600">来院日</dt>
+          <dd class="mt-1 text-sm text-greige-900 sm:mt-0 sm:col-span-2"><%= l(@medical_record.visit_date, format: :long) %></dd>
         </div>
         <div class="py-4 sm:py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
-          <dt class="text-sm font-medium text-gray-500">施術部位</dt>
-          <dd class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2"><%= @medical_record.treatment_location %></dd>
+          <dt class="text-sm font-medium text-greige-600">施術部位</dt>
+          <dd class="mt-1 text-sm text-greige-900 sm:mt-0 sm:col-span-2"><%= @medical_record.treatment_location %></dd>
         </div>
         <div class="py-4 sm:py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
-          <dt class="text-sm font-medium text-gray-500">主訴</dt>
-          <dd class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2 whitespace-pre-wrap"><%= @medical_record.chief_complaint %></dd>
+          <dt class="text-sm font-medium text-greige-600">主訴</dt>
+          <dd class="mt-1 text-sm text-greige-900 sm:mt-0 sm:col-span-2 whitespace-pre-wrap"><%= @medical_record.chief_complaint %></dd>
         </div>
         <div class="py-4 sm:py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
-          <dt class="text-sm font-medium text-gray-500">診断</dt>
-          <dd class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2 whitespace-pre-wrap"><%= @medical_record.diagnosis %></dd>
+          <dt class="text-sm font-medium text-greige-600">診断</dt>
+          <dd class="mt-1 text-sm text-greige-900 sm:mt-0 sm:col-span-2 whitespace-pre-wrap"><%= @medical_record.diagnosis %></dd>
         </div>
         <div class="py-4 sm:py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
-          <dt class="text-sm font-medium text-gray-500">施術内容</dt>
-          <dd class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2 whitespace-pre-wrap"><%= @medical_record.treatment_content %></dd>
+          <dt class="text-sm font-medium text-greige-600">施術内容</dt>
+          <dd class="mt-1 text-sm text-greige-900 sm:mt-0 sm:col-span-2 whitespace-pre-wrap"><%= @medical_record.treatment_content %></dd>
         </div>
         <% if @medical_record.notes.present? %>
           <div class="py-4 sm:py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
-            <dt class="text-sm font-medium text-gray-500">メモ</dt>
-            <dd class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2 whitespace-pre-wrap"><%= @medical_record.notes %></dd>
+            <dt class="text-sm font-medium text-greige-600">メモ</dt>
+            <dd class="mt-1 text-sm text-greige-900 sm:mt-0 sm:col-span-2 whitespace-pre-wrap"><%= @medical_record.notes %></dd>
           </div>
         <% end %>
         <% if @medical_record.tags.any? %>
           <div class="py-4 sm:py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
-            <dt class="text-sm font-medium text-gray-500">タグ</dt>
+            <dt class="text-sm font-medium text-greige-600">タグ</dt>
             <dd class="mt-1 sm:mt-0 sm:col-span-2">
               <div class="flex flex-wrap gap-2">
                 <% @medical_record.tags.each do |tag| %>
@@ -67,9 +67,9 @@
 
     <!-- 施術写真セクション -->
     <% if @medical_record.photos.attached? %>
-      <div class="border-t border-gray-200" data-controller="image-modal" data-image-modal-urls-value='<%= @medical_record.photos.map { |photo| url_for(photo) }.to_json.html_safe %>' data-action="keydown@window->image-modal#handleKeydown">
+      <div class="border-t border-greige-200" data-controller="image-modal" data-image-modal-urls-value='<%= @medical_record.photos.map { |photo| url_for(photo) }.to_json.html_safe %>' data-action="keydown@window->image-modal#handleKeydown">
         <div class="px-4 py-5 sm:px-6">
-          <h3 class="text-lg leading-6 font-medium text-gray-900">施術写真 (<%= @medical_record.photos.count %>枚)</h3>
+          <h3 class="text-lg leading-6 font-medium text-greige-900">施術写真 (<%= @medical_record.photos.count %>枚)</h3>
         </div>
         <div class="px-4 pb-5 sm:px-6">
           <div class="grid grid-cols-2 md:grid-cols-3 gap-4">
@@ -117,34 +117,34 @@
 
     <!-- コスト項目セクション -->
     <% if @medical_record.cost_items.any? %>
-      <div class="border-t border-gray-200">
+      <div class="border-t border-greige-200">
         <div class="px-4 py-5 sm:px-6">
-          <h3 class="text-lg leading-6 font-medium text-gray-900">コスト項目</h3>
+          <h3 class="text-lg leading-6 font-medium text-greige-900">コスト項目</h3>
         </div>
-        <div class="border-t border-gray-200">
-          <table class="min-w-full divide-y divide-gray-200">
-            <thead class="bg-gray-50">
+        <div class="border-t border-greige-200">
+          <table class="min-w-full divide-y divide-greige-200">
+            <thead class="bg-greige-50">
               <tr>
-                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">項目名</th>
-                <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">数量</th>
-                <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">単価</th>
-                <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">合計</th>
+                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-greige-600 uppercase tracking-wider">項目名</th>
+                <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-greige-600 uppercase tracking-wider">数量</th>
+                <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-greige-600 uppercase tracking-wider">単価</th>
+                <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-greige-600 uppercase tracking-wider">合計</th>
               </tr>
             </thead>
-            <tbody class="bg-white divide-y divide-gray-200">
+            <tbody class="bg-white divide-y divide-greige-200">
               <% @medical_record.cost_items.each do |cost_item| %>
                 <tr>
-                  <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900"><%= cost_item.item_name %></td>
-                  <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 text-right"><%= cost_item.quantity %></td>
-                  <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 text-right">¥<%= number_with_delimiter(cost_item.unit_price.to_i) %></td>
-                  <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 text-right font-medium">¥<%= number_with_delimiter(cost_item.total_price.to_i) %></td>
+                  <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-greige-900"><%= cost_item.item_name %></td>
+                  <td class="px-6 py-4 whitespace-nowrap text-sm text-greige-600 text-right"><%= cost_item.quantity %></td>
+                  <td class="px-6 py-4 whitespace-nowrap text-sm text-greige-600 text-right">¥<%= number_with_delimiter(cost_item.unit_price.to_i) %></td>
+                  <td class="px-6 py-4 whitespace-nowrap text-sm text-greige-900 text-right font-medium">¥<%= number_with_delimiter(cost_item.total_price.to_i) %></td>
                 </tr>
               <% end %>
             </tbody>
-            <tfoot class="bg-gray-50">
+            <tfoot class="bg-greige-50">
               <tr>
-                <td colspan="3" class="px-6 py-4 text-right text-sm font-semibold text-gray-900">合計金額</td>
-                <td class="px-6 py-4 whitespace-nowrap text-right text-base font-bold text-gray-900">¥<%= number_with_delimiter(@medical_record.total_cost.to_i) %></td>
+                <td colspan="3" class="px-6 py-4 text-right text-sm font-semibold text-greige-900">合計金額</td>
+                <td class="px-6 py-4 whitespace-nowrap text-right text-base font-bold text-accent-primary">¥<%= number_with_delimiter(@medical_record.total_cost.to_i) %></td>
               </tr>
             </tfoot>
           </table>
@@ -153,21 +153,21 @@
     <% end %>
 
     <!-- 同意書セクション -->
-    <div class="bg-white shadow-md rounded-lg overflow-hidden mb-6">
-      <div class="px-4 py-5 sm:px-6 bg-gray-50 border-b border-gray-200 flex justify-between items-center">
-        <h3 class="text-lg leading-6 font-medium text-gray-900">同意書</h3>
-        <%= link_to '同意書を作成', new_medical_record_patient_consent_path(@medical_record), class: "inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500" %>
+    <div class="bg-white shadow-sm border border-greige-200 rounded-lg overflow-hidden mb-6">
+      <div class="px-4 py-5 sm:px-6 bg-greige-50 border-b border-greige-200 flex justify-between items-center">
+        <h3 class="text-lg leading-6 font-medium text-greige-900">同意書</h3>
+        <%= link_to '同意書を作成', new_medical_record_patient_consent_path(@medical_record), class: "inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-accent-primary hover:bg-accent-primary/90 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-accent-primary transition-colors" %>
       </div>
 
       <div class="px-4 py-5 sm:p-6">
         <% if @medical_record.patient_consents.any? %>
           <div class="space-y-3">
             <% @medical_record.patient_consents.includes(:consent_form_template, :facility_doctor).recent.each do |consent| %>
-              <div class="border border-gray-200 rounded-lg p-4 hover:bg-gray-50 transition-colors">
+              <div class="border border-greige-200 rounded-lg p-4 hover:bg-greige-50 transition-colors">
                 <div class="flex justify-between items-start">
                   <div class="flex-1">
-                    <h4 class="text-base font-medium text-gray-900"><%= consent.consent_form_template.title %></h4>
-                    <div class="mt-2 text-sm text-gray-600 space-y-1">
+                    <h4 class="text-base font-medium text-greige-900"><%= consent.consent_form_template.title %></h4>
+                    <div class="mt-2 text-sm text-greige-600 space-y-1">
                       <p>署名日時: <%= l consent.agreed_at, format: :long %></p>
                       <% if consent.facility_doctor.present? %>
                         <p>担当医師: <%= consent.facility_doctor.name %>（<%= consent.facility_doctor.license_number %>）</p>
@@ -177,11 +177,11 @@
                     <div class="mt-3">
                       <%= link_to '詳細・PDF',
                                   medical_record_patient_consent_path(@medical_record, consent),
-                                  class: "text-sm font-medium text-blue-600 hover:text-blue-800" %>
+                                  class: "text-sm font-medium text-accent-primary hover:text-accent-primary/80 transition-colors" %>
                     </div>
                   </div>
                   <div class="ml-4">
-                    <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-green-100 text-green-800">
+                    <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-accent-success/20 text-accent-success">
                       署名済み
                     </span>
                   </div>
@@ -190,13 +190,13 @@
             <% end %>
           </div>
         <% else %>
-          <p class="text-gray-500 text-center py-4">同意書はまだ作成されていません。</p>
+          <p class="text-greige-500 text-center py-4">同意書はまだ作成されていません。</p>
         <% end %>
       </div>
     </div>
 
-    <div class="px-4 py-3 bg-gray-50 text-right sm:px-6">
-      <%= link_to '一覧に戻る', medical_records_path, class: "inline-flex items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500" %>
+    <div class="px-4 py-3 bg-greige-50 text-right sm:px-6">
+      <%= link_to '一覧に戻る', medical_records_path, class: "inline-flex items-center px-4 py-2 border border-greige-300 rounded-md shadow-sm text-sm font-medium text-greige-700 bg-white hover:bg-greige-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-accent-primary transition-colors" %>
     </div>
   </div>
 </div>
