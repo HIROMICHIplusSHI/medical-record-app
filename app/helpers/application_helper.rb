@@ -12,9 +12,9 @@ module ApplicationHelper
 
   def dynamic_root_path
     if user_signed_in?
-      current_user.admin? ? admin_root_path : user_root_path
+      current_user.admin? ? admin_root_path : user_dashboard_path
     else
-      new_user_session_path
+      root_path
     end
   end
 

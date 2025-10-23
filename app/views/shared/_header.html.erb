@@ -23,7 +23,7 @@
           <% end %>
         <% else %>
           <% user_badge_count = unread_inquiry_count(current_user) %>
-          <%= link_to_nav_item('ダッシュボード', dashboard_path) %>
+          <%= link_to_nav_item('売上', revenue_dashboard_path) %>
           <%= link_to_nav_item('カルテ', medical_records_path) %>
           <%= link_to_nav_item('患者', patients_path) %>
           <%= link_to_nav_item('施術場所', facilities_path) %>
@@ -115,7 +115,7 @@
         <% end %>
       <% else %>
         <% mobile_user_badge_count = unread_inquiry_count(current_user) %>
-        <%= link_to_mobile_nav_item('ダッシュボード', dashboard_path) %>
+        <%= link_to_mobile_nav_item('売上', revenue_dashboard_path) %>
         <%= link_to_mobile_nav_item('カルテ', medical_records_path) %>
         <%= link_to_mobile_nav_item('患者', patients_path) %>
         <%= link_to_mobile_nav_item('施術場所', facilities_path) %>
