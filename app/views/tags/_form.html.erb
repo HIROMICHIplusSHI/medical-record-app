@@ -1,6 +1,6 @@
 <%= form_with(model: tag, local: true, class: "space-y-6") do |form| %>
   <% if tag.errors.any? %>
-    <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded">
+    <div class="bg-accent-danger/10 border border-accent-danger text-accent-danger px-4 py-3 rounded">
       <h2 class="font-bold mb-2"><%= pluralize(tag.errors.count, "件") %>のエラーがあります：</h2>
       <ul class="list-disc list-inside">
         <% tag.errors.full_messages.each do |message| %>
@@ -11,26 +11,26 @@
   <% end %>
 
   <div>
-    <%= form.label :name, "タグ名", class: "block text-sm font-medium text-gray-700 mb-2" %>
-    <%= form.text_field :name, class: "mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500", placeholder: "例：施術部位、症状", required: true, maxlength: 50 %>
+    <%= form.label :name, "タグ名", class: "block text-sm font-medium text-greige-700 mb-2" %>
+    <%= form.text_field :name, class: "mt-1 block w-full rounded-md border-greige-300 shadow-sm focus:border-accent-primary focus:ring-accent-primary", placeholder: "例：施術部位、症状", required: true, maxlength: 50 %>
   </div>
 
   <div>
-    <%= form.label :category, "カテゴリ", class: "block text-sm font-medium text-gray-700 mb-2" %>
-    <%= form.text_field :category, class: "mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500", placeholder: "例：施術、診断、症状" %>
-    <p class="mt-1 text-sm text-gray-500">タグをグループ分けするためのカテゴリ（任意）</p>
+    <%= form.label :category, "カテゴリ", class: "block text-sm font-medium text-greige-700 mb-2" %>
+    <%= form.text_field :category, class: "mt-1 block w-full rounded-md border-greige-300 shadow-sm focus:border-accent-primary focus:ring-accent-primary", placeholder: "例：施術、診断、症状" %>
+    <p class="mt-1 text-sm text-greige-500">タグをグループ分けするためのカテゴリ（任意）</p>
   </div>
 
   <div>
-    <%= form.label :color, "色", class: "block text-sm font-medium text-gray-700 mb-2" %>
+    <%= form.label :color, "色", class: "block text-sm font-medium text-greige-700 mb-2" %>
     <div class="flex items-center space-x-3">
-      <%= form.color_field :color, value: tag.color || '#3B82F6', class: "h-10 w-20 rounded border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500" %>
-      <span class="text-sm text-gray-600">タグの表示色を選択してください</span>
+      <%= form.color_field :color, value: tag.color || '#3B82F6', class: "h-10 w-20 rounded border-greige-300 shadow-sm focus:border-accent-primary focus:ring-accent-primary" %>
+      <span class="text-sm text-greige-600">タグの表示色を選択してください</span>
     </div>
   </div>
 
   <div class="flex justify-end space-x-3">
-    <%= link_to "キャンセル", tags_path, class: "bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded" %>
-    <%= form.submit "保存", class: "bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded" %>
+    <%= link_to "キャンセル", tags_path, class: "bg-greige-300 hover:bg-greige-400 text-greige-800 font-bold py-2 px-4 rounded transition-colors" %>
+    <%= form.submit "保存", class: "bg-accent-primary hover:bg-accent-primary/90 text-white font-bold py-2 px-4 rounded transition-colors" %>
   </div>
 <% end %>
