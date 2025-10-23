@@ -801,7 +801,7 @@ end
       </h1>
 
       <p class="text-xl text-greige-600 mb-12 max-w-2xl mx-auto">
-        フリーランス美容施術者のための電子カルテ・経営管理システム
+        フリーランスアートメイク施術者のための電子カルテ・経営管理システム
       </p>
 
       <%= button_primary 'ログイン', new_user_session_path, class: 'text-lg px-8 py-3' %>

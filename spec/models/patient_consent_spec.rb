@@ -60,7 +60,7 @@ RSpec.describe PatientConsent, type: :model do
   describe 'コールバック' do
     describe '#snapshot_facility_info' do
       it '作成時に施設情報をスナップショットとして保存する' do
-        user = create(:user, company_name: '美容施術者 田中')
+        user = create(:user, company_name: 'アートメイク施術者 田中')
         facility = create(:facility,
                           user: user,
                           name: 'サロンA',
@@ -77,7 +77,7 @@ RSpec.describe PatientConsent, type: :model do
         expect(consent.facility_name).to eq('サロンA')
         expect(consent.facility_address).to eq('東京都渋谷区')
         expect(consent.facility_phone).to eq('03-1234-5678')
-        expect(consent.practitioner_name).to eq('美容施術者 田中')
+        expect(consent.practitioner_name).to eq('アートメイク施術者 田中')
       end
 
       it 'ユーザーにcompany_nameがない場合はemailを使用する' do
