@@ -31,7 +31,6 @@ Rails.application.routes.draw do
 
   # ユーザーダッシュボード（ログイン後のホーム画面）
   get 'dashboard', to: 'user_dashboard#index', as: :user_dashboard
-  post 'dashboard/dismiss_announcement', to: 'user_dashboard#dismiss_announcement', as: :user_dashboard_dismiss_announcement
 
   # 売上ダッシュボード
   get 'dashboard/revenue', to: 'dashboards#index', as: :revenue_dashboard
