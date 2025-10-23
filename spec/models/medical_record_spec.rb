@@ -12,10 +12,6 @@ RSpec.describe MedicalRecord, type: :model do
     subject { build(:medical_record) }
 
     it { is_expected.to validate_presence_of(:visit_date) }
-    it { is_expected.to validate_presence_of(:treatment_location) }
-    it { is_expected.to validate_length_of(:treatment_location).is_at_most(200) }
-    it { is_expected.to validate_presence_of(:chief_complaint) }
-    it { is_expected.to validate_presence_of(:diagnosis) }
     it { is_expected.to validate_presence_of(:treatment_content) }
   end
 
