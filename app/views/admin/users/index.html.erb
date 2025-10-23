@@ -48,7 +48,7 @@
                   <%= user.created_at.strftime('%Y/%m/%d') %>
                 </td>
                 <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                  <%= link_to "詳細", admin_user_path(user), class: "inline-flex items-center px-3 py-1 border border-greige-300 rounded-md text-sm font-medium text-greige-700 bg-white hover:bg-greige-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-accent-primary transition-colors" %>
+                  <%= show_button "詳細", admin_user_path(user) %>
                 </td>
               </tr>
             <% end %>

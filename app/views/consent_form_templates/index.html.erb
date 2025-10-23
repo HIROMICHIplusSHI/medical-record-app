@@ -1,7 +1,7 @@
 <div class="container mx-auto px-4 py-8">
   <div class="flex justify-between items-center mb-6">
     <h1 class="text-3xl font-bold text-greige-900">同意書テンプレート一覧</h1>
-    <%= link_to '新規作成', new_consent_form_template_path, class: "bg-accent-primary hover:bg-accent-primary/90 text-white font-bold py-2 px-4 rounded transition-colors" %>
+    <%= new_button '新規作成', new_consent_form_template_path %>
   </div>
 
   <% if @consent_form_templates.any? %>
@@ -17,9 +17,9 @@
             <span>項目: <%= template.consent_form_items.count %>件</span>
           </div>
           <div class="flex space-x-2">
-            <%= link_to '詳細', template, class: "text-accent-primary hover:text-accent-primary/90 transition-colors" %>
-            <%= link_to '編集', edit_consent_form_template_path(template), class: "text-green-600 hover:text-accent-success/90" %>
-            <%= link_to '削除', template, method: :delete, data: { turbo_method: :delete, turbo_confirm: '本当に削除しますか？' }, class: "text-accent-danger hover:text-red-800" %>
+            <%= show_button '詳細', template %>
+            <%= edit_button '編集', edit_consent_form_template_path(template) %>
+            <%= delete_button '削除', template, data: { turbo_confirm: '本当に削除しますか？' } %>
           </div>
         </div>
       <% end %>

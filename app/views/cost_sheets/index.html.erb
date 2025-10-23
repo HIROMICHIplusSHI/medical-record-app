@@ -1,7 +1,7 @@
 <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
   <div class="flex justify-between items-center mb-6">
     <h1 class="text-3xl font-bold text-greige-900">コストシート管理</h1>
-    <%= link_to "新規作成", new_cost_sheet_path, class: "bg-accent-primary hover:bg-accent-primary/90 text-white font-semibold py-2 px-4 rounded-lg shadow transition-colors" %>
+    <%= new_button "新規作成", new_cost_sheet_path %>
   </div>
 
   <% if @cost_sheets.any? %>
@@ -43,9 +43,9 @@
               <td class="px-6 py-4 text-sm text-greige-500">
                 <%= truncate(cost_sheet.memo, length: 50) %>
               </td>
-              <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                <%= link_to "編集", edit_cost_sheet_path(cost_sheet), class: "text-accent-primary hover:text-accent-primary/80 transition-colors mr-3" %>
-                <%= button_to "削除", cost_sheet_path(cost_sheet), method: :delete, data: { turbo_confirm: "本当に削除しますか？" }, class: "text-accent-danger hover:text-accent-danger/80 transition-colors" %>
+              <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium space-x-2">
+                <%= edit_button "編集", edit_cost_sheet_path(cost_sheet) %>
+                <%= delete_button "削除", cost_sheet_path(cost_sheet) %>
               </td>
             </tr>
           <% end %>
@@ -55,7 +55,7 @@
   <% else %>
     <div class="bg-white shadow-md rounded-lg p-8 text-center">
       <p class="text-greige-500 mb-4">コストシートがまだ登録されていません。</p>
-      <%= link_to "最初のコストシートを作成", new_cost_sheet_path, class: "text-accent-primary hover:text-blue-800 font-semibold" %>
+      <%= new_button "最初のコストシートを作成", new_cost_sheet_path %>
     </div>
   <% end %>
 </div>

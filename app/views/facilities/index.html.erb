@@ -1,7 +1,7 @@
 <div class="container mx-auto px-4 py-8">
   <div class="flex justify-between items-center mb-6">
     <h1 class="text-3xl font-bold text-greige-900">施設一覧</h1>
-    <%= link_to "新しい施設を登録", new_facility_path, class: "bg-accent-primary hover:bg-accent-primary/90 text-white font-bold py-2 px-4 rounded transition-colors" %>
+    <%= new_button "新しい施設を登録", new_facility_path %>
   </div>
 
   <% if notice %>
@@ -31,10 +31,10 @@
               <td class="px-6 py-4"><%= facility.address %></td>
               <td class="px-6 py-4"><%= facility.phone %></td>
               <td class="px-6 py-4"><%= facility.email %></td>
-              <td class="px-6 py-4 whitespace-nowrap text-sm">
-                <%= link_to "表示", facility, class: "text-accent-primary hover:text-accent-primary/80 mr-3" %>
-                <%= link_to "編集", edit_facility_path(facility), class: "text-accent-secondary hover:text-accent-secondary/80 mr-3" %>
-                <%= button_to "削除", facility, method: :delete, data: { turbo_confirm: "本当に削除しますか？" }, class: "text-accent-danger hover:text-accent-danger/80 transition-colors" %>
+              <td class="px-6 py-4 whitespace-nowrap text-sm space-x-2">
+                <%= show_button "表示", facility %>
+                <%= edit_button "編集", edit_facility_path(facility) %>
+                <%= delete_button "削除", facility %>
               </td>
             </tr>
           <% end %>
@@ -44,7 +44,7 @@
   <% else %>
     <div class="bg-white shadow-md rounded p-8 text-center">
       <p class="text-greige-600 mb-4">まだ施設が登録されていません。</p>
-      <%= link_to "最初の施設を登録する", new_facility_path, class: "bg-accent-primary hover:bg-accent-primary/90 text-white font-bold py-2 px-4 rounded transition-colors" %>
+      <%= new_button "最初の施設を登録する", new_facility_path %>
     </div>
   <% end %>
 </div>
