@@ -22,7 +22,7 @@ RSpec.describe 'Admin::Users', type: :request do
 
       it 'アクセスが拒否される' do
         get admin_users_path
-        expect(response).to redirect_to(user_root_path)
+        expect(response).to redirect_to(user_dashboard_path)
       end
     end
   end

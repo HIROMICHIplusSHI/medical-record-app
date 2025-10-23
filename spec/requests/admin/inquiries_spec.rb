@@ -187,14 +187,14 @@ RSpec.describe 'Admin::Inquiries', type: :request do
     it 'お問い合わせ一覧にアクセスできない' do
       get admin_inquiries_path
       expect(response).to have_http_status(:redirect)
-      expect(response).to redirect_to(user_root_path)
+      expect(response).to redirect_to(user_dashboard_path)
     end
 
     it 'お問い合わせ詳細にアクセスできない' do
       inquiry = create(:inquiry)
       get admin_inquiry_path(inquiry)
       expect(response).to have_http_status(:redirect)
-      expect(response).to redirect_to(user_root_path)
+      expect(response).to redirect_to(user_dashboard_path)
     end
 
     it 'ステータス更新ができない' do
