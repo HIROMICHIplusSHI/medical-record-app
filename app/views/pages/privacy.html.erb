@@ -3,7 +3,7 @@
     <h1 class="text-3xl font-bold text-greige-800 mb-6">プライバシーポリシー</h1>
 
     <p class="text-sm text-greige-600 mb-6">
-      <strong>最終更新日：2025年10月23日</strong>
+      <strong>最終更新日：<%= l(TermsConstants::PRIVACY_UPDATED_AT, format: :long) %></strong>
     </p>
 
     <div class="prose prose-greige max-w-none space-y-6">
@@ -264,8 +264,8 @@
         <div class="bg-greige-50 border border-greige-300 rounded-md p-4 mt-2">
           <p class="text-greige-800 font-semibold">【個人情報に関するお問い合わせ窓口】</p>
           <ul class="list-disc list-inside space-y-1 text-greige-700 ml-4 mt-2">
-            <li>メールアドレス：inkfolio.sup@gmail.com</li>
-            <li>受付時間：平日10:00〜17:00（土日祝日、年末年始を除く）</li>
+            <li>メールアドレス：<%= TermsConstants::CONTACT_EMAIL %></li>
+            <li>受付時間：<%= TermsConstants::SUPPORT_HOURS %></li>
           </ul>
         </div>
 
@@ -319,7 +319,7 @@
           <ul class="space-y-1 text-greige-700">
             <li><strong>サービス名：</strong>InkFolio</li>
             <li><strong>運営者：</strong>InkFolio運営事務局</li>
-            <li><strong>メールアドレス：</strong>inkfolio.sup@gmail.com</li>
+            <li><strong>メールアドレス：</strong><%= TermsConstants::CONTACT_EMAIL %></li>
           </ul>
         </div>
 
