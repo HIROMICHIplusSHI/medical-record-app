@@ -47,7 +47,10 @@ module ApplicationHelper
 
     return unless show_unread
 
-    content_tag(:span, 'NEW', class: 'inline-block px-2 py-0.5 text-xs font-semibold rounded bg-accent-danger text-white',
-                              title: '未読', 'aria-label': '未読')
+    content_tag(
+      :span, 'NEW',
+      class: 'inline-block px-2 py-0.5 text-xs font-semibold rounded bg-accent-danger text-white',
+      title: '未読', 'aria-label': '未読'
+    )
   end
 end
