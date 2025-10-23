@@ -45,3 +45,4 @@
 # Brakeman security scan reports
 brakeman-report.json
 brakeman-report.html
+.playwright-mcp/
