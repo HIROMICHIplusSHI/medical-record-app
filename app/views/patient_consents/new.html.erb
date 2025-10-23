@@ -86,6 +86,7 @@
                           options_from_collection_for_select(@facility_doctors, :id, :name_with_license),
                           prompt: '医師を選択してください',
                           class: "mt-1 block w-full py-2 px-3 border border-greige-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-accent-primary focus:border-accent-primary sm:text-sm",
+                          data: { controller: 'tom-select' },
                           required: false %>
                     </div>
                   </div>

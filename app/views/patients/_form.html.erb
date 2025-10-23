@@ -74,7 +74,7 @@
       <%= form.select :gender,
           Patient.genders.keys.map { |key| [t("activerecord.attributes.patient.genders.#{key}"), key] },
           { prompt: "選択してください" },
-          class: "mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-accent-primary" %>
+          { class: "mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-accent-primary", data: { controller: 'tom-select' } } %>
     </div>
 
     <div>

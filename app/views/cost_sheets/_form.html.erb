@@ -43,7 +43,7 @@
     <%= f.select :category,
                  options_for_select(CostSheet::CATEGORIES.map { |k, v| [v, k] }, cost_sheet.category),
                  { include_blank: "カテゴリを選択" },
-                 class: "mt-1 block w-full rounded-md border-greige-300 shadow-sm focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-accent-primary sm:text-sm" %>
+                 { class: "mt-1 block w-full rounded-md border-greige-300 shadow-sm focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-accent-primary sm:text-sm", data: { controller: 'tom-select' } } %>
   </div>
 
   <div>
