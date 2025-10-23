@@ -116,7 +116,10 @@ RSpec.describe Questionnaire, type: :model do
 
         expect do
           questionnaire.update(nurse_confirmed: true)
-        end.to change { questionnaire.nurse_confirmed_at }.from(nil).to(current_time)
+        end.to change { questionnaire.nurse_confirmed_at }.from(nil)
+
+        # データベースのマイクロ秒精度に対応するため、1秒以内の差を許容
+        expect(questionnaire.nurse_confirmed_at).to be_within(1.second).of(current_time)
       end
 
       it 'nurse_name にユーザーのemailが設定される' do
