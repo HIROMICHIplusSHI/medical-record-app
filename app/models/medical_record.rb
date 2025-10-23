@@ -19,9 +19,6 @@ class MedicalRecord < ApplicationRecord
 
   # バリデーション
   validates :visit_date, presence: true
-  validates :treatment_location, presence: true, length: { maximum: 200 }
-  validates :chief_complaint, presence: true
-  validates :diagnosis, presence: true
   validates :treatment_content, presence: true
   validate :photos_count_limit
   validate :photos_size_limit
@@ -45,8 +42,7 @@ class MedicalRecord < ApplicationRecord
 
   # Ransack設定
   def self.ransackable_attributes(_auth_object = nil)
-    %w[visit_date treatment_location chief_complaint diagnosis treatment_content notes
-       patient_id facility_id created_at updated_at]
+    %w[visit_date treatment_content patient_id facility_id created_at updated_at]
   end
 
   def self.ransackable_associations(_auth_object = nil)
