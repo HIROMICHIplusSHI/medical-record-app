@@ -457,6 +457,44 @@ delete_button "削除", @patient, data: { turbo_confirm: "本当に削除して�
 - ステータス変更ボタン（公開/アーカイブ等）
 - ロール切替ボタン（管理者機能）
 
+### TomSelect規約
+
+**要件**: 全ての`select`タグ・`collection_select`には`data: { controller: 'tom-select' }`を必須で付与
+
+**理由**: 検索可能なドロップダウンUIを統一し、ユーザビリティを向上させるため
+
+**実装方針**: ヘルパーモジュール化せず、Rails標準の`form.select`に直接data属性を追加
+
+- **ButtonHelperとの違い**: TomSelectはJavaScript初期化フラグ（1行のdata属性）であり、複雑なデザインシステム（ButtonHelper）とは性質が異なる
+- **YAGNI原則**: 現時点でヘルパーモジュール化は過剰設計
+- **既存コード整合性**: 既存6ファイルが直接追加方式を採用しており、統一性を保つ
+
+**正しい使用例**:
+
+```erb
+<%# form.select の場合 %>
+<%= form.select :category,
+    options_for_select(...),
+    { prompt: "選択してください" },
+    { class: "...", data: { controller: 'tom-select' } } %>
+
+<%# form.collection_select の場合 %>
+<%= form.collection_select :facility_id, @facilities, :id, :name,
+    { prompt: "選択してください" },
+    { class: "...", data: { controller: 'tom-select' } } %>
+
+<%# select_tag の場合 %>
+<%= select_tag "field_name",
+    options_from_collection_for_select(...),
+    prompt: '選択してください',
+    class: "...",
+    data: { controller: 'tom-select' } %>
+```
+
+**例外ケース**: なし（全てのselectタグに適用必須）
+
+**将来の検討事項**: プロジェクトが大規模化し、TomSelectに複雑なオプション設定が必要になった場合はヘルパーモジュール化を再検討
+
 ### 特殊な設定・例外
 
 ```yaml
