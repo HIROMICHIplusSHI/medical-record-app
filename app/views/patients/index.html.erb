@@ -36,13 +36,13 @@
           <% @patients.each do |patient| %>
             <tr>
               <td class="px-6 py-4 whitespace-nowrap">
-                <%= link_to patient.name, patient, class: "text-accent-primary hover:text-accent-primary/80" %>
+                <%= link_to patient.name, patient, class: "text-ink-dark hover:text-accent-primary transition-colors" %>
               </td>
               <td class="px-6 py-4"><%= patient.date_of_birth&.strftime('%Y年%m月%d日') %></td>
               <td class="px-6 py-4"><%= t("activerecord.attributes.patient.genders.#{patient.gender}") %></td>
               <td class="px-6 py-4"><%= patient.phone %></td>
               <td class="px-6 py-4 whitespace-nowrap text-sm">
-                <%= link_to "表示", patient, class: "text-accent-primary hover:text-accent-primary/80 mr-3" %>
+                <%= link_to "表示", patient, class: "text-ink-dark hover:text-accent-primary transition-colors mr-3" %>
                 <%= link_to "編集", edit_patient_path(patient), class: "text-accent-secondary hover:text-accent-secondary/80 mr-3" %>
                 <%= button_to "削除", patient, method: :delete, data: { turbo_confirm: "本当に削除しますか？" }, class: "text-accent-danger hover:text-accent-danger/80" %>
               </td>

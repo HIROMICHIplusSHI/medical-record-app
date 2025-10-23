@@ -13,9 +13,9 @@
   <% if patient.questionnaire.present? %>
     <%# 問診票が存在する場合は基本情報を表示のみ %>
     <div class="bg-accent-primary/10 border border-accent-primary rounded p-4 mb-4">
-      <p class="text-sm text-accent-primary font-medium mb-2">基本情報は問診票から管理されています</p>
-      <p class="text-sm text-accent-primary">基本情報（氏名・生年月日・性別・電話番号）を変更する場合は、問診票を編集してください。</p>
-      <%= link_to "問診票を編集", edit_patient_questionnaire_path(patient), class: "inline-block mt-2 text-accent-primary hover:text-accent-primary/80 underline transition-colors" %>
+      <p class="text-sm text-ink-dark font-medium mb-2">基本情報は問診票から管理されています</p>
+      <p class="text-sm text-ink-dark">基本情報（氏名・生年月日・性別・電話番号）を変更する場合は、問診票を編集してください。</p>
+      <%= link_to "問診票を編集", edit_patient_questionnaire_path(patient), class: "inline-block mt-2 text-ink-dark hover:text-accent-primary transition-colors underline transition-colors" %>
     </div>
 
     <div class="bg-greige-100 rounded p-4 space-y-4">
