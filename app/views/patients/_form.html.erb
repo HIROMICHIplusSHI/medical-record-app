@@ -1,6 +1,6 @@
-<%= form_with(model: patient, local: true, class: "space-y-6") do |form| %>
+<%= form_with(model: patient, local: true, class: "space-y-6", html: { 'aria-describedby': (patient.errors.any? ? 'form-errors' : nil) }) do |form| %>
   <% if patient.errors.any? %>
-    <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded">
+    <div id="form-errors" role="alert" class="bg-accent-danger/10 border border-accent-danger text-accent-danger px-4 py-3 rounded">
       <h2 class="font-bold mb-2"><%= pluralize(patient.errors.count, "件") %>のエラーがあります：</h2>
       <ul class="list-disc list-inside">
         <% patient.errors.full_messages.each do |message| %>

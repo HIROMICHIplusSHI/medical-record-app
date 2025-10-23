@@ -1,6 +1,6 @@
-<%= form_with(model: medical_record, local: true, class: "space-y-6", data: { controller: "cost-items" }) do |f| %>
+<%= form_with(model: medical_record, local: true, class: "space-y-6", data: { controller: "cost-items" }, html: { 'aria-describedby': (medical_record.errors.any? ? 'form-errors' : nil) }) do |f| %>
   <% if medical_record.errors.any? %>
-    <div class="rounded-md bg-accent-danger/10 border border-accent-danger p-4">
+    <div id="form-errors" role="alert" class="rounded-md bg-accent-danger/10 border border-accent-danger p-4">
       <div class="flex">
         <div class="flex-shrink-0">
           <svg class="h-5 w-5 text-accent-danger" viewBox="0 0 20 20" fill="currentColor">
