@@ -1,0 +1,84 @@
+<div class="min-h-screen bg-gradient-to-br from-greige-50 via-white to-greige-50 flex items-center justify-center px-4 -mt-28 pt-28">
+  <div class="w-full max-w-md">
+    <!-- Logo Section -->
+    <div class="text-center mb-8">
+      <%= image_tag 'inkfolio-logo.svg', alt: 'InkFolio', class: 'h-24 w-auto mx-auto mb-6' %>
+      <h1 class="text-2xl text-greige-800 tracking-wide mb-2" style="font-family: 'Shippori Mincho', serif; font-weight: 500;">
+        美容施術者のための<br>ポートフォリオ＆業務管理システム
+      </h1>
+    </div>
+
+    <!-- Login Card -->
+    <div class="bg-white/80 backdrop-blur-sm rounded-2xl shadow-xl border border-greige-100 p-8 mb-6">
+      <%= form_for(:user, url: user_session_path, html: { class: "space-y-5" }) do |f| %>
+        <!-- メールアドレス -->
+        <div>
+          <%= f.label :email, "メールアドレス", class: "block text-sm font-medium text-greige-700 mb-2" %>
+          <%= f.email_field :email,
+              autofocus: true,
+              autocomplete: "email",
+              class: "appearance-none block w-full px-4 py-3 border border-greige-200 rounded-xl shadow-sm placeholder-greige-400 focus:outline-none focus:ring-2 focus:ring-accent-primary focus:border-transparent transition-all",
+              placeholder: "you@example.com" %>
+        </div>
+
+        <!-- パスワード -->
+        <div>
+          <%= f.label :password, "パスワード", class: "block text-sm font-medium text-greige-700 mb-2" %>
+          <%= f.password_field :password,
+              autocomplete: "current-password",
+              class: "appearance-none block w-full px-4 py-3 border border-greige-200 rounded-xl shadow-sm placeholder-greige-400 focus:outline-none focus:ring-2 focus:ring-accent-primary focus:border-transparent transition-all",
+              placeholder: "••••••••" %>
+        </div>
+
+        <!-- ログイン状態を保持 -->
+        <div class="flex items-center justify-between">
+          <div class="flex items-center">
+            <%= f.check_box :remember_me, class: "h-4 w-4 text-accent-primary focus:ring-accent-primary border-greige-300 rounded" %>
+            <%= f.label :remember_me, "ログイン状態を保持", class: "ml-2 block text-sm text-greige-600" %>
+          </div>
+          <%= link_to "パスワードを忘れた？", new_user_password_path, class: "text-sm text-accent-primary hover:text-ink-dark transition-colors" %>
+        </div>
+
+        <!-- ログインボタン -->
+        <div class="mt-8">
+          <%= f.submit "ログイン", class: "w-full py-3 px-4 bg-accent-primary text-white font-medium rounded-xl shadow-md hover:bg-accent-primary/90 hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-accent-primary transition-all duration-200" %>
+        </div>
+      <% end %>
+
+      <!-- 新規登録リンク -->
+      <div class="mt-6 text-center">
+        <p class="text-sm text-greige-600">
+          アカウントをお持ちでない方は
+          <%= link_to "新規登録", new_user_registration_path, class: "text-accent-primary hover:text-ink-dark font-medium transition-colors" %>
+        </p>
+      </div>
+    </div>
+
+    <!-- Features Tags -->
+    <div class="flex flex-wrap justify-center gap-2 text-xs text-greige-600">
+      <span class="inline-flex items-center px-3 py-1 bg-white rounded-full shadow-sm">
+        <svg class="w-3 h-3 mr-1.5 text-accent-primary" fill="currentColor" viewBox="0 0 20 20">
+          <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+        </svg>
+        施術ポートフォリオ
+      </span>
+      <span class="inline-flex items-center px-3 py-1 bg-white rounded-full shadow-sm">
+        <svg class="w-3 h-3 mr-1.5 text-accent-secondary" fill="currentColor" viewBox="0 0 20 20">
+          <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+        </svg>
+        売上・請求管理
+      </span>
+      <span class="inline-flex items-center px-3 py-1 bg-white rounded-full shadow-sm">
+        <svg class="w-3 h-3 mr-1.5 text-accent-tertiary" fill="currentColor" viewBox="0 0 20 20">
+          <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+        </svg>
+        データ暗号化
+      </span>
+    </div>
+
+    <!-- Footer -->
+    <div class="mt-8 text-center text-xs text-greige-500">
+      &copy; <%= Time.current.year %> InkFolio. All rights reserved.
+    </div>
+  </div>
+</div>
