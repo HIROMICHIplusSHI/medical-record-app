@@ -3,9 +3,10 @@ module NavigationHelper
     css_class = if disabled
                   'px-3 py-2 rounded-md text-sm font-medium text-gray-300 cursor-not-allowed'
                 elsif current_page?(path)
-                  'px-3 py-2 rounded-md text-sm font-medium bg-blue-700'
+                  'px-3 py-2 rounded-md text-sm font-medium bg-greige-100 text-accent-primary'
                 else
-                  'px-3 py-2 rounded-md text-sm font-medium hover:bg-blue-700'
+                  'px-3 py-2 rounded-md text-sm font-medium text-greige-700 ' \
+                    'hover:text-accent-primary hover:bg-greige-100 transition-colors'
                 end
 
     if disabled
@@ -19,9 +20,10 @@ module NavigationHelper
     css_class = if disabled
                   'block px-3 py-2 rounded-md text-base font-medium text-gray-300 cursor-not-allowed'
                 elsif current_page?(path)
-                  'block px-3 py-2 rounded-md text-base font-medium bg-blue-700'
+                  'block px-3 py-2 rounded-md text-base font-medium bg-greige-100 text-accent-primary'
                 else
-                  'block px-3 py-2 rounded-md text-base font-medium hover:bg-blue-700'
+                  'block px-3 py-2 rounded-md text-base font-medium text-greige-700 ' \
+                    'hover:text-accent-primary hover:bg-greige-100 transition-colors'
                 end
 
     if disabled

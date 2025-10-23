@@ -1,48 +1,48 @@
 <div class="container mx-auto px-4 py-8">
   <div class="mb-6">
-    <%= link_to '← 一覧に戻る', consent_form_templates_path, class: "text-blue-600 hover:text-blue-800" %>
+    <%= link_to '← 一覧に戻る', consent_form_templates_path, class: "text-accent-primary hover:text-accent-primary/90 transition-colors" %>
   </div>
 
   <div class="bg-white rounded-lg shadow p-8">
-    <h1 class="text-3xl font-bold text-gray-900 mb-4"><%= @consent_form_template.title %></h1>
+    <h1 class="text-3xl font-bold text-greige-900 mb-4"><%= @consent_form_template.title %></h1>
 
     <div class="mb-6">
-      <span class="inline-block px-3 py-1 rounded-full text-sm <%= @consent_form_template.is_active ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800' %>">
+      <span class="inline-block px-3 py-1 rounded-full text-sm <%= @consent_form_template.is_active ? 'bg-accent-success/10 text-accent-success/90' : 'bg-greige-100 text-greige-800' %>">
         <%= @consent_form_template.is_active ? '使用中' : '停止中' %>
       </span>
     </div>
 
     <% if @consent_form_template.description.present? %>
       <div class="mb-6">
-        <h2 class="text-lg font-semibold text-gray-900 mb-2">説明</h2>
-        <p class="text-gray-700"><%= simple_format(@consent_form_template.description) %></p>
+        <h2 class="text-lg font-semibold text-greige-900 mb-2">説明</h2>
+        <p class="text-greige-700"><%= simple_format(@consent_form_template.description) %></p>
       </div>
     <% end %>
 
     <div class="mb-6">
-      <h2 class="text-lg font-semibold text-gray-900 mb-4">チェック項目（<%= @consent_form_template.consent_form_items.count %>件）</h2>
+      <h2 class="text-lg font-semibold text-greige-900 mb-4">チェック項目（<%= @consent_form_template.consent_form_items.count %>件）</h2>
       <% if @consent_form_template.consent_form_items.any? %>
         <ul class="space-y-2">
           <% @consent_form_template.consent_form_items.each do |item| %>
             <li class="flex items-start">
               <span class="mr-2"><%= item.is_required ? '☑' : '☐' %></span>
-              <span class="text-gray-700">
+              <span class="text-greige-700">
                 <%= item.content %>
                 <% if item.is_required %>
-                  <span class="text-red-600 text-sm">（必須）</span>
+                  <span class="text-accent-danger text-sm">（必須）</span>
                 <% end %>
               </span>
             </li>
           <% end %>
         </ul>
       <% else %>
-        <p class="text-gray-500">チェック項目が登録されていません。</p>
+        <p class="text-greige-500">チェック項目が登録されていません。</p>
       <% end %>
     </div>
 
     <div class="flex space-x-3">
-      <%= link_to '編集', edit_consent_form_template_path(@consent_form_template), class: "bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded" %>
-      <%= link_to '削除', @consent_form_template, method: :delete, data: { turbo_method: :delete, turbo_confirm: '本当に削除しますか？' }, class: "bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded" %>
+      <%= link_to '編集', edit_consent_form_template_path(@consent_form_template), class: "bg-accent-success/50 hover:bg-green-700 text-white font-bold py-2 px-4 rounded" %>
+      <%= link_to '削除', @consent_form_template, method: :delete, data: { turbo_method: :delete, turbo_confirm: '本当に削除しますか？' }, class: "bg-accent-danger hover:bg-accent-danger/90 text-white font-bold py-2 px-4 rounded transition-colors" %>
     </div>
   </div>
 </div>

@@ -1,11 +1,11 @@
 <div class="container mx-auto px-4 py-8">
   <div class="flex justify-between items-center mb-6">
-    <h1 class="text-3xl font-bold text-gray-900">請求書一覧</h1>
-    <%= link_to "新しい請求書を作成", new_invoice_path, class: "bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded" %>
+    <h1 class="text-3xl font-bold text-greige-900">請求書一覧</h1>
+    <%= link_to "新しい請求書を作成", new_invoice_path, class: "bg-accent-primary hover:bg-accent-primary/90 text-white font-bold py-2 px-4 rounded transition-colors" %>
   </div>
 
   <% if notice %>
-    <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded mb-4">
+    <div class="bg-accent-success/10 border border-accent-success text-accent-success px-4 py-3 rounded mb-4">
       <%= notice %>
     </div>
   <% end %>
@@ -15,14 +15,14 @@
       <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
         <div>
           <%= f.label :invoice_number_cont, "請求書番号", class: "block text-sm font-medium text-gray-700 mb-1" %>
-          <%= f.text_field :invoice_number_cont, placeholder: "請求書番号で検索", class: "w-full rounded-lg border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500" %>
+          <%= f.text_field :invoice_number_cont, placeholder: "請求書番号で検索", class: "w-full rounded-lg border-gray-300 shadow-sm focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-accent-primary" %>
         </div>
 
         <div>
           <%= f.label :facility_id_eq, "施設", class: "block text-sm font-medium text-gray-700 mb-1" %>
           <%= f.collection_select :facility_id_eq, Facility.order(:name), :id, :name,
               { include_blank: "すべて" },
-              { class: "w-full rounded-lg border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500", data: { controller: "tom-select" } } %>
+              { class: "w-full rounded-lg border-gray-300 shadow-sm focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-accent-primary", data: { controller: "tom-select" } } %>
         </div>
 
         <div>
@@ -30,25 +30,25 @@
           <%= f.select :status_eq,
               Invoice.statuses.keys.map { |k| [t("activerecord.attributes.invoice.statuses.#{k}"), k] },
               { include_blank: "すべて" },
-              { class: "w-full rounded-lg border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500", data: { controller: "tom-select" } } %>
+              { class: "w-full rounded-lg border-gray-300 shadow-sm focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-accent-primary", data: { controller: "tom-select" } } %>
         </div>
       </div>
 
       <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div>
           <%= f.label :billing_period_start_gteq, "請求期間開始日（以降）", class: "block text-sm font-medium text-gray-700 mb-1" %>
-          <%= f.date_field :billing_period_start_gteq, class: "w-full rounded-lg border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500" %>
+          <%= f.date_field :billing_period_start_gteq, class: "w-full rounded-lg border-gray-300 shadow-sm focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-accent-primary" %>
         </div>
 
         <div>
           <%= f.label :billing_period_end_lteq, "請求期間終了日（以前）", class: "block text-sm font-medium text-gray-700 mb-1" %>
-          <%= f.date_field :billing_period_end_lteq, class: "w-full rounded-lg border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500" %>
+          <%= f.date_field :billing_period_end_lteq, class: "w-full rounded-lg border-gray-300 shadow-sm focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-accent-primary" %>
         </div>
       </div>
 
       <div class="flex gap-2">
-        <%= f.submit "検索", class: "bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-6 rounded-lg" %>
-        <%= link_to "クリア", invoices_path, class: "bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-6 rounded-lg" %>
+        <%= f.submit "検索", class: "bg-accent-primary hover:bg-accent-primary/90 text-white font-bold py-2 px-6 rounded-lg transition-colors" %>
+        <%= link_to "クリア", invoices_path, class: "bg-accent-secondary hover:bg-accent-secondary/90 text-white font-bold py-2 px-6 rounded-lg transition-colors" %>
       </div>
     <% end %>
   </div>
@@ -60,15 +60,15 @@
           <!-- ヘッダー部分: 請求書番号とステータス -->
           <div class="flex justify-between items-start mb-4">
             <div>
-              <%= link_to invoice.invoice_number, invoice, class: "text-lg font-bold text-blue-600 hover:text-blue-900" %>
+              <%= link_to invoice.invoice_number, invoice, class: "text-lg font-bold text-ink-dark hover:text-accent-primary transition-colors" %>
             </div>
             <span class="px-3 py-1 text-xs font-semibold rounded-full
               <%= case invoice.status
-                  when 'draft' then 'bg-gray-100 text-gray-800'
-                  when 'issued' then 'bg-blue-100 text-blue-800'
-                  when 'sent' then 'bg-yellow-100 text-yellow-800'
-                  when 'paid' then 'bg-green-100 text-green-800'
-                  when 'cancelled' then 'bg-red-100 text-red-800'
+                  when 'draft' then 'bg-greige-100 text-greige-800'
+                  when 'issued' then 'bg-accent-primary/10 text-accent-primary'
+                  when 'sent' then 'bg-accent-warning/10 text-accent-warning'
+                  when 'paid' then 'bg-accent-success/10 text-accent-success'
+                  when 'cancelled' then 'bg-accent-danger/10 text-accent-danger'
                   end %>">
               <%= t("activerecord.attributes.invoice.statuses.#{invoice.status}") %>
             </span>
@@ -97,13 +97,13 @@
           </div>
 
           <!-- 操作ボタン -->
-          <div class="flex gap-2 pt-4 border-t border-gray-200">
-            <%= link_to "表示", invoice, class: "flex-1 text-center bg-blue-500 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded" %>
+          <div class="flex gap-2 pt-4 border-t border-greige-200">
+            <%= link_to "表示", invoice, class: "flex-1 text-center bg-accent-primary hover:bg-accent-primary/90 text-white font-medium py-2 px-4 rounded transition-colors" %>
             <% if invoice.can_edit? %>
-              <%= link_to "編集", edit_invoice_path(invoice), class: "flex-1 text-center bg-indigo-500 hover:bg-indigo-700 text-white font-medium py-2 px-4 rounded" %>
+              <%= link_to "編集", edit_invoice_path(invoice), class: "flex-1 text-center bg-accent-secondary hover:bg-accent-secondary/90 text-white font-medium py-2 px-4 rounded transition-colors" %>
             <% end %>
             <% if invoice.can_delete? %>
-              <%= button_to "削除", invoice, method: :delete, data: { turbo_confirm: "本当に削除しますか？" }, class: "flex-1 bg-red-500 hover:bg-red-700 text-white font-medium py-2 px-4 rounded" %>
+              <%= button_to "削除", invoice, method: :delete, data: { turbo_confirm: "本当に削除しますか？" }, class: "flex-1 bg-accent-danger hover:bg-accent-danger/90 text-white font-medium py-2 px-4 rounded transition-colors" %>
             <% end %>
           </div>
         </div>
@@ -115,8 +115,8 @@
     </div>
   <% else %>
     <div class="bg-white shadow-md rounded p-8 text-center">
-      <p class="text-gray-600 mb-4">請求書が見つかりませんでした。</p>
-      <%= link_to "新しい請求書を作成する", new_invoice_path, class: "bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded" %>
+      <p class="text-greige-600 mb-4">請求書が見つかりませんでした。</p>
+      <%= link_to "新しい請求書を作成する", new_invoice_path, class: "bg-accent-primary hover:bg-accent-primary/90 text-white font-bold py-2 px-4 rounded transition-colors" %>
     </div>
   <% end %>
 </div>

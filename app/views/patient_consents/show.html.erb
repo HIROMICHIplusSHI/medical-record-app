@@ -2,17 +2,17 @@
   <!-- ヘッダー -->
   <div class="mb-8">
     <div class="flex justify-between items-center mb-4">
-      <h1 class="text-3xl font-bold text-gray-900">同意書詳細</h1>
-      <%= link_to '戻る', medical_record_path(@medical_record), class: 'text-blue-600 hover:text-blue-800' %>
+      <h1 class="text-3xl font-bold text-greige-900">同意書詳細</h1>
+      <%= link_to '戻る', medical_record_path(@medical_record), class: 'text-accent-primary hover:text-accent-primary/90' %>
     </div>
   </div>
 
   <!-- 同意書情報カード -->
   <div class="bg-white shadow-md rounded-lg overflow-hidden mb-6">
-    <div class="px-6 py-5 border-b border-gray-200 bg-gray-50">
-      <h2 class="text-xl font-semibold text-gray-900"><%= @patient_consent.template_title %></h2>
+    <div class="px-6 py-5 border-b border-greige-200 bg-greige-50">
+      <h2 class="text-xl font-semibold text-greige-900"><%= @patient_consent.template_title %></h2>
       <% if @patient_consent.consent_form_template.description.present? %>
-        <p class="text-sm text-gray-600 mt-2 whitespace-pre-line"><%= @patient_consent.consent_form_template.description %></p>
+        <p class="text-sm text-greige-600 mt-2 whitespace-pre-line"><%= @patient_consent.consent_form_template.description %></p>
       <% end %>
     </div>
 
@@ -20,34 +20,34 @@
       <!-- 基本情報 -->
       <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
         <div>
-          <h3 class="text-sm font-medium text-gray-500 mb-2">同意日</h3>
-          <p class="text-base text-gray-900"><%= @patient_consent.agreed_at.strftime('%Y年%m月%d日 %H:%M') %></p>
+          <h3 class="text-sm font-medium text-greige-500 mb-2">同意日</h3>
+          <p class="text-base text-greige-900"><%= @patient_consent.agreed_at.strftime('%Y年%m月%d日 %H:%M') %></p>
         </div>
 
         <div>
-          <h3 class="text-sm font-medium text-gray-500 mb-2">患者名</h3>
-          <p class="text-base text-gray-900"><%= @patient_consent.patient.name %></p>
+          <h3 class="text-sm font-medium text-greige-500 mb-2">患者名</h3>
+          <p class="text-base text-greige-900"><%= @patient_consent.patient.name %></p>
         </div>
 
         <div>
-          <h3 class="text-sm font-medium text-gray-500 mb-2">施設名</h3>
-          <p class="text-base text-gray-900"><%= @patient_consent.facility_name %></p>
+          <h3 class="text-sm font-medium text-greige-500 mb-2">施設名</h3>
+          <p class="text-base text-greige-900"><%= @patient_consent.facility_name %></p>
         </div>
 
         <% if @patient_consent.facility_doctor.present? %>
           <div>
-            <h3 class="text-sm font-medium text-gray-500 mb-2">担当医師</h3>
-            <p class="text-base text-gray-900"><%= @patient_consent.facility_doctor.name %></p>
+            <h3 class="text-sm font-medium text-greige-500 mb-2">担当医師</h3>
+            <p class="text-base text-greige-900"><%= @patient_consent.facility_doctor.name %></p>
           </div>
         <% end %>
       </div>
 
       <!-- 同意項目 -->
       <div>
-        <h3 class="text-lg font-semibold text-gray-900 mb-4">同意項目</h3>
+        <h3 class="text-lg font-semibold text-greige-900 mb-4">同意項目</h3>
         <div class="space-y-3">
           <% @patient_consent.consent_item_responses.includes(:consent_form_item).each do |response| %>
-            <div class="flex items-start p-3 rounded-lg <%= response.checked ? 'bg-green-50' : 'bg-gray-50' %>">
+            <div class="flex items-start p-3 rounded-lg <%= response.checked ? 'bg-accent-success/5' : 'bg-greige-50' %>">
               <div class="flex-shrink-0 mt-1">
                 <% if response.checked %>
                   <svg class="h-5 w-5 text-green-600" fill="currentColor" viewBox="0 0 20 20">
@@ -60,9 +60,9 @@
                 <% end %>
               </div>
               <div class="ml-3 flex-1">
-                <p class="text-sm font-medium text-gray-900 whitespace-pre-line">
+                <p class="text-sm font-medium text-greige-900 whitespace-pre-line">
                   <% if response.consent_form_item.is_required %>
-                    <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-red-100 text-red-800 mr-2">必須</span>
+                    <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-accent-danger/10 text-red-800 mr-2">必須</span>
                   <% end %>
                   <%= response.item_content %>
                 </p>
@@ -74,34 +74,34 @@
 
       <!-- 署名 -->
       <div>
-        <h3 class="text-lg font-semibold text-gray-900 mb-4">署名</h3>
-        <div class="border-2 border-gray-300 rounded-lg p-4 bg-gray-50">
+        <h3 class="text-lg font-semibold text-greige-900 mb-4">署名</h3>
+        <div class="border-2 border-greige-300 rounded-lg p-4 bg-greige-50">
           <% if @patient_consent.signature_data.present? %>
             <%= image_tag @patient_consent.signature_data, alt: '患者署名', class: 'max-w-md h-auto' %>
           <% else %>
-            <p class="text-gray-500">署名データがありません</p>
+            <p class="text-greige-500">署名データがありません</p>
           <% end %>
         </div>
       </div>
 
       <!-- 施術者情報 -->
       <div>
-        <h3 class="text-lg font-semibold text-gray-900 mb-4">施術者情報</h3>
+        <h3 class="text-lg font-semibold text-greige-900 mb-4">施術者情報</h3>
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
-            <h4 class="text-sm font-medium text-gray-500 mb-1">施術者名</h4>
-            <p class="text-base text-gray-900"><%= @patient_consent.practitioner_name %></p>
+            <h4 class="text-sm font-medium text-greige-500 mb-1">施術者名</h4>
+            <p class="text-base text-greige-900"><%= @patient_consent.practitioner_name %></p>
           </div>
           <% if @patient_consent.facility_address.present? %>
             <div>
-              <h4 class="text-sm font-medium text-gray-500 mb-1">施設住所</h4>
-              <p class="text-base text-gray-900"><%= @patient_consent.facility_address %></p>
+              <h4 class="text-sm font-medium text-greige-500 mb-1">施設住所</h4>
+              <p class="text-base text-greige-900"><%= @patient_consent.facility_address %></p>
             </div>
           <% end %>
           <% if @patient_consent.facility_phone.present? %>
             <div>
-              <h4 class="text-sm font-medium text-gray-500 mb-1">施設電話番号</h4>
-              <p class="text-base text-gray-900"><%= @patient_consent.facility_phone %></p>
+              <h4 class="text-sm font-medium text-greige-500 mb-1">施設電話番号</h4>
+              <p class="text-base text-greige-900"><%= @patient_consent.facility_phone %></p>
             </div>
           <% end %>
         </div>
@@ -111,33 +111,33 @@
 
   <!-- PDFアクション -->
   <div class="bg-white shadow-md rounded-lg overflow-hidden">
-    <div class="px-6 py-5 border-b border-gray-200 bg-gray-50">
-      <h2 class="text-xl font-semibold text-gray-900">PDF出力</h2>
+    <div class="px-6 py-5 border-b border-greige-200 bg-greige-50">
+      <h2 class="text-xl font-semibold text-greige-900">PDF出力</h2>
     </div>
 
     <div class="px-6 py-5">
       <div class="flex flex-wrap gap-4">
         <%= button_to 'PDF生成', generate_pdf_medical_record_patient_consent_path(@medical_record, @patient_consent),
             method: :post,
-            class: 'inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500' %>
+            class: 'inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-md text-white bg-accent-primary hover:bg-accent-primary/90 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-accent-primary' %>
 
         <%= link_to 'PDFダウンロード', download_pdf_medical_record_patient_consent_path(@medical_record, @patient_consent),
             class: 'inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-md text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500' %>
 
         <%= link_to 'PDFプレビュー', preview_pdf_medical_record_patient_consent_path(@medical_record, @patient_consent),
             target: '_blank',
-            class: 'inline-flex items-center px-6 py-3 border border-gray-300 text-base font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500' %>
+            class: 'inline-flex items-center px-6 py-3 border border-greige-300 text-base font-medium rounded-md text-greige-700 bg-white hover:bg-greige-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-accent-primary' %>
       </div>
 
-      <p class="mt-4 text-sm text-gray-500">
+      <p class="mt-4 text-sm text-greige-500">
         ※ PDFをダウンロードする前に、「PDF生成」ボタンをクリックしてください。
       </p>
 
-      <div class="mt-8 pt-6 border-t border-gray-200">
+      <div class="mt-8 pt-6 border-t border-greige-200">
         <%= button_to '同意書を削除', medical_record_patient_consent_path(@medical_record, @patient_consent),
             method: :delete,
             data: { turbo_confirm: 'この同意書を削除してもよろしいですか？' },
-            class: 'inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-md text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500' %>
+            class: 'inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-md text-white bg-accent-danger hover:bg-accent-danger/90 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500' %>
       </div>
     </div>
   </div>

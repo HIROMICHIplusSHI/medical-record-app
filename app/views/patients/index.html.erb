@@ -1,27 +1,27 @@
 <div class="container mx-auto px-4 py-8">
   <div class="flex justify-between items-center mb-6">
-    <h1 class="text-3xl font-bold text-gray-900">患者一覧</h1>
-    <%= link_to "新しい患者を登録", new_patient_path, class: "bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded" %>
+    <h1 class="text-3xl font-bold text-greige-900">患者一覧</h1>
+    <%= link_to "新しい患者を登録", new_patient_path, class: "bg-accent-primary hover:bg-accent-primary/90 text-white font-bold py-2 px-4 rounded transition-colors" %>
   </div>
 
   <% if notice %>
-    <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded mb-4">
+    <div class="bg-accent-success/10 border border-accent-success text-accent-success px-4 py-3 rounded transition-colors mb-4">
       <%= notice %>
     </div>
   <% end %>
 
   <div class="mb-6">
     <%= form_with url: patients_path, method: :get, local: true, class: "flex gap-2" do |form| %>
-      <%= form.text_field :query, value: params[:query], placeholder: "氏名または電話番号で検索", class: "flex-1 rounded-lg border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-lg p-3" %>
-      <%= form.submit "検索", class: "bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-6 rounded-lg" %>
+      <%= form.text_field :query, value: params[:query], placeholder: "氏名または電話番号で検索", class: "flex-1 rounded-lg border-gray-300 shadow-sm focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-accent-primary text-lg p-3" %>
+      <%= form.submit "検索", class: "bg-accent-primary hover:bg-accent-primary/90 text-white font-bold py-2 px-6 rounded-lg" %>
       <% if params[:query].present? %>
-        <%= link_to "クリア", patients_path, class: "bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-6 rounded-lg" %>
+        <%= link_to "クリア", patients_path, class: "bg-accent-secondary hover:bg-accent-secondary/90 text-white font-bold py-2 px-6 rounded-lg" %>
       <% end %>
     <% end %>
   </div>
 
   <% if @patients.any? %>
-    <div class="bg-white shadow-md rounded">
+    <div class="bg-white shadow-md rounded transition-colors">
       <table class="min-w-full">
         <thead class="bg-gray-50">
           <tr>
@@ -36,15 +36,15 @@
           <% @patients.each do |patient| %>
             <tr>
               <td class="px-6 py-4 whitespace-nowrap">
-                <%= link_to patient.name, patient, class: "text-blue-600 hover:text-blue-900" %>
+                <%= link_to patient.name, patient, class: "text-ink-dark hover:text-accent-primary transition-colors" %>
               </td>
               <td class="px-6 py-4"><%= patient.date_of_birth&.strftime('%Y年%m月%d日') %></td>
               <td class="px-6 py-4"><%= t("activerecord.attributes.patient.genders.#{patient.gender}") %></td>
               <td class="px-6 py-4"><%= patient.phone %></td>
               <td class="px-6 py-4 whitespace-nowrap text-sm">
-                <%= link_to "表示", patient, class: "text-blue-600 hover:text-blue-900 mr-3" %>
-                <%= link_to "編集", edit_patient_path(patient), class: "text-indigo-600 hover:text-indigo-900 mr-3" %>
-                <%= button_to "削除", patient, method: :delete, data: { turbo_confirm: "本当に削除しますか？" }, class: "text-red-600 hover:text-red-900" %>
+                <%= link_to "表示", patient, class: "text-ink-dark hover:text-accent-primary transition-colors mr-3" %>
+                <%= link_to "編集", edit_patient_path(patient), class: "text-accent-secondary hover:text-accent-secondary/80 mr-3" %>
+                <%= button_to "削除", patient, method: :delete, data: { turbo_confirm: "本当に削除しますか？" }, class: "text-accent-danger hover:text-accent-danger/80" %>
               </td>
             </tr>
           <% end %>
@@ -56,9 +56,9 @@
       <%= paginate @patients, params: { query: params[:query] } %>
     </div>
   <% else %>
-    <div class="bg-white shadow-md rounded p-8 text-center">
-      <p class="text-gray-600 mb-4">まだ患者が登録されていません。</p>
-      <%= link_to "最初の患者を登録する", new_patient_path, class: "bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded" %>
+    <div class="bg-white shadow-md rounded transition-colors p-8 text-center">
+      <p class="text-greige-600 mb-4">まだ患者が登録されていません。</p>
+      <%= link_to "最初の患者を登録する", new_patient_path, class: "bg-accent-primary hover:bg-accent-primary/90 text-white font-bold py-2 px-4 rounded transition-colors" %>
     </div>
   <% end %>
 </div>

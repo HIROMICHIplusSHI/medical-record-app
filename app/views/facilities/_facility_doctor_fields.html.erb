@@ -1,22 +1,22 @@
-<div class="facility-doctor-row bg-gray-50 p-4 rounded-lg mb-3" data-nested-form-target="item">
+<div class="facility-doctor-row bg-greige-50 p-4 rounded-lg mb-3" data-nested-form-target="item">
   <div class="grid grid-cols-1 gap-4 sm:grid-cols-12">
     <div class="sm:col-span-4">
-      <%= f.label :name, "医師名", class: "block text-sm font-medium text-gray-700" %>
-      <%= f.text_field :name, class: "mt-1 focus:ring-blue-500 focus:border-blue-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md", placeholder: "例: 山田太郎" %>
+      <%= f.label :name, "医師名", class: "block text-sm font-medium text-greige-700" %>
+      <%= f.text_field :name, class: "mt-1 focus:ring-accent-primary focus:border-accent-primary block w-full shadow-sm sm:text-sm border-greige-300 rounded-md", placeholder: "例: 山田太郎" %>
     </div>
 
     <div class="sm:col-span-3">
-      <%= f.label :medical_license_number, "医師免許番号", class: "block text-sm font-medium text-gray-700" %>
-      <%= f.text_field :medical_license_number, class: "mt-1 focus:ring-blue-500 focus:border-blue-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md", placeholder: "例: DOC001（任意）" %>
+      <%= f.label :medical_license_number, "医師免許番号", class: "block text-sm font-medium text-greige-700" %>
+      <%= f.text_field :medical_license_number, class: "mt-1 focus:ring-accent-primary focus:border-accent-primary block w-full shadow-sm sm:text-sm border-greige-300 rounded-md", placeholder: "例: DOC001（任意）" %>
     </div>
 
     <div class="sm:col-span-4">
-      <%= f.label :specialization, "専門分野", class: "block text-sm font-medium text-gray-700" %>
-      <%= f.text_field :specialization, class: "mt-1 focus:ring-blue-500 focus:border-blue-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md", placeholder: "例: 美容外科（任意）" %>
+      <%= f.label :specialization, "専門分野", class: "block text-sm font-medium text-greige-700" %>
+      <%= f.text_field :specialization, class: "mt-1 focus:ring-accent-primary focus:border-accent-primary block w-full shadow-sm sm:text-sm border-greige-300 rounded-md", placeholder: "例: 美容外科（任意）" %>
     </div>
 
     <div class="sm:col-span-1 flex items-end">
-      <button type="button" data-action="click->nested-form#removeItem" class="w-full inline-flex justify-center items-center px-3 py-2 border border-red-300 shadow-sm text-sm font-medium rounded-md text-red-700 bg-white hover:bg-red-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500">
+      <button type="button" data-action="click->nested-form#removeItem" class="w-full inline-flex justify-center items-center px-3 py-2 border border-accent-danger/50 shadow-sm text-sm font-medium rounded-md text-accent-danger bg-white hover:bg-accent-danger/10 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-accent-danger transition-colors">
         <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
         </svg>

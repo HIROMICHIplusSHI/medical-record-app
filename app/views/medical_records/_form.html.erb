@@ -1,15 +1,15 @@
-<%= form_with(model: medical_record, local: true, class: "space-y-6", data: { controller: "cost-items" }) do |f| %>
+<%= form_with(model: medical_record, local: true, class: "space-y-6", data: { controller: "cost-items" }, html: { 'aria-describedby': (medical_record.errors.any? ? 'form-errors' : nil) }) do |f| %>
   <% if medical_record.errors.any? %>
-    <div class="rounded-md bg-red-50 p-4">
+    <div id="form-errors" role="alert" class="rounded-md bg-accent-danger/10 border border-accent-danger p-4">
       <div class="flex">
         <div class="flex-shrink-0">
-          <svg class="h-5 w-5 text-red-400" viewBox="0 0 20 20" fill="currentColor">
+          <svg class="h-5 w-5 text-accent-danger" viewBox="0 0 20 20" fill="currentColor">
             <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd" />
           </svg>
         </div>
         <div class="ml-3">
-          <h3 class="text-sm font-medium text-red-800"><%= pluralize(medical_record.errors.count, "個") %>のエラーがあります</h3>
-          <ul class="mt-2 text-sm text-red-700 list-disc pl-5">
+          <h3 class="text-sm font-medium text-accent-danger"><%= pluralize(medical_record.errors.count, "個") %>のエラーがあります</h3>
+          <ul class="mt-2 text-sm text-accent-danger list-disc pl-5">
             <% medical_record.errors.full_messages.each do |message| %>
               <li><%= message %></li>
             <% end %>
@@ -21,86 +21,86 @@
 
   <div class="grid grid-cols-1 gap-6 sm:grid-cols-2">
     <div>
-      <%= f.label :patient_id, class: "block text-sm font-medium text-gray-700" %>
-      <%= f.collection_select :patient_id, @patients, :id, :name, { prompt: '患者を選択' }, { class: "mt-1 block w-full px-4 py-3 text-xl border-gray-300 focus:outline-none focus:ring-blue-500 focus:border-blue-500 rounded-md shadow-sm", data: { controller: "tom-select" } } %>
+      <%= f.label :patient_id, class: "block text-sm font-medium text-greige-700" %>
+      <%= f.collection_select :patient_id, @patients, :id, :name, { prompt: '患者を選択' }, { class: "mt-1 block w-full px-4 py-3 text-xl border-greige-300 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-accent-primary rounded-md shadow-sm", data: { controller: "tom-select" } } %>
     </div>
 
     <div>
-      <%= f.label :facility_id, class: "block text-sm font-medium text-gray-700" %>
-      <%= f.collection_select :facility_id, @facilities, :id, :name, { prompt: '施術場所を選択' }, { class: "mt-1 block w-full px-4 py-3 text-xl border-gray-300 focus:outline-none focus:ring-blue-500 focus:border-blue-500 rounded-md shadow-sm", data: { controller: "tom-select" } } %>
+      <%= f.label :facility_id, class: "block text-sm font-medium text-greige-700" %>
+      <%= f.collection_select :facility_id, @facilities, :id, :name, { prompt: '施術場所を選択' }, { class: "mt-1 block w-full px-4 py-3 text-xl border-greige-300 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-accent-primary rounded-md shadow-sm", data: { controller: "tom-select" } } %>
     </div>
 
     <div>
-      <%= f.label :visit_date, class: "block text-sm font-medium text-gray-700" %>
-      <%= f.date_field :visit_date, class: "mt-1 focus:ring-blue-500 focus:border-blue-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md" %>
+      <%= f.label :visit_date, class: "block text-sm font-medium text-greige-700" %>
+      <%= f.date_field :visit_date, class: "mt-1 focus:ring-accent-primary focus:border-accent-primary block w-full shadow-sm sm:text-sm border-greige-300 rounded-md" %>
     </div>
 
     <div>
-      <%= f.label :treatment_location, class: "block text-sm font-medium text-gray-700" %>
-      <%= f.text_field :treatment_location, class: "mt-1 focus:ring-blue-500 focus:border-blue-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md", placeholder: "例: 顔全体" %>
+      <%= f.label :treatment_location, class: "block text-sm font-medium text-greige-700" %>
+      <%= f.text_field :treatment_location, class: "mt-1 focus:ring-accent-primary focus:border-accent-primary block w-full shadow-sm sm:text-sm border-greige-300 rounded-md", placeholder: "例: 顔全体" %>
     </div>
   </div>
 
   <div>
-    <%= f.label :chief_complaint, class: "block text-sm font-medium text-gray-700" %>
-    <%= f.text_area :chief_complaint, rows: 3, class: "mt-1 focus:ring-blue-500 focus:border-blue-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md", placeholder: "患者の主な訴えを記入" %>
+    <%= f.label :chief_complaint, class: "block text-sm font-medium text-greige-700" %>
+    <%= f.text_area :chief_complaint, rows: 3, class: "mt-1 focus:ring-accent-primary focus:border-accent-primary block w-full shadow-sm sm:text-sm border-greige-300 rounded-md", placeholder: "患者の主な訴えを記入" %>
   </div>
 
   <div>
-    <%= f.label :diagnosis, class: "block text-sm font-medium text-gray-700" %>
-    <%= f.text_area :diagnosis, rows: 3, class: "mt-1 focus:ring-blue-500 focus:border-blue-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md", placeholder: "診断結果を記入" %>
+    <%= f.label :diagnosis, class: "block text-sm font-medium text-greige-700" %>
+    <%= f.text_area :diagnosis, rows: 3, class: "mt-1 focus:ring-accent-primary focus:border-accent-primary block w-full shadow-sm sm:text-sm border-greige-300 rounded-md", placeholder: "診断結果を記入" %>
   </div>
 
   <div>
-    <%= f.label :treatment_content, class: "block text-sm font-medium text-gray-700" %>
-    <%= f.text_area :treatment_content, rows: 4, class: "mt-1 focus:ring-blue-500 focus:border-blue-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md", placeholder: "施術内容を記入" %>
+    <%= f.label :treatment_content, class: "block text-sm font-medium text-greige-700" %>
+    <%= f.text_area :treatment_content, rows: 4, class: "mt-1 focus:ring-accent-primary focus:border-accent-primary block w-full shadow-sm sm:text-sm border-greige-300 rounded-md", placeholder: "施術内容を記入" %>
   </div>
 
   <div>
-    <%= f.label :notes, class: "block text-sm font-medium text-gray-700" %>
-    <%= f.text_area :notes, rows: 3, class: "mt-1 focus:ring-blue-500 focus:border-blue-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md", placeholder: "その他メモ（任意）" %>
+    <%= f.label :notes, class: "block text-sm font-medium text-greige-700" %>
+    <%= f.text_area :notes, rows: 3, class: "mt-1 focus:ring-accent-primary focus:border-accent-primary block w-full shadow-sm sm:text-sm border-greige-300 rounded-md", placeholder: "その他メモ（任意）" %>
   </div>
 
   <!-- タグ選択セクション -->
   <div data-controller="tag-accordion">
     <div class="flex justify-between items-center mb-2">
-      <%= f.label :tag_ids, "タグ", class: "block text-sm font-medium text-gray-700" %>
-      <button type="button" data-action="click->tag-accordion#toggle" class="text-sm text-blue-600 hover:text-blue-800 underline">
+      <%= f.label :tag_ids, "タグ", class: "block text-sm font-medium text-greige-700" %>
+      <button type="button" data-action="click->tag-accordion#toggle" class="text-sm text-accent-primary hover:text-accent-primary/80 transition-colors underline">
         + タグを作成
       </button>
     </div>
 
     <!-- アコーディオン形式のタグ作成フォーム -->
-    <div data-tag-accordion-target="form" class="hidden mb-4 p-4 border border-gray-300 rounded-md bg-gray-50">
-      <h4 class="text-sm font-medium text-gray-900 mb-3">新しいタグを作成</h4>
+    <div data-tag-accordion-target="form" class="hidden mb-4 p-4 border border-greige-300 rounded-md bg-greige-50">
+      <h4 class="text-sm font-medium text-greige-900 mb-3">新しいタグを作成</h4>
       <div class="space-y-3">
         <div>
-          <label class="block text-xs font-medium text-gray-700 mb-1">タグ名 *</label>
+          <label class="block text-xs font-medium text-greige-700 mb-1">タグ名 *</label>
           <input type="text" data-tag-accordion-target="nameInput" maxlength="50"
-                 class="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-sm"
+                 class="block w-full rounded-md border-greige-300 shadow-sm focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-accent-primary text-sm"
                  placeholder="例：施術部位、症状">
         </div>
         <div>
-          <label class="block text-xs font-medium text-gray-700 mb-1">カテゴリ</label>
+          <label class="block text-xs font-medium text-greige-700 mb-1">カテゴリ</label>
           <input type="text" data-tag-accordion-target="categoryInput"
-                 class="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-sm"
+                 class="block w-full rounded-md border-greige-300 shadow-sm focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-accent-primary text-sm"
                  placeholder="例：施術、診断、症状">
         </div>
         <div>
-          <label class="block text-xs font-medium text-gray-700 mb-1">色</label>
+          <label class="block text-xs font-medium text-greige-700 mb-1">色</label>
           <div class="flex items-center space-x-2">
             <input type="color" data-tag-accordion-target="colorInput" value="#3B82F6"
-                   class="h-8 w-16 rounded border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
-            <span class="text-xs text-gray-600">タグの表示色</span>
+                   class="h-8 w-16 rounded border-greige-300 shadow-sm focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-accent-primary">
+            <span class="text-xs text-greige-600">タグの表示色</span>
           </div>
         </div>
         <div class="flex justify-end space-x-2 pt-2">
           <button type="button" data-action="click->tag-accordion#cancel"
-                  class="px-3 py-1.5 text-sm bg-gray-300 hover:bg-gray-400 text-gray-800 font-medium rounded">
+                  class="px-3 py-1.5 text-sm bg-greige-300 hover:bg-greige-400 transition-colors text-greige-800 font-medium rounded">
             キャンセル
           </button>
           <button type="button" data-action="click->tag-accordion#submit"
-                  class="px-3 py-1.5 text-sm bg-blue-500 hover:bg-blue-700 text-white font-medium rounded">
+                  class="px-3 py-1.5 text-sm bg-accent-primary hover:bg-accent-primary/90 transition-colors text-white font-medium rounded">
             保存
           </button>
         </div>
@@ -120,7 +120,7 @@
           </label>
         <% end %>
       <% else %>
-        <p class="text-sm text-gray-500">
+        <p class="text-sm text-greige-500">
           まだタグが登録されていません。
         </p>
       <% end %>
@@ -128,15 +128,15 @@
   </div>
 
   <!-- 画像アップロードセクション -->
-  <div class="border-t border-gray-200 pt-6" data-controller="photo-preview" data-photo-preview-max-files-value="5">
+  <div class="border-t border-greige-200 pt-6" data-controller="photo-preview" data-photo-preview-max-files-value="5">
     <div class="mb-4">
-      <h3 class="text-lg font-medium text-gray-900 mb-2">施術写真</h3>
-      <p class="text-sm text-gray-500">最大5枚まで、1枚あたり10MB以内の画像をアップロードできます。複数回に分けて選択できます。</p>
+      <h3 class="text-lg font-medium text-greige-900 mb-2">施術写真</h3>
+      <p class="text-sm text-greige-500">最大5枚まで、1枚あたり10MB以内の画像をアップロードできます。複数回に分けて選択できます。</p>
     </div>
 
     <div class="mb-4">
-      <%= f.label :photos, "画像を選択", class: "block text-sm font-medium text-gray-700 mb-2" %>
-      <%= f.file_field :photos, multiple: true, accept: "image/*", data: { photo_preview_target: "input", action: "change->photo-preview#preview" }, class: "block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100" %>
+      <%= f.label :photos, "画像を選択", class: "block text-sm font-medium text-greige-700 mb-2" %>
+      <%= f.file_field :photos, multiple: true, accept: "image/*", data: { photo_preview_target: "input", action: "change->photo-preview#preview" }, class: "block w-full text-sm text-greige-500 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-accent-primary/10 file:text-accent-primary hover:file:bg-accent-primary/20" %>
     </div>
 
     <!-- 新規選択画像のプレビュー -->
@@ -144,13 +144,13 @@
 
     <% if medical_record.persisted? && medical_record.photos.attached? %>
       <div class="mt-4">
-        <h4 class="text-sm font-medium text-gray-700 mb-2">アップロード済みの画像 (<%= medical_record.photos.count %>枚)</h4>
+        <h4 class="text-sm font-medium text-greige-700 mb-2">アップロード済みの画像 (<%= medical_record.photos.count %>枚)</h4>
         <div class="grid grid-cols-2 md:grid-cols-3 gap-4">
           <% medical_record.photos.attachments.each do |attachment| %>
             <div class="relative group">
               <%= image_tag attachment, class: "w-full h-40 object-cover rounded-lg shadow-sm" %>
               <div class="absolute top-2 right-2">
-                <%= link_to remove_photo_medical_record_path(medical_record, photo_id: attachment.id), method: :delete, data: { turbo_method: :delete, turbo_confirm: 'この画像を削除しますか？' }, class: "bg-red-600 hover:bg-red-700 text-white rounded-full p-2 opacity-0 group-hover:opacity-100 transition-opacity shadow-lg border-2 border-white inline-block" do %>
+                <%= link_to remove_photo_medical_record_path(medical_record, photo_id: attachment.id), method: :delete, data: { turbo_method: :delete, turbo_confirm: 'この画像を削除しますか？' }, class: "bg-accent-danger hover:bg-accent-danger/90 transition-colors text-white rounded-full p-2 opacity-0 group-hover:opacity-100 transition-opacity shadow-lg border-2 border-white inline-block" do %>
                   <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="3">
                     <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
                   </svg>
@@ -164,10 +164,10 @@
   </div>
 
   <!-- コスト項目セクション -->
-  <div class="border-t border-gray-200 pt-6" data-cost-sheets="<%= (@cost_sheets || []).to_json(only: [:id, :item_name, :standard_price]) %>">
+  <div class="border-t border-greige-200 pt-6" data-cost-sheets="<%= (@cost_sheets || []).to_json(only: [:id, :item_name, :standard_price]) %>">
     <div class="flex items-center justify-between mb-4">
-      <h3 class="text-lg font-medium text-gray-900">コスト項目</h3>
-      <button type="button" id="add-cost-item" class="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+      <h3 class="text-lg font-medium text-greige-900">コスト項目</h3>
+      <button type="button" id="add-cost-item" class="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-white bg-accent-primary hover:bg-accent-primary/90 transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-accent-primary">
         <svg class="h-4 w-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
         </svg>
@@ -189,7 +189,7 @@
   </div>
 
   <div class="flex justify-end space-x-3">
-    <%= link_to 'キャンセル', medical_records_path, class: "inline-flex justify-center py-2 px-4 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500" %>
-    <%= f.submit "更新する", class: "inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500" %>
+    <%= link_to 'キャンセル', medical_records_path, class: "inline-flex justify-center py-2 px-4 border border-greige-300 shadow-sm text-sm font-medium rounded-md text-greige-700 bg-white hover:bg-greige-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-accent-primary" %>
+    <%= f.submit "更新する", class: "inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-accent-primary hover:bg-accent-primary/90 transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-accent-primary" %>
   </div>
 <% end %>

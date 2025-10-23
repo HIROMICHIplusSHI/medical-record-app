@@ -1,10 +1,10 @@
-<header class="bg-blue-600 text-white" data-controller="header">
+<header class="bg-white border-b border-greige-200 shadow-sm" data-controller="header">
   <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
     <div class="flex items-center justify-between" style="min-height: 64px;">
-      <!-- ロゴ/アプリ名 -->
+      <!-- InkFolioロゴ -->
       <div class="flex items-center">
-        <%= link_to dynamic_root_path, class: "text-xl font-bold" do %>
-          電子カルテ
+        <%= link_to dynamic_root_path, class: "flex items-center" do %>
+          <%= image_tag 'inkfolio-logo.svg', alt: 'InkFolio', class: 'h-14 w-auto' %>
         <% end %>
       </div>
 
@@ -15,10 +15,10 @@
           <%= link_to_nav_item('ダッシュボード', admin_root_path) %>
           <%= link_to_nav_item('ユーザー管理', admin_users_path) %>
           <%= link_to_nav_item('お知らせ管理', admin_announcements_path) %>
-          <%= link_to admin_inquiries_path, class: "px-3 py-2 rounded-md text-sm font-medium transition-colors #{current_page?(admin_inquiries_path) ? 'bg-blue-700' : 'hover:bg-blue-700'}" do %>
+          <%= link_to admin_inquiries_path, class: "px-3 py-2 rounded-md text-sm font-medium text-greige-700 hover:text-accent-primary transition-colors #{current_page?(admin_inquiries_path) ? 'bg-greige-100 text-accent-primary' : 'hover:bg-greige-100'}" do %>
             お問い合わせ
             <% if badge_count > 0 %>
-              <span class="ml-1 px-2 py-0.5 text-xs font-semibold rounded-full bg-red-500 text-white" aria-label="<%= badge_count %>件の未対応お問い合わせ"><%= badge_count %></span>
+              <span class="ml-1 px-2 py-0.5 text-xs font-semibold rounded-full bg-accent-danger text-white" aria-label="<%= badge_count %>件の未対応お問い合わせ"><%= badge_count %></span>
             <% end %>
           <% end %>
         <% else %>
@@ -30,10 +30,10 @@
           <%= link_to_nav_item('コストシート', cost_sheets_path) %>
           <%= link_to_nav_item('同意書', consent_form_templates_path) %>
           <%= link_to_nav_item('請求書', invoices_path) %>
-          <%= link_to inquiries_path, class: "px-3 py-2 rounded-md text-sm font-medium transition-colors #{current_page?(inquiries_path) ? 'bg-blue-700' : 'hover:bg-blue-700'}" do %>
+          <%= link_to inquiries_path, class: "px-3 py-2 rounded-md text-sm font-medium text-greige-700 hover:text-accent-primary transition-colors #{current_page?(inquiries_path) ? 'bg-greige-100 text-accent-primary' : 'hover:bg-greige-100'}" do %>
             お問い合わせ
             <% if user_badge_count > 0 %>
-              <span class="ml-1 px-2 py-0.5 text-xs font-semibold rounded-full bg-red-500 text-white" aria-label="<%= user_badge_count %>件の未読お問い合わせ"><%= user_badge_count %></span>
+              <span class="ml-1 px-2 py-0.5 text-xs font-semibold rounded-full bg-accent-danger text-white" aria-label="<%= user_badge_count %>件の未読お問い合わせ"><%= user_badge_count %></span>
             <% end %>
           <% end %>
         <% end %>
@@ -51,7 +51,7 @@
             aria-controls="user-menu"
             data-action="click->dropdown#toggle click@window->dropdown#hide"
             data-dropdown-target="button"
-            class="flex items-center space-x-1 p-2 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-white"
+            class="flex items-center space-x-1 p-2 rounded-md text-greige-700 hover:bg-greige-100 focus:outline-none focus:ring-2 focus:ring-accent-primary"
           >
             <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
@@ -70,10 +70,10 @@
             data-dropdown-target="menu"
             class="hidden absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 z-50"
           >
-            <%= link_to mypage_path, role: 'menuitem', class: 'block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100' do %>
+            <%= link_to mypage_path, role: 'menuitem', class: 'block px-4 py-2 text-sm text-greige-700 hover:bg-greige-100 transition-colors' do %>
               マイページ設定
             <% end %>
-            <%= link_to destroy_user_session_path, method: :delete, role: 'menuitem', data: { turbo_method: :delete }, class: 'block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100' do %>
+            <%= link_to destroy_user_session_path, method: :delete, role: 'menuitem', data: { turbo_method: :delete }, class: 'block px-4 py-2 text-sm text-greige-700 hover:bg-greige-100 transition-colors' do %>
               ログアウト
             <% end %>
           </div>
@@ -83,7 +83,7 @@
         <button
           type="button"
           data-action="click->header#toggleMobileMenu"
-          class="md:hidden inline-flex items-center justify-center p-2 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-white"
+          class="md:hidden inline-flex items-center justify-center p-2 rounded-md text-greige-700 hover:bg-greige-100 focus:outline-none focus:ring-2 focus:ring-accent-primary"
         >
           <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
@@ -96,7 +96,7 @@
   <!-- モバイルメニュー（mdより小さい画面で表示） -->
   <nav
     data-header-target="mobileMenu"
-    class="md:hidden hidden bg-blue-700 bg-opacity-95"
+    class="md:hidden hidden bg-white border-t border-greige-200"
     role="navigation"
   >
     <div class="px-2 pt-2 pb-3 space-y-1">
@@ -105,10 +105,10 @@
         <%= link_to_mobile_nav_item('ダッシュボード', admin_root_path) %>
         <%= link_to_mobile_nav_item('ユーザー管理', admin_users_path) %>
         <%= link_to_mobile_nav_item('お知らせ管理', admin_announcements_path) %>
-        <%= link_to admin_inquiries_path, class: "block px-3 py-2 rounded-md text-base font-medium transition-colors #{current_page?(admin_inquiries_path) ? 'bg-blue-700' : 'hover:bg-blue-700'}" do %>
+        <%= link_to admin_inquiries_path, class: "block px-3 py-2 rounded-md text-base font-medium text-greige-700 hover:text-accent-primary transition-colors #{current_page?(admin_inquiries_path) ? 'bg-greige-100 text-accent-primary' : 'hover:bg-greige-100'}" do %>
           お問い合わせ
           <% if mobile_badge_count > 0 %>
-            <span class="ml-1 px-2 py-0.5 text-xs font-semibold rounded-full bg-red-500 text-white" aria-label="<%= mobile_badge_count %>件の未対応お問い合わせ">
+            <span class="ml-1 px-2 py-0.5 text-xs font-semibold rounded-full bg-accent-danger text-white" aria-label="<%= mobile_badge_count %>件の未対応お問い合わせ">
               <%= mobile_badge_count %>
             </span>
           <% end %>
@@ -122,10 +122,10 @@
         <%= link_to_mobile_nav_item('コストシート', cost_sheets_path) %>
         <%= link_to_mobile_nav_item('同意書', consent_form_templates_path) %>
         <%= link_to_mobile_nav_item('請求書', invoices_path) %>
-        <%= link_to inquiries_path, class: "block px-3 py-2 rounded-md text-base font-medium transition-colors #{current_page?(inquiries_path) ? 'bg-blue-700' : 'hover:bg-blue-700'}" do %>
+        <%= link_to inquiries_path, class: "block px-3 py-2 rounded-md text-base font-medium text-greige-700 hover:text-accent-primary transition-colors #{current_page?(inquiries_path) ? 'bg-greige-100 text-accent-primary' : 'hover:bg-greige-100'}" do %>
           お問い合わせ
           <% if mobile_user_badge_count > 0 %>
-            <span class="ml-1 px-2 py-0.5 text-xs font-semibold rounded-full bg-red-500 text-white" aria-label="<%= mobile_user_badge_count %>件の未読お問い合わせ">
+            <span class="ml-1 px-2 py-0.5 text-xs font-semibold rounded-full bg-accent-danger text-white" aria-label="<%= mobile_user_badge_count %>件の未読お問い合わせ">
               <%= mobile_user_badge_count %>
             </span>
           <% end %>

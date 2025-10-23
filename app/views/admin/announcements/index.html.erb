@@ -2,78 +2,78 @@
   <!-- ヘッダー -->
   <div class="mb-8 flex justify-between items-center">
     <div>
-      <h1 class="text-3xl font-bold text-gray-900">お知らせ管理</h1>
-      <p class="mt-2 text-sm text-gray-600">システムお知らせの作成と管理</p>
+      <h1 class="text-3xl font-bold text-greige-900">お知らせ管理</h1>
+      <p class="mt-2 text-sm text-greige-600">システムお知らせの作成と管理</p>
     </div>
-    <%= link_to "新規作成", new_admin_announcement_path, class: "inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500" %>
+    <%= link_to "新規作成", new_admin_announcement_path, class: "inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-accent-primary hover:bg-accent-primary/90 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-accent-primary" %>
   </div>
 
   <!-- お知らせ一覧 -->
   <div class="bg-white shadow-sm rounded-lg overflow-hidden">
     <% if @announcements.any? %>
       <div class="overflow-x-auto">
-        <table class="min-w-full divide-y divide-gray-200" role="table" aria-label="お知らせ一覧">
+        <table class="min-w-full divide-y divide-greige-200" role="table" aria-label="お知らせ一覧">
           <caption class="sr-only">お知らせ管理テーブル</caption>
-          <thead class="bg-gray-50">
+          <thead class="bg-greige-50">
             <tr>
-              <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+              <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-greige-500 uppercase tracking-wider">
                 タイトル
               </th>
-              <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+              <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-greige-500 uppercase tracking-wider">
                 重要度
               </th>
-              <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+              <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-greige-500 uppercase tracking-wider">
                 ステータス
               </th>
-              <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+              <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-greige-500 uppercase tracking-wider">
                 公開日時
               </th>
-              <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+              <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-greige-500 uppercase tracking-wider">
                 作成者
               </th>
-              <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+              <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-greige-500 uppercase tracking-wider">
                 操作
               </th>
             </tr>
           </thead>
-          <tbody class="bg-white divide-y divide-gray-200">
+          <tbody class="bg-white divide-y divide-greige-200">
             <% @announcements.each do |announcement| %>
-              <tr class="hover:bg-gray-50">
+              <tr class="hover:bg-greige-50">
                 <td class="px-6 py-4">
-                  <%= link_to announcement.title, admin_announcement_path(announcement), class: "text-sm text-blue-600 hover:text-blue-700 font-medium" %>
+                  <%= link_to announcement.title, admin_announcement_path(announcement), class: "text-sm text-accent-primary hover:text-accent-primary/90 transition-colors font-medium" %>
                 </td>
                 <td class="px-6 py-4 whitespace-nowrap">
                   <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium <%= case announcement.severity
                     when 'info' then 'bg-blue-100 text-blue-800'
-                    when 'warning' then 'bg-yellow-100 text-yellow-800'
-                    when 'critical' then 'bg-red-100 text-red-800'
+                    when 'warning' then 'bg-accent-warning/10 text-yellow-800'
+                    when 'critical' then 'bg-accent-danger/10 text-red-800'
                     end %>">
                     <%= announcement.severity_i18n %>
                   </span>
                 </td>
                 <td class="px-6 py-4 whitespace-nowrap">
                   <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium <%= case announcement.status
-                    when 'draft' then 'bg-gray-100 text-gray-800'
-                    when 'published' then 'bg-green-100 text-green-800'
-                    when 'archived' then 'bg-gray-100 text-gray-600'
+                    when 'draft' then 'bg-greige-100 text-greige-800'
+                    when 'published' then 'bg-accent-success/10 text-accent-success/90'
+                    when 'archived' then 'bg-greige-100 text-greige-600'
                     end %>">
                     <%= announcement.status_i18n %>
                   </span>
                 </td>
-                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-greige-500">
                   <%= announcement.published_at&.strftime('%Y/%m/%d %H:%M') || '-' %>
                 </td>
-                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-greige-900">
                   <%= announcement.author.email %>
                 </td>
                 <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                   <div class="flex gap-2 justify-end">
-                    <%= link_to "編集", edit_admin_announcement_path(announcement), class: "inline-flex items-center px-3 py-1 border border-gray-300 rounded-md text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500" %>
+                    <%= link_to "編集", edit_admin_announcement_path(announcement), class: "inline-flex items-center px-3 py-1 border border-greige-300 rounded-md text-sm font-medium text-greige-700 bg-white hover:bg-greige-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-accent-primary transition-colors" %>
                     <% if announcement.draft? %>
                       <%= button_to "公開", publish_admin_announcement_path(announcement), method: :patch, class: "inline-flex items-center px-3 py-1 border border-transparent rounded-md text-sm font-medium text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500" %>
                     <% end %>
                     <% if announcement.published? %>
-                      <%= button_to "アーカイブ", archive_admin_announcement_path(announcement), method: :patch, class: "inline-flex items-center px-3 py-1 border border-gray-300 rounded-md text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500" %>
+                      <%= button_to "アーカイブ", archive_admin_announcement_path(announcement), method: :patch, class: "inline-flex items-center px-3 py-1 border border-greige-300 rounded-md text-sm font-medium text-greige-700 bg-white hover:bg-greige-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-accent-primary transition-colors" %>
                     <% end %>
                   </div>
                 </td>
@@ -84,12 +84,12 @@
       </div>
 
       <!-- ページネーション -->
-      <div class="px-6 py-4 bg-gray-50 border-t border-gray-200">
+      <div class="px-6 py-4 bg-greige-50 border-t border-greige-200">
         <%= paginate @announcements %>
       </div>
     <% else %>
       <div class="px-6 py-12 text-center">
-        <p class="text-sm text-gray-500">お知らせがありません</p>
+        <p class="text-sm text-greige-500">お知らせがありません</p>
       </div>
     <% end %>
   </div>
