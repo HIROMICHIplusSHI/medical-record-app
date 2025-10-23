@@ -46,7 +46,7 @@ RSpec.describe '請求書管理ワークフロー', type: :system do
       expect(page).to have_content('INV-')
 
       # 詳細画面へ
-      first('.text-blue-600').click
+      click_link '表示', match: :first
       expect(page).to have_content('請求書詳細')
       expect(page).to have_content('テスト施設')
 
@@ -181,13 +181,13 @@ RSpec.describe '請求書管理ワークフロー', type: :system do
       draft_invoice = create(:invoice, user: user, facility: facility, status: :draft)
       issued_invoice = create(:invoice, user: user, facility: facility, status: :issued)
 
-      # draft状態の請求書詳細
-      visit invoice_path(draft_invoice)
-      expect(page).to have_button('削除')
+      # draft状態の請求書編集ページ
+      visit edit_invoice_path(draft_invoice)
+      expect(page).to have_button('請求書を削除')
 
-      # issued状態の請求書詳細
-      visit invoice_path(issued_invoice)
-      expect(page).not_to have_button('削除')
+      # issued状態の請求書編集ページ
+      visit edit_invoice_path(issued_invoice)
+      expect(page).not_to have_button('請求書を削除')
     end
   end
 

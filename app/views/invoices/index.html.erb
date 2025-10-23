@@ -102,9 +102,6 @@
             <% if invoice.can_edit? %>
               <%= link_to "編集", edit_invoice_path(invoice), class: "flex-1 text-center bg-accent-secondary hover:bg-accent-secondary/90 text-white font-medium py-2 px-4 rounded transition-colors" %>
             <% end %>
-            <% if invoice.can_delete? %>
-              <%= button_to "削除", invoice, method: :delete, data: { turbo_confirm: "本当に削除しますか？" }, class: "flex-1 bg-accent-danger hover:bg-accent-danger/90 text-white font-medium py-2 px-4 rounded transition-colors" %>
-            <% end %>
           </div>
         </div>
       <% end %>

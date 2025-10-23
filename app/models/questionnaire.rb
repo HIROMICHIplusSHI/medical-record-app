@@ -32,6 +32,22 @@ class Questionnaire < ApplicationRecord
   # full_name_kana, birth_date, genderは任意（来院時に記入）
   validates :full_name, :phone, presence: true
 
+  # コールバック
+  before_save :set_nurse_confirmation, if: :nurse_confirmed_changed_to_true?
+
+  private
+
+  def nurse_confirmed_changed_to_true?
+    nurse_confirmed? && nurse_confirmed_changed? && nurse_confirmed_was == false
+  end
+
+  def set_nurse_confirmation
+    self.nurse_confirmed_at = Time.current
+    self.nurse_name = patient.user.email if patient&.user
+  end
+
+  public
+
   # JSONフィールドのアクセサー
   # medical_conditions: { has_conditions: bool, conditions: [], other_condition: string }
   def medical_conditions_data

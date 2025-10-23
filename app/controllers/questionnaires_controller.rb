@@ -7,6 +7,9 @@ class QuestionnairesController < ApplicationController
   USE_CHECKBOX_UI = true
 
   def new
+    # カルテからの遷移の場合、セッションに保存
+    store_return_medical_record_id
+
     # 予約時に入力された患者情報を事前入力（編集可能）
     @questionnaire = @patient.build_questionnaire(
       full_name: @patient.name,
@@ -36,6 +39,9 @@ class QuestionnairesController < ApplicationController
   end
 
   def show
+    # カルテからの遷移の場合、セッションに保存
+    store_return_medical_record_id
+
     redirect_to new_patient_questionnaire_path(@patient), alert: '問診票が見つかりません。' unless @questionnaire
   end
 
@@ -94,7 +100,9 @@ class QuestionnairesController < ApplicationController
       :desired_treatments,
       :past_treatments,
       :skin_conditions,
-      :other_concerns
+      :other_concerns,
+      # 看護師確認
+      :nurse_confirmed
     )
   end
 
@@ -206,5 +214,15 @@ class QuestionnairesController < ApplicationController
     else
       Rails.logger.warn("Patient sync validation failed: #{@patient.errors.full_messages}")
     end
+  end
+
+  # カルテからの遷移の場合、セッションに保存
+  def store_return_medical_record_id
+    return unless params[:from_medical_record_id].present?
+
+    medical_record_id = params[:from_medical_record_id].to_i
+    # セキュリティチェック: 現在のユーザーのカルテかどうか確認
+    medical_record = current_user.medical_records.find_by(id: medical_record_id)
+    session[:return_to_medical_record_id] = medical_record.id if medical_record
   end
 end

@@ -6,4 +6,11 @@
   <div class="bg-white shadow-md rounded px-8 pt-6 pb-8">
     <%= render "form", tag: @tag %>
   </div>
+
+  <!-- 削除セクション -->
+  <div class="mt-8 bg-red-50 border border-red-200 rounded-lg p-6">
+    <h3 class="text-lg font-semibold text-red-900 mb-2">危険な操作</h3>
+    <p class="text-sm text-red-700 mb-4">このタグを削除します。この操作は取り消すことができません。</p>
+    <%= button_to "タグを削除", @tag, method: :delete, data: { turbo_confirm: "本当に削除しますか？" }, class: "bg-red-600 hover:bg-red-700 text-white font-medium py-2 px-4 rounded transition-colors" %>
+  </div>
 </div>
