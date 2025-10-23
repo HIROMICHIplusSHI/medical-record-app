@@ -297,7 +297,9 @@ RSpec.describe 'Questionnaires', type: :request do
   describe 'セッションストレージ機能（カルテからの遷移）' do
     let(:facility) { create(:facility, user: user) }
     let(:medical_record) { create(:medical_record, user: user, patient: patient, facility: facility) }
-    let(:other_medical_record) { create(:medical_record, user: other_user, patient: other_patient, facility: create(:facility, user: other_user)) }
+    let(:other_medical_record) do
+      create(:medical_record, user: other_user, patient: other_patient, facility: create(:facility, user: other_user))
+    end
 
     context 'newアクションでfrom_medical_record_idパラメータがある場合' do
       it 'セッションにmedical_record_idが保存される' do

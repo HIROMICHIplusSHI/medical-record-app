@@ -114,9 +114,9 @@ RSpec.describe Questionnaire, type: :model do
         current_time = Time.current
         allow(Time).to receive(:current).and_return(current_time)
 
-        expect {
+        expect do
           questionnaire.update(nurse_confirmed: true)
-        }.to change { questionnaire.nurse_confirmed_at }.from(nil).to(current_time)
+        end.to change { questionnaire.nurse_confirmed_at }.from(nil).to(current_time)
       end
 
       it 'nurse_name にユーザーのemailが設定される' do

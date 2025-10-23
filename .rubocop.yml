@@ -57,6 +57,7 @@ Metrics/ClassLength:
     - 'app/services/patient_consent_pdf_generator.rb'  # PDF生成サービスは複雑なため除外
     - 'app/controllers/invoices_controller.rb'  # 多機能なコントローラーのため除外
     - 'app/controllers/patient_consents_controller.rb'  # 多機能なコントローラーのため除外
+    - 'app/controllers/questionnaires_controller.rb'  # 看護師確認機能を含むため除外
 
 Metrics/AbcSize:
   Max: 25
