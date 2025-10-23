@@ -1,11 +1,11 @@
 <div class="container mx-auto px-4 py-8">
   <div class="flex justify-between items-center mb-6">
-    <h1 class="text-3xl font-bold text-gray-900">請求書一覧</h1>
-    <%= link_to "新しい請求書を作成", new_invoice_path, class: "bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded" %>
+    <h1 class="text-3xl font-bold text-greige-900">請求書一覧</h1>
+    <%= link_to "新しい請求書を作成", new_invoice_path, class: "bg-accent-primary hover:bg-accent-primary/90 text-white font-bold py-2 px-4 rounded transition-colors" %>
   </div>
 
   <% if notice %>
-    <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded mb-4">
+    <div class="bg-accent-success/10 border border-accent-success text-accent-success px-4 py-3 rounded mb-4">
       <%= notice %>
     </div>
   <% end %>
@@ -47,8 +47,8 @@
       </div>
 
       <div class="flex gap-2">
-        <%= f.submit "検索", class: "bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-6 rounded-lg" %>
-        <%= link_to "クリア", invoices_path, class: "bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-6 rounded-lg" %>
+        <%= f.submit "検索", class: "bg-accent-primary hover:bg-accent-primary/90 text-white font-bold py-2 px-6 rounded-lg transition-colors" %>
+        <%= link_to "クリア", invoices_path, class: "bg-accent-secondary hover:bg-accent-secondary/90 text-white font-bold py-2 px-6 rounded-lg transition-colors" %>
       </div>
     <% end %>
   </div>
@@ -60,7 +60,7 @@
           <!-- ヘッダー部分: 請求書番号とステータス -->
           <div class="flex justify-between items-start mb-4">
             <div>
-              <%= link_to invoice.invoice_number, invoice, class: "text-lg font-bold text-blue-600 hover:text-blue-900" %>
+              <%= link_to invoice.invoice_number, invoice, class: "text-lg font-bold text-ink-dark hover:text-accent-primary transition-colors" %>
             </div>
             <span class="px-3 py-1 text-xs font-semibold rounded-full
               <%= case invoice.status
@@ -115,8 +115,8 @@
     </div>
   <% else %>
     <div class="bg-white shadow-md rounded p-8 text-center">
-      <p class="text-gray-600 mb-4">請求書が見つかりませんでした。</p>
-      <%= link_to "新しい請求書を作成する", new_invoice_path, class: "bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded" %>
+      <p class="text-greige-600 mb-4">請求書が見つかりませんでした。</p>
+      <%= link_to "新しい請求書を作成する", new_invoice_path, class: "bg-accent-primary hover:bg-accent-primary/90 text-white font-bold py-2 px-4 rounded transition-colors" %>
     </div>
   <% end %>
 </div>
