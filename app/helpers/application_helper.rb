@@ -36,36 +36,6 @@ module ApplicationHelper
     end
   end
 
-  def link_to_nav_item(text, path, &block)
-    is_active = current_page?(path)
-    classes = "px-3 py-2 rounded-md text-sm font-medium transition-colors #{
-      is_active ? 'bg-greige-800' : 'hover:bg-greige-800'
-    }"
-
-    if block_given?
-      link_to path, class: classes do
-        capture(&block)
-      end
-    else
-      link_to text, path, class: classes
-    end
-  end
-
-  def link_to_mobile_nav_item(text, path, &block)
-    is_active = current_page?(path)
-    classes = "block px-3 py-2 rounded-md text-base font-medium transition-colors #{
-      is_active ? 'bg-greige-700' : 'hover:bg-greige-700'
-    }"
-
-    if block_given?
-      link_to path, class: classes do
-        capture(&block)
-      end
-    else
-      link_to text, path, class: classes
-    end
-  end
-
   def unread_indicator_for(inquiry, current_user)
     show_unread = if current_user.admin?
                     # 管理者：未対応 OR 対応中でユーザーが最後に返信
