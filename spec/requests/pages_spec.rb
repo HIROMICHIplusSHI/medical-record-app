@@ -6,7 +6,7 @@ RSpec.describe 'Pages', type: :request do
       get terms_path
 
       expect(response).to have_http_status(:success)
-      expect(response.body).to include('ベータ版利用規約')
+      expect(response.body).to include('デモ版利用規約')
     end
 
     it '未認証でもアクセスできる' do

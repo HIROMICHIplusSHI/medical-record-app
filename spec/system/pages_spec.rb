@@ -5,43 +5,51 @@ RSpec.describe 'Pages', type: :system do
     it '利用規約が表示される' do
       visit terms_path
 
-      expect(page).to have_selector('h1', text: 'ベータ版利用規約')
+      expect(page).to have_selector('h1', text: 'デモ版利用規約')
       expect(page).to have_content('InkFolio')
-      expect(page).to have_content('本アプリは補助ツールです')
-      expect(page).to have_content('医療法上の正式な診療録（カルテ）ではありません')
+      expect(page).to have_content('技術デモンストレーション・ポートフォリオ展示を目的としたデモ版')
     end
 
     it '未認証でもアクセスできる' do
       visit terms_path
 
-      expect(page).to have_selector('h1', text: 'ベータ版利用規約')
+      expect(page).to have_selector('h1', text: 'デモ版利用規約')
       expect(page).not_to have_content('ログイン')
     end
 
     it '主要セクションが表示される' do
       visit terms_path
 
-      expect(page).to have_content('1. ベータ版について')
-      expect(page).to have_content('2. 本アプリの目的と性質')
-      expect(page).to have_content('5. データの取り扱い')
-      expect(page).to have_content('7. 免責事項')
-      expect(page).to have_content('14. 最後に大切なこと')
+      expect(page).to have_content('第1条（本規約の適用）')
+      expect(page).to have_content('第2条（デモ版の位置づけ）')
+      expect(page).to have_content('第4条（禁止事項）')
+      expect(page).to have_content('第5条（データの取扱い）')
+      expect(page).to have_content('第7条（免責事項）')
     end
 
     it '警告メッセージが表示される' do
       visit terms_path
 
-      # ベータ版警告
-      expect(page).to have_content('重要：本アプリは無料で提供されるベータ版であり、継続的な提供を保証するものではありません')
+      # デモ版警告
+      expect(page).to have_content('本デモシステムは、医療行為・美容施術に関する実際の業務には使用しないでください')
 
-      # 施設記録必須警告
-      expect(page).to have_content('本アプリに記録したかどうかに関わらず、施設の正式な電子カルテへの記録は必ず行ってください')
-
-      # データ消失警告
-      expect(page).to have_content('大切なデータは必ず別途保存してください。データ消失について運営者は一切責任を負いません')
+      # 個人情報入力禁止警告
+      expect(page).to have_content('実在する患者・顧客の個人情報を入力する行為')
 
       # 免責警告
-      expect(page).to have_content('本アプリは「現状有姿」で提供され、いかなる保証もありません')
+      expect(page).to have_content('本デモシステムは「現状有姿（AS IS）」で提供されます')
+
+      # ポートフォリオ作品であることの明記
+      expect(page).to have_content('開発者の技術スキルを証明するためのポートフォリオ作品')
+    end
+
+    it 'テストデータの例が表示される' do
+      visit terms_path
+
+      expect(page).to have_content('テストデータの例')
+      expect(page).to have_content('山田太郎、田中花子')
+      expect(page).to have_content('000-0000-0000')
+      expect(page).to have_content('test@example.com')
     end
   end
 
@@ -49,15 +57,15 @@ RSpec.describe 'Pages', type: :system do
     it 'プライバシーポリシーが表示される' do
       visit privacy_path
 
-      expect(page).to have_selector('h1', text: 'プライバシーポリシー')
+      expect(page).to have_selector('h1', text: 'プライバシーポリシー（デモ版）')
       expect(page).to have_content('InkFolio')
-      expect(page).to have_content('個人情報保護法')
+      expect(page).to have_content('技術デモンストレーション・ポートフォリオ展示を目的としたデモ版')
     end
 
     it '未認証でもアクセスできる' do
       visit privacy_path
 
-      expect(page).to have_selector('h1', text: 'プライバシーポリシー')
+      expect(page).to have_selector('h1', text: 'プライバシーポリシー（デモ版）')
       # 未認証でもページが表示されることを確認（認証エラーがないこと）
       expect(page).not_to have_content('アカウント登録')
     end
@@ -65,51 +73,55 @@ RSpec.describe 'Pages', type: :system do
     it '主要セクションが表示される' do
       visit privacy_path
 
-      expect(page).to have_content('第1条（個人情報の定義）')
-      expect(page).to have_content('第2条（本ポリシーの適用範囲）')
-      expect(page).to have_content('第5条（顧客情報の取扱い）')
-      expect(page).to have_content('第6条（要配慮個人情報の取扱い）')
-      expect(page).to have_content('第9条（個人情報の安全管理措置）')
-      expect(page).to have_content('第12条（個人情報の開示、訂正、利用停止等）')
+      expect(page).to have_content('第1条（本ポリシーの適用）')
+      expect(page).to have_content('第2条（デモ版における情報の取扱い）')
+      expect(page).to have_content('第3条（取得する情報）')
+      expect(page).to have_content('第6条（セキュリティ対策）')
+      expect(page).to have_content('第10条（免責事項）')
+      expect(page).to have_content('第12条（個人情報保護法との関係）')
     end
 
-    it '利用者情報の取得項目が表示される' do
+    it '個人情報入力禁止の警告が表示される' do
       visit privacy_path
 
-      # 登録情報
-      expect(page).to have_content('1. 登録情報')
-      expect(page).to have_content('氏名、メールアドレス、電話番号')
+      expect(page).to have_content('本デモシステムには、実在する個人の情報を入力しないでください')
+      expect(page).to have_content('実在する患者・顧客の個人情報を入力した場合、個人情報保護法違反となる可能性があります')
+      expect(page).to have_content('実際の業務で個人情報を取り扱う場合は、個人情報保護法に準拠した正式なシステムを使用してください')
+    end
 
-      # 決済情報
-      expect(page).to have_content('2. 決済情報')
+    it '取得する情報が表示される' do
+      visit privacy_path
+
+      # アカウント情報
+      expect(page).to have_content('3-1. アカウント情報')
+      expect(page).to have_content('メールアドレス（認証目的）')
+      expect(page).to have_content('パスワード（ハッシュ化して保存）')
+
+      # 入力データ
+      expect(page).to have_content('3-2. 入力データ')
+      expect(page).to have_content('架空のテストデータ')
 
       # 利用履歴情報
-      expect(page).to have_content('3. 利用履歴情報')
-      expect(page).to have_content('Cookie情報、端末情報')
+      expect(page).to have_content('3-3. 利用履歴情報')
+      expect(page).to have_content('Cookie情報')
     end
 
-    it '安全管理措置が表示される' do
+    it 'セキュリティ対策が表示される' do
       visit privacy_path
 
-      expect(page).to have_content('1. 技術的安全管理措置')
       expect(page).to have_content('SSL/TLS暗号化通信の使用')
-
-      expect(page).to have_content('2. 組織的安全管理措置')
-      expect(page).to have_content('個人情報取扱規程の策定')
-
-      expect(page).to have_content('3. 物理的安全管理措置')
-      expect(page).to have_content('サーバー設備の施錠管理')
-
-      expect(page).to have_content('4. 人的安全管理措置')
-      expect(page).to have_content('秘密保持契約の締結')
+      expect(page).to have_content('パスワードのハッシュ化保存（bcrypt）')
+      expect(page).to have_content('Active Record Encryption による機密データの暗号化')
+      expect(page).to have_content('セキュリティの限界について')
     end
 
     it 'お問い合わせ窓口が表示される' do
       visit privacy_path
 
-      expect(page).to have_content('個人情報に関するお問い合わせ窓口')
+      expect(page).to have_content('お問い合わせ')
       expect(page).to have_content('inkfolio.sup@gmail.com')
       expect(page).to have_content('平日10:00〜17:00')
+      expect(page).to have_content('本デモシステムはポートフォリオ作品のため、サポート対応は限定的です')
     end
   end
 end
