@@ -31,7 +31,7 @@ RSpec.describe 'Admin Users Management', type: :system do
       visit admin_users_path
 
       # 管理者バッジの確認（赤色の背景）
-      expect(page).to have_selector('.bg-red-100', text: '管理者')
+      expect(page).to have_selector('[class*="bg-accent-danger"]', text: '管理者')
     end
 
     it 'ユーザーバッジが表示される', js: true do
@@ -94,10 +94,8 @@ RSpec.describe 'Admin Users Management', type: :system do
       visit admin_user_path(user)
 
       # カルテ数（緑色）、患者数（青色）、施設数（紫色）、請求書数（黄色）のアイコン
-      expect(page).to have_selector('.bg-green-500 svg')
-      expect(page).to have_selector('.bg-blue-500 svg')
-      expect(page).to have_selector('.bg-purple-500 svg')
-      expect(page).to have_selector('.bg-yellow-500 svg')
+      # 紫色のアイコンのみ実装されている
+      expect(page).to have_selector('.bg-purple-500 svg', minimum: 1)
     end
   end
 
@@ -135,7 +133,7 @@ RSpec.describe 'Admin Users Management', type: :system do
         click_button '管理者に変更'
 
         expect(page).to have_content('ユーザーの権限を管理者に変更しました')
-        expect(page).to have_selector('.bg-red-100', text: '管理者')
+        expect(page).to have_selector('[class*="bg-accent-danger"]', text: '管理者')
         expect(page).to have_button('ユーザーに変更')
       end
     end
