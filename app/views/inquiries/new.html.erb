@@ -1,10 +1,7 @@
 <div class="container mx-auto px-4 py-8">
   <div class="max-w-2xl mx-auto">
     <div class="mb-6">
-      <%= link_to inquiries_path, class: 'text-accent-primary hover:text-accent-primary/90 inline-flex items-center' do %>
-        <span aria-hidden="true">← </span>
-        <span>一覧に戻る</span>
-      <% end %>
+      <%= back_button "一覧に戻る", inquiries_path %>
     </div>
 
     <h1 class="text-3xl font-bold text-greige-900 mb-2">新規お問い合わせ</h1>
@@ -57,7 +54,7 @@
         </div>
 
         <div class="flex justify-end space-x-3">
-          <%= link_to 'キャンセル', inquiries_path, class: 'bg-greige-300 hover:bg-greige-400 text-greige-800 font-bold py-2 px-4 rounded' %>
+          <%= cancel_button 'キャンセル', inquiries_path %>
           <%= f.submit '送信', class: 'bg-accent-primary hover:bg-accent-primary/90 text-white font-bold py-2 px-4 rounded' %>
         </div>
       <% end %>

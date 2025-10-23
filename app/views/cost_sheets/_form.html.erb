@@ -52,7 +52,7 @@
   </div>
 
   <div class="flex items-center justify-between pt-4">
-    <%= link_to "キャンセル", cost_sheets_path, class: "text-greige-600 hover:text-greige-900 font-medium" %>
+    <%= cancel_button "キャンセル", cost_sheets_path %>
     <%= f.submit "保存", class: "bg-accent-primary hover:bg-accent-primary/90 text-white font-semibold py-2 px-6 rounded-lg shadow cursor-pointer transition-colors" %>
   </div>
 <% end %>
