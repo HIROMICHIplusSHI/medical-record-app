@@ -212,14 +212,14 @@ RSpec.describe 'Admin Inquiries Management', type: :system do
     it '一般ユーザーは管理者ページにアクセスできない', js: true do
       visit admin_inquiries_path
 
-      expect(page).to have_current_path(user_root_path)
+      expect(page).to have_current_path(user_dashboard_path)
       expect(page).to have_content('管理者権限が必要です')
     end
 
     it '一般ユーザーは管理者詳細ページにアクセスできない', js: true do
       visit admin_inquiry_path(inquiry)
 
-      expect(page).to have_current_path(user_root_path)
+      expect(page).to have_current_path(user_dashboard_path)
       expect(page).to have_content('管理者権限が必要です')
     end
   end

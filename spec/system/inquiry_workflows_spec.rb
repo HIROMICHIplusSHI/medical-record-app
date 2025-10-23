@@ -149,7 +149,7 @@ RSpec.describe 'お問い合わせワークフロー', type: :system do
 
   describe 'ナビゲーション確認' do
     it 'ヘッダーにお問い合わせリンクが表示される', js: true do
-      visit dashboard_path
+      visit user_dashboard_path
 
       # デスクトップナビゲーション
       within('nav.hidden.md\\:flex') do
