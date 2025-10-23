@@ -35,25 +35,25 @@ RSpec.describe 'Dashboards', type: :request do
     end
   end
 
-  describe 'GET /dashboard' do
+  describe 'GET /revenue/dashboard' do
     context '未ログイン' do
       before { sign_out user }
 
       it 'ログインページにリダイレクトする' do
-        get dashboard_path
+        get revenue_dashboard_path
         expect(response).to redirect_to(new_user_session_path)
       end
     end
 
     context 'ログイン済み' do
       it 'ダッシュボードページが表示される' do
-        get dashboard_path
+        get revenue_dashboard_path
         expect(response).to have_http_status(:success)
         expect(response.body).to include('売上ダッシュボード')
       end
 
       it '今年の売上データを取得する' do
-        get dashboard_path
+        get revenue_dashboard_path
         expect(response).to have_http_status(:success)
         expect(response.body).to include('月次売上推移')
         # 1月から12月までの月が表示される
@@ -63,7 +63,7 @@ RSpec.describe 'Dashboards', type: :request do
       end
 
       it '施設別売上データを取得する' do
-        get dashboard_path, params: { start_date: '2024-01-01', end_date: '2024-12-31' }
+        get revenue_dashboard_path, params: { start_date: '2024-01-01', end_date: '2024-12-31' }
         expect(response).to have_http_status(:success)
         expect(response.body).to include('施設別売上')
         expect(response.body).to include('施設A')
@@ -71,14 +71,14 @@ RSpec.describe 'Dashboards', type: :request do
       end
 
       it '期間指定で売上データを取得する' do
-        get dashboard_path, params: { start_date: '2024-01-01', end_date: '2024-01-31' }
+        get revenue_dashboard_path, params: { start_date: '2024-01-01', end_date: '2024-01-31' }
         expect(response).to have_http_status(:success)
         expect(response.body).to include('110,000')
       end
 
       it '期間が指定されない場合は今月のデータを取得する' do
         travel_to Date.new(2024, 1, 25) do
-          get dashboard_path
+          get revenue_dashboard_path
           expect(response).to have_http_status(:success)
           expect(response.body).to include('2024年01月01日')
           expect(response.body).to include('2024年01月31日')
@@ -86,14 +86,14 @@ RSpec.describe 'Dashboards', type: :request do
       end
 
       it 'year パラメータで年次データを取得する' do
-        get dashboard_path, params: { year: 2024 }
+        get revenue_dashboard_path, params: { year: 2024 }
         expect(response).to have_http_status(:success)
         expect(response.body).to include('月次売上推移')
       end
     end
   end
 
-  describe 'GET /dashboard/export' do
+  describe 'GET /revenue/dashboard/export' do
     context '未ログイン' do
       before { sign_out user }
 

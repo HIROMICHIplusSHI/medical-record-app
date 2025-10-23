@@ -8,7 +8,7 @@ module Admin
       return if current_user&.admin?
 
       flash[:alert] = '管理者権限が必要です。'
-      redirect_to user_root_path
+      redirect_to user_dashboard_path
     end
   end
 end

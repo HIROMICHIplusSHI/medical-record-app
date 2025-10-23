@@ -11,28 +11,29 @@ RSpec.describe 'Header Navigation', type: :system do
 
   describe 'ヘッダーの表示' do
     it '全ページでヘッダーが表示される' do
-      visit user_root_path
+      visit user_dashboard_path
       expect(page).to have_selector('header')
       expect(page).to have_content('InkFolio')
     end
 
     it 'ナビゲーションメニューが表示される' do
-      visit user_root_path
+      visit user_dashboard_path
 
       within('header') do
         # 有効化されたアイテムはlinkとして表示される
-        expect(page).to have_link('ダッシュボード', href: dashboard_path)
+        expect(page).to have_link('売上', href: revenue_dashboard_path)
         expect(page).to have_link('カルテ', href: medical_records_path)
         expect(page).to have_link('患者', href: patients_path)
         expect(page).to have_link('施術場所', href: facilities_path)
         expect(page).to have_link('コストシート', href: cost_sheets_path)
+        expect(page).to have_link('同意書', href: consent_form_templates_path)
         # Phase 5-B-2で請求書機能を実装したため有効化
         expect(page).to have_link('請求書', href: invoices_path)
       end
     end
 
     it 'ユーザーメニューが表示される' do
-      visit user_root_path
+      visit user_dashboard_path
 
       within('header') do
         expect(page).to have_content(user.email.split('@').first)
@@ -65,7 +66,7 @@ RSpec.describe 'Header Navigation', type: :system do
 
   describe 'ナビゲーションの動作', js: true do
     it '「カルテ」リンクをクリックするとカルテ一覧に遷移する' do
-      visit user_root_path
+      visit user_dashboard_path
 
       within('header') do
         click_link 'カルテ'
@@ -76,7 +77,7 @@ RSpec.describe 'Header Navigation', type: :system do
     end
 
     it '「患者」リンクをクリックすると患者一覧に遷移する' do
-      visit user_root_path
+      visit user_dashboard_path
 
       within('header') do
         click_link '患者'
@@ -87,7 +88,7 @@ RSpec.describe 'Header Navigation', type: :system do
     end
 
     it '「請求書」リンクをクリックすると請求書一覧に遷移する' do
-      visit user_root_path
+      visit user_dashboard_path
 
       within('header') do
         click_link '請求書'
@@ -100,7 +101,7 @@ RSpec.describe 'Header Navigation', type: :system do
 
   describe 'ユーザードロップダウン', js: true do
     it 'ユーザー名をクリックするとメニューが表示される' do
-      visit user_root_path
+      visit user_dashboard_path
 
       within('header') do
         # ドロップダウンメニューは最初は非表示（hiddenクラスで制御）
@@ -115,15 +116,15 @@ RSpec.describe 'Header Navigation', type: :system do
     end
 
     it 'ログアウトリンクが機能する' do
-      visit user_root_path
+      visit user_dashboard_path
 
       within('header') do
         find('[data-controller="dropdown"] button').click
         click_link 'ログアウト'
       end
 
-      # ログインページにリダイレクトされる
-      expect(page).to have_current_path(new_user_session_path)
+      # ウェルカムページ（root_path）にリダイレクトされる
+      expect(page).to have_current_path(root_path)
       # ログインフォームが表示されることで、ログアウト成功を確認
       expect(page).to have_selector('input[type="email"]')
       expect(page).to have_selector('input[type="password"]')
@@ -138,7 +139,7 @@ RSpec.describe 'Header Navigation', type: :system do
       end
 
       it 'ハンバーガーメニューボタンが表示される' do
-        visit user_root_path
+        visit user_dashboard_path
 
         within('header') do
           expect(page).to have_css('button[data-action="click->header#toggleMobileMenu"]', visible: :visible)
@@ -146,14 +147,14 @@ RSpec.describe 'Header Navigation', type: :system do
       end
 
       it 'デフォルトでナビゲーションメニューが非表示' do
-        visit user_root_path
+        visit user_dashboard_path
 
         # モバイルメニューは最初は hidden
         expect(page).to have_css('nav.hidden, nav[style*="display: none"]', visible: :all)
       end
 
       it 'ハンバーガーメニューをクリックするとメニューが表示される' do
-        visit user_root_path
+        visit user_dashboard_path
 
         within('header') do
           # ハンバーガーアイコンをクリック
@@ -173,7 +174,7 @@ RSpec.describe 'Header Navigation', type: :system do
       end
 
       it 'ハンバーガーメニューボタンが非表示' do
-        visit user_root_path
+        visit user_dashboard_path
 
         within('header') do
           expect(page).not_to have_css('button[data-action="click->header#toggleMobileMenu"]', visible: :visible)
@@ -181,7 +182,7 @@ RSpec.describe 'Header Navigation', type: :system do
       end
 
       it 'ナビゲーションメニューが常に表示される' do
-        visit user_root_path
+        visit user_dashboard_path
 
         within('header nav') do
           expect(page).to have_link('カルテ', visible: :visible)
@@ -193,17 +194,17 @@ RSpec.describe 'Header Navigation', type: :system do
 
   describe 'アクセシビリティ' do
     it 'ヘッダーに適切なランドマークロールが設定されている' do
-      visit user_root_path
+      visit user_dashboard_path
       expect(page).to have_css('header[role="banner"], header')
     end
 
     it 'ナビゲーションに適切なロールが設定されている' do
-      visit user_root_path
+      visit user_dashboard_path
       expect(page).to have_css('nav[role="navigation"], nav')
     end
 
     it 'ログアウトボタンにmethod: :deleteが設定されている' do
-      visit user_root_path
+      visit user_dashboard_path
 
       within('header') do
         find('[data-controller="dropdown"] button').click

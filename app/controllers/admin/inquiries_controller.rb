@@ -43,7 +43,7 @@ module Admin
     def require_admin!
       return if current_user&.admin?
 
-      redirect_to user_root_path, alert: '管理者権限が必要です。'
+      redirect_to user_dashboard_path, alert: '管理者権限が必要です。'
     end
 
     def valid_status?

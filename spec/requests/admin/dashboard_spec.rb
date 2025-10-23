@@ -29,7 +29,7 @@ RSpec.describe 'Admin::Dashboard', type: :request do
 
       it 'アクセスが拒否される' do
         get admin_root_path
-        expect(response).to redirect_to(user_root_path)
+        expect(response).to redirect_to(user_dashboard_path)
         follow_redirect!
         expect(response.body).to include('管理者権限が必要です')
       end

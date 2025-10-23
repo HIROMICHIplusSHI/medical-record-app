@@ -96,7 +96,7 @@ RSpec.describe 'Admin::InquiryMessages', type: :request do
         inquiry_message: { body: 'テスト' },
       }
       expect(response).to have_http_status(:redirect)
-      expect(response).to redirect_to(user_root_path)
+      expect(response).to redirect_to(user_dashboard_path)
     end
   end
 

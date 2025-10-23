@@ -22,7 +22,7 @@ RSpec.describe 'Admin::Announcements', type: :request do
 
       it 'アクセスが拒否される' do
         get admin_announcements_path
-        expect(response).to redirect_to(user_root_path)
+        expect(response).to redirect_to(user_dashboard_path)
       end
     end
   end
