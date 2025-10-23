@@ -1,6 +1,6 @@
-<%= form_with(model: medical_record, local: true, class: "space-y-6", data: { controller: "cost-items" }) do |f| %>
+<%= form_with(model: medical_record, local: true, class: "space-y-6", data: { controller: "cost-items" }, html: { 'aria-describedby': (medical_record.errors.any? ? 'form-errors' : nil) }) do |f| %>
   <% if medical_record.errors.any? %>
-    <div class="rounded-md bg-accent-danger/10 border border-accent-danger p-4">
+    <div id="form-errors" role="alert" class="rounded-md bg-accent-danger/10 border border-accent-danger p-4">
       <div class="flex">
         <div class="flex-shrink-0">
           <svg class="h-5 w-5 text-accent-danger" viewBox="0 0 20 20" fill="currentColor">
@@ -22,12 +22,12 @@
   <div class="grid grid-cols-1 gap-6 sm:grid-cols-2">
     <div>
       <%= f.label :patient_id, class: "block text-sm font-medium text-greige-700" %>
-      <%= f.collection_select :patient_id, @patients, :id, :name, { prompt: '患者を選択' }, { class: "mt-1 block w-full px-4 py-3 text-xl border-greige-300 focus:outline-none focus:ring-accent-primary focus:border-accent-primary rounded-md shadow-sm", data: { controller: "tom-select" } } %>
+      <%= f.collection_select :patient_id, @patients, :id, :name, { prompt: '患者を選択' }, { class: "mt-1 block w-full px-4 py-3 text-xl border-greige-300 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-accent-primary rounded-md shadow-sm", data: { controller: "tom-select" } } %>
     </div>
 
     <div>
       <%= f.label :facility_id, class: "block text-sm font-medium text-greige-700" %>
-      <%= f.collection_select :facility_id, @facilities, :id, :name, { prompt: '施術場所を選択' }, { class: "mt-1 block w-full px-4 py-3 text-xl border-greige-300 focus:outline-none focus:ring-accent-primary focus:border-accent-primary rounded-md shadow-sm", data: { controller: "tom-select" } } %>
+      <%= f.collection_select :facility_id, @facilities, :id, :name, { prompt: '施術場所を選択' }, { class: "mt-1 block w-full px-4 py-3 text-xl border-greige-300 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-accent-primary rounded-md shadow-sm", data: { controller: "tom-select" } } %>
     </div>
 
     <div>
@@ -77,20 +77,20 @@
         <div>
           <label class="block text-xs font-medium text-greige-700 mb-1">タグ名 *</label>
           <input type="text" data-tag-accordion-target="nameInput" maxlength="50"
-                 class="block w-full rounded-md border-greige-300 shadow-sm focus:border-accent-primary focus:ring-accent-primary text-sm"
+                 class="block w-full rounded-md border-greige-300 shadow-sm focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-accent-primary text-sm"
                  placeholder="例：施術部位、症状">
         </div>
         <div>
           <label class="block text-xs font-medium text-greige-700 mb-1">カテゴリ</label>
           <input type="text" data-tag-accordion-target="categoryInput"
-                 class="block w-full rounded-md border-greige-300 shadow-sm focus:border-accent-primary focus:ring-accent-primary text-sm"
+                 class="block w-full rounded-md border-greige-300 shadow-sm focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-accent-primary text-sm"
                  placeholder="例：施術、診断、症状">
         </div>
         <div>
           <label class="block text-xs font-medium text-greige-700 mb-1">色</label>
           <div class="flex items-center space-x-2">
             <input type="color" data-tag-accordion-target="colorInput" value="#3B82F6"
-                   class="h-8 w-16 rounded border-greige-300 shadow-sm focus:border-accent-primary focus:ring-accent-primary">
+                   class="h-8 w-16 rounded border-greige-300 shadow-sm focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-accent-primary">
             <span class="text-xs text-greige-600">タグの表示色</span>
           </div>
         </div>

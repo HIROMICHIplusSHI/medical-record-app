@@ -70,10 +70,10 @@
             data-dropdown-target="menu"
             class="hidden absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 z-50"
           >
-            <%= link_to mypage_path, role: 'menuitem', class: 'block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100' do %>
+            <%= link_to mypage_path, role: 'menuitem', class: 'block px-4 py-2 text-sm text-greige-700 hover:bg-greige-100 transition-colors' do %>
               マイページ設定
             <% end %>
-            <%= link_to destroy_user_session_path, method: :delete, role: 'menuitem', data: { turbo_method: :delete }, class: 'block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100' do %>
+            <%= link_to destroy_user_session_path, method: :delete, role: 'menuitem', data: { turbo_method: :delete }, class: 'block px-4 py-2 text-sm text-greige-700 hover:bg-greige-100 transition-colors' do %>
               ログアウト
             <% end %>
           </div>
