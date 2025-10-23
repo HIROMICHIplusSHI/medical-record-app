@@ -44,8 +44,8 @@
                 <%= truncate(cost_sheet.memo, length: 50) %>
               </td>
               <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium space-x-2">
+                <%= show_button "表示", cost_sheet %>
                 <%= edit_button "編集", edit_cost_sheet_path(cost_sheet) %>
-                <%= delete_button "削除", cost_sheet_path(cost_sheet) %>
               </td>
             </tr>
           <% end %>

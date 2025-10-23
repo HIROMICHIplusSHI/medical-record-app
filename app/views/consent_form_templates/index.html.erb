@@ -17,9 +17,8 @@
             <span>項目: <%= template.consent_form_items.count %>件</span>
           </div>
           <div class="flex space-x-2">
-            <%= show_button '詳細', template %>
+            <%= show_button '表示', template %>
             <%= edit_button '編集', edit_consent_form_template_path(template) %>
-            <%= delete_button '削除', template, data: { turbo_confirm: '本当に削除しますか？' } %>
           </div>
         </div>
       <% end %>

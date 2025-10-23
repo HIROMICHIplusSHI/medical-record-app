@@ -34,31 +34,11 @@
       <%= f.label :visit_date, class: "block text-sm font-medium text-greige-700" %>
       <%= f.date_field :visit_date, class: "mt-1 focus:ring-accent-primary focus:border-accent-primary block w-full shadow-sm sm:text-sm border-greige-300 rounded-md" %>
     </div>
-
-    <div>
-      <%= f.label :treatment_location, class: "block text-sm font-medium text-greige-700" %>
-      <%= f.text_field :treatment_location, class: "mt-1 focus:ring-accent-primary focus:border-accent-primary block w-full shadow-sm sm:text-sm border-greige-300 rounded-md", placeholder: "例: 顔全体" %>
-    </div>
-  </div>
-
-  <div>
-    <%= f.label :chief_complaint, class: "block text-sm font-medium text-greige-700" %>
-    <%= f.text_area :chief_complaint, rows: 3, class: "mt-1 focus:ring-accent-primary focus:border-accent-primary block w-full shadow-sm sm:text-sm border-greige-300 rounded-md", placeholder: "患者の主な訴えを記入" %>
-  </div>
-
-  <div>
-    <%= f.label :diagnosis, class: "block text-sm font-medium text-greige-700" %>
-    <%= f.text_area :diagnosis, rows: 3, class: "mt-1 focus:ring-accent-primary focus:border-accent-primary block w-full shadow-sm sm:text-sm border-greige-300 rounded-md", placeholder: "診断結果を記入" %>
   </div>
 
   <div>
     <%= f.label :treatment_content, class: "block text-sm font-medium text-greige-700" %>
     <%= f.text_area :treatment_content, rows: 4, class: "mt-1 focus:ring-accent-primary focus:border-accent-primary block w-full shadow-sm sm:text-sm border-greige-300 rounded-md", placeholder: "施術内容を記入" %>
-  </div>
-
-  <div>
-    <%= f.label :notes, class: "block text-sm font-medium text-greige-700" %>
-    <%= f.text_area :notes, rows: 3, class: "mt-1 focus:ring-accent-primary focus:border-accent-primary block w-full shadow-sm sm:text-sm border-greige-300 rounded-md", placeholder: "その他メモ（任意）" %>
   </div>
 
   <!-- タグ選択セクション -->

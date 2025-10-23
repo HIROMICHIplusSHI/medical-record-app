@@ -32,8 +32,8 @@ RSpec.describe 'Admin Inquiries Management', type: :system do
 
       # ステータスバッジ（Tailwindクラスを使用）
       expect(page).to have_selector('.bg-blue-100.text-blue-800', text: '未対応')
-      expect(page).to have_selector('.bg-yellow-100.text-yellow-800', text: '対応中')
-      expect(page).to have_selector('.bg-gray-100.text-gray-800', text: '対応完了')
+      expect(page).to have_selector('[class*="bg-accent-warning"]', text: '対応中')
+      expect(page).to have_selector('[class*="bg-greige-100"]', text: '対応完了')
     end
 
     it 'ユーザー情報が表示される', js: true do

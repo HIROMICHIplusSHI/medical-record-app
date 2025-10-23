@@ -293,4 +293,45 @@ RSpec.describe 'Questionnaires', type: :request do
       end
     end
   end
+
+  describe 'セッションストレージ機能（カルテからの遷移）' do
+    let(:facility) { create(:facility, user: user) }
+    let(:medical_record) { create(:medical_record, user: user, patient: patient, facility: facility) }
+    let(:other_medical_record) do
+      create(:medical_record, user: other_user, patient: other_patient, facility: create(:facility, user: other_user))
+    end
+
+    context 'newアクションでfrom_medical_record_idパラメータがある場合' do
+      it 'セッションにmedical_record_idが保存される' do
+        get new_patient_questionnaire_path(patient, from_medical_record_id: medical_record.id)
+        expect(session[:return_to_medical_record_id]).to eq(medical_record.id)
+      end
+
+      it '他のユーザーのmedical_record_idは保存されない（セキュリティチェック）' do
+        get new_patient_questionnaire_path(patient, from_medical_record_id: other_medical_record.id)
+        expect(session[:return_to_medical_record_id]).to be_nil
+      end
+    end
+
+    context 'showアクションでfrom_medical_record_idパラメータがある場合' do
+      let!(:questionnaire) { create(:questionnaire, patient: patient) }
+
+      it 'セッションにmedical_record_idが保存される' do
+        get patient_questionnaire_path(patient, from_medical_record_id: medical_record.id)
+        expect(session[:return_to_medical_record_id]).to eq(medical_record.id)
+      end
+
+      it '他のユーザーのmedical_record_idは保存されない（セキュリティチェック）' do
+        get patient_questionnaire_path(patient, from_medical_record_id: other_medical_record.id)
+        expect(session[:return_to_medical_record_id]).to be_nil
+      end
+    end
+
+    context 'from_medical_record_idパラメータがない場合' do
+      it 'セッションには何も保存されない' do
+        get new_patient_questionnaire_path(patient)
+        expect(session[:return_to_medical_record_id]).to be_nil
+      end
+    end
+  end
 end

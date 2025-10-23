@@ -17,8 +17,8 @@ RSpec.describe 'MedicalRecords', type: :request do
     end
 
     it 'カルテ一覧が表示される' do
-      create(:medical_record, user: user, patient: patient, facility: facility, chief_complaint: '主訴A')
-      create(:medical_record, user: user, patient: patient, facility: facility, chief_complaint: '主訴B')
+      create(:medical_record, user: user, patient: patient, facility: facility, treatment_content: '主訴A')
+      create(:medical_record, user: user, patient: patient, facility: facility, treatment_content: '主訴B')
       get medical_records_path
       expect(response.body).to include('主訴A')
       expect(response.body).to include('主訴B')
@@ -54,11 +54,7 @@ RSpec.describe 'MedicalRecords', type: :request do
             patient_id: patient.id,
             facility_id: facility.id,
             visit_date: Date.today,
-            treatment_location: '顔全体',
-            chief_complaint: 'しわが気になる',
-            diagnosis: '加齢による皮膚の弾力低下',
             treatment_content: 'ボトックス注射を実施',
-            notes: '経過観察',
           },
         }
       end
@@ -87,9 +83,6 @@ RSpec.describe 'MedicalRecords', type: :request do
             patient_id: patient.id,
             facility_id: facility.id,
             visit_date: Date.today,
-            treatment_location: '顔全体',
-            chief_complaint: 'しわが気になる',
-            diagnosis: '加齢による皮膚の弾力低下',
             treatment_content: 'ボトックス注射を実施',
             cost_items_attributes: [
               { item_name: 'ボトックス注射', quantity: 1, unit_price: 50_000 },
@@ -118,9 +111,6 @@ RSpec.describe 'MedicalRecords', type: :request do
           medical_record: {
             patient_id: nil,
             visit_date: nil,
-            treatment_location: '',
-            chief_complaint: '',
-            diagnosis: '',
             treatment_content: '',
           },
         }
@@ -144,7 +134,7 @@ RSpec.describe 'MedicalRecords', type: :request do
       let(:update_params) do
         {
           medical_record: {
-            chief_complaint: '更新された主訴',
+            treatment_content: '更新された施術内容',
           },
         }
       end
@@ -152,7 +142,7 @@ RSpec.describe 'MedicalRecords', type: :request do
       it 'カルテが更新される' do
         patch medical_record_path(medical_record), params: update_params
         medical_record.reload
-        expect(medical_record.chief_complaint).to eq('更新された主訴')
+        expect(medical_record.treatment_content).to eq('更新された施術内容')
       end
 
       it '詳細ページにリダイレクトされる' do
@@ -165,16 +155,16 @@ RSpec.describe 'MedicalRecords', type: :request do
       let(:invalid_params) do
         {
           medical_record: {
-            chief_complaint: '',
+            treatment_content: '',
           },
         }
       end
 
       it 'カルテが更新されない' do
-        original_complaint = medical_record.chief_complaint
+        original_content = medical_record.treatment_content
         patch medical_record_path(medical_record), params: invalid_params
         medical_record.reload
-        expect(medical_record.chief_complaint).to eq(original_complaint)
+        expect(medical_record.treatment_content).to eq(original_content)
       end
 
       it 'editテンプレートが再表示される' do
@@ -190,9 +180,6 @@ RSpec.describe 'MedicalRecords', type: :request do
         patient_id: patient.id,
         facility_id: facility.id,
         visit_date: Date.today,
-        treatment_location: '顔全体',
-        chief_complaint: 'しわが気になる',
-        diagnosis: '加齢による皮膚の弾力低下',
         treatment_content: 'ボトックス注射を実施',
       }
     end
@@ -272,10 +259,10 @@ RSpec.describe 'MedicalRecords', type: :request do
     end
 
     it '他のユーザーのカルテを更新できない' do
-      original_complaint = other_record.chief_complaint
-      patch medical_record_path(other_record), params: { medical_record: { chief_complaint: 'hacked' } }
+      original_content = other_record.treatment_content
+      patch medical_record_path(other_record), params: { medical_record: { treatment_content: 'hacked' } }
       expect(response).to have_http_status(:not_found)
-      expect(other_record.reload.chief_complaint).to eq(original_complaint)
+      expect(other_record.reload.treatment_content).to eq(original_content)
     end
 
     it '他のユーザーのカルテを削除できない' do
@@ -316,7 +303,7 @@ RSpec.describe 'MedicalRecords', type: :request do
              patient: patient_a,
              facility: facility_a,
              visit_date: Date.new(2025, 1, 10),
-             chief_complaint: '額のしわが気になる',
+             treatment_content: '額のしわが気になる',
              tags: [tag_a])
     end
 
@@ -326,7 +313,7 @@ RSpec.describe 'MedicalRecords', type: :request do
              patient: patient_b,
              facility: facility_b,
              visit_date: Date.new(2025, 2, 15),
-             chief_complaint: 'ほうれい線の改善',
+             treatment_content: 'ほうれい線の改善',
              tags: [tag_b])
     end
 
@@ -336,7 +323,7 @@ RSpec.describe 'MedicalRecords', type: :request do
              patient: patient_a,
              facility: facility_a,
              visit_date: Date.new(2025, 3, 20),
-             chief_complaint: '目元のたるみ',
+             treatment_content: '目元のたるみ',
              tags: [tag_a, tag_b])
     end
 
@@ -385,9 +372,9 @@ RSpec.describe 'MedicalRecords', type: :request do
       end
     end
 
-    describe '主訴・診断・施術内容で検索' do
-      it '主訴のキーワードで検索できる' do
-        get medical_records_path, params: { q: { chief_complaint_cont: 'しわ' } }
+    describe '施術内容で検索' do
+      it '施術内容のキーワードで検索できる' do
+        get medical_records_path, params: { q: { treatment_content_cont: 'しわ' } }
         expect(response).to have_http_status(:success)
         expect(response.body).to include('額のしわが気になる')
         expect(response.body).not_to include('ほうれい線の改善')
@@ -446,13 +433,55 @@ RSpec.describe 'MedicalRecords', type: :request do
                user: other_user,
                patient: other_patient,
                facility: other_facility,
-               chief_complaint: '他のユーザーのカルテ')
+               treatment_content: '他のユーザーのカルテ')
       end
 
       it '他のユーザーのカルテは検索結果に含まれない' do
-        get medical_records_path, params: { q: { chief_complaint_cont: 'カルテ' } }
+        get medical_records_path, params: { q: { treatment_content_cont: 'カルテ' } }
         expect(response).to have_http_status(:success)
         expect(response.body).not_to include('他のユーザーのカルテ')
+      end
+    end
+  end
+
+  describe 'カルテ詳細ページの問診票セクション' do
+    context '問診票が存在する場合' do
+      let!(:questionnaire) { create(:questionnaire, patient: patient) }
+
+      it '問診票確認ボタンが表示される' do
+        get medical_record_path(medical_record)
+        expect(response).to have_http_status(:success)
+        expect(response.body).to include('問診票を確認')
+        expect(response.body).not_to include('問診票を作成')
+      end
+
+      it '問診票確認ボタンにfrom_medical_record_idパラメータが含まれる' do
+        get medical_record_path(medical_record)
+        expect(response.body).to include("from_medical_record_id=#{medical_record.id}")
+      end
+
+      it '問診票の更新日が表示される' do
+        get medical_record_path(medical_record)
+        expect(response.body).to include('問診票が登録されています')
+      end
+    end
+
+    context '問診票が存在しない場合' do
+      it '問診票作成ボタンが表示される' do
+        get medical_record_path(medical_record)
+        expect(response).to have_http_status(:success)
+        expect(response.body).to include('問診票を作成')
+        expect(response.body).not_to include('問診票を確認')
+      end
+
+      it '問診票作成ボタンにfrom_medical_record_idパラメータが含まれる' do
+        get medical_record_path(medical_record)
+        expect(response.body).to include("from_medical_record_id=#{medical_record.id}")
+      end
+
+      it '問診票未作成のメッセージが表示される' do
+        get medical_record_path(medical_record)
+        expect(response.body).to include('問診票はまだ作成されていません')
       end
     end
   end

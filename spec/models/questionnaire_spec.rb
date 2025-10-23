@@ -103,4 +103,53 @@ RSpec.describe Questionnaire, type: :model do
       expect(questionnaire.other_concerns).to eq('自然な仕上がりを希望')
     end
   end
+
+  describe '看護師確認機能' do
+    let(:user) { create(:user, email: 'nurse@example.com') }
+    let(:patient) { create(:patient, user: user) }
+    let(:questionnaire) { create(:questionnaire, patient: patient, nurse_confirmed: false) }
+
+    describe 'nurse_confirmed が true になった場合' do
+      it 'nurse_confirmed_at に現在時刻が設定される' do
+        current_time = Time.current
+        allow(Time).to receive(:current).and_return(current_time)
+
+        expect do
+          questionnaire.update(nurse_confirmed: true)
+        end.to change { questionnaire.nurse_confirmed_at }.from(nil)
+
+        # データベースのマイクロ秒精度に対応するため、1秒以内の差を許容
+        expect(questionnaire.nurse_confirmed_at).to be_within(1.second).of(current_time)
+      end
+
+      it 'nurse_name にユーザーのemailが設定される' do
+        questionnaire.update(nurse_confirmed: true)
+        expect(questionnaire.nurse_name).to eq('nurse@example.com')
+      end
+
+      it 'nurse_confirmed が false から true に変更された場合のみ日時が更新される' do
+        questionnaire.update(nurse_confirmed: true, nurse_name: 'nurse@example.com')
+        first_time = questionnaire.nurse_confirmed_at
+
+        # 時間を進める
+        future_time = first_time + 1.hour
+        allow(Time).to receive(:current).and_return(future_time)
+
+        questionnaire.update(full_name: '更新後の名前')
+        expect(questionnaire.nurse_confirmed_at).to eq(first_time)
+      end
+    end
+
+    describe 'nurse_confirmed が false のまま' do
+      it 'nurse_confirmed_at は設定されない' do
+        questionnaire.update(full_name: '更新')
+        expect(questionnaire.nurse_confirmed_at).to be_nil
+      end
+
+      it 'nurse_name は設定されない' do
+        questionnaire.update(full_name: '更新')
+        expect(questionnaire.nurse_name).to be_nil
+      end
+    end
+  end
 end

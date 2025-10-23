@@ -41,10 +41,10 @@ RSpec.describe 'ConsentFormTemplates', type: :system do
       let!(:template) { create(:consent_form_template, user: user, title: '削除するテンプレート') }
 
       it '同意書テンプレートを削除できる' do
-        visit consent_form_templates_path
+        visit edit_consent_form_template_path(template)
 
         accept_confirm do
-          click_link '削除', match: :first
+          click_button 'テンプレートを削除'
         end
 
         expect(page).to have_content('同意書テンプレートが正常に削除されました')

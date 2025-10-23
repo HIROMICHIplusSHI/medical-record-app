@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2025_10_22_135445) do
+ActiveRecord::Schema[7.2].define(version: 2025_10_23_091628) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -301,6 +301,9 @@ ActiveRecord::Schema[7.2].define(version: 2025_10_22_135445) do
     t.text "past_treatments"
     t.text "skin_conditions"
     t.text "other_concerns"
+    t.boolean "nurse_confirmed", default: false, null: false
+    t.datetime "nurse_confirmed_at"
+    t.string "nurse_name"
     t.index ["patient_id"], name: "index_questionnaires_on_patient_id", unique: true
   end
 
