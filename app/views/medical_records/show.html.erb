@@ -9,7 +9,6 @@
       </div>
       <div class="flex space-x-3">
         <%= edit_button '編集', edit_medical_record_path(@medical_record) %>
-        <%= delete_button '削除', @medical_record, data: { turbo_confirm: 'カルテを削除してもよろしいですか？' } %>
       </div>
     </div>
     <div class="border-t border-greige-200 px-4 py-5 sm:p-0">
@@ -23,31 +22,9 @@
           <dd class="mt-1 text-sm text-greige-900 sm:mt-0 sm:col-span-2"><%= @medical_record.facility.name %></dd>
         </div>
         <div class="py-4 sm:py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
-          <dt class="text-sm font-medium text-greige-600">来院日</dt>
-          <dd class="mt-1 text-sm text-greige-900 sm:mt-0 sm:col-span-2"><%= l(@medical_record.visit_date, format: :long) %></dd>
-        </div>
-        <div class="py-4 sm:py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
-          <dt class="text-sm font-medium text-greige-600">施術部位</dt>
-          <dd class="mt-1 text-sm text-greige-900 sm:mt-0 sm:col-span-2"><%= @medical_record.treatment_location %></dd>
-        </div>
-        <div class="py-4 sm:py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
-          <dt class="text-sm font-medium text-greige-600">主訴</dt>
-          <dd class="mt-1 text-sm text-greige-900 sm:mt-0 sm:col-span-2 whitespace-pre-wrap"><%= @medical_record.chief_complaint %></dd>
-        </div>
-        <div class="py-4 sm:py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
-          <dt class="text-sm font-medium text-greige-600">診断</dt>
-          <dd class="mt-1 text-sm text-greige-900 sm:mt-0 sm:col-span-2 whitespace-pre-wrap"><%= @medical_record.diagnosis %></dd>
-        </div>
-        <div class="py-4 sm:py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
           <dt class="text-sm font-medium text-greige-600">施術内容</dt>
           <dd class="mt-1 text-sm text-greige-900 sm:mt-0 sm:col-span-2 whitespace-pre-wrap"><%= @medical_record.treatment_content %></dd>
         </div>
-        <% if @medical_record.notes.present? %>
-          <div class="py-4 sm:py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
-            <dt class="text-sm font-medium text-greige-600">メモ</dt>
-            <dd class="mt-1 text-sm text-greige-900 sm:mt-0 sm:col-span-2 whitespace-pre-wrap"><%= @medical_record.notes %></dd>
-          </div>
-        <% end %>
         <% if @medical_record.tags.any? %>
           <div class="py-4 sm:py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
             <dt class="text-sm font-medium text-greige-600">タグ</dt>
@@ -151,6 +128,32 @@
         </div>
       </div>
     <% end %>
+
+    <!-- 問診票セクション -->
+    <div class="border-t border-greige-200">
+      <div class="px-4 py-5 sm:px-6 bg-greige-50 flex justify-between items-center">
+        <h3 class="text-lg leading-6 font-medium text-greige-900">問診票</h3>
+        <% if @medical_record.patient.questionnaire.present? %>
+          <%= show_button '問診票を確認', patient_questionnaire_path(@medical_record.patient, from_medical_record_id: @medical_record.id) %>
+        <% else %>
+          <%= new_button '問診票を作成', new_patient_questionnaire_path(@medical_record.patient, from_medical_record_id: @medical_record.id) %>
+        <% end %>
+      </div>
+      <% if @medical_record.patient.questionnaire.present? %>
+        <div class="px-4 py-5 sm:px-6">
+          <div class="flex items-center text-sm text-greige-600">
+            <svg class="h-5 w-5 text-accent-success mr-2" fill="currentColor" viewBox="0 0 20 20">
+              <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+            </svg>
+            <span>問診票が登録されています（更新日: <%= l @medical_record.patient.questionnaire.updated_at, format: :short %>）</span>
+          </div>
+        </div>
+      <% else %>
+        <div class="px-4 py-5 sm:px-6">
+          <p class="text-greige-500 text-center py-2">問診票はまだ作成されていません。</p>
+        </div>
+      <% end %>
+    </div>
 
     <!-- 同意書セクション -->
     <div class="bg-white shadow-sm border border-greige-200 rounded-lg overflow-hidden mb-6">
