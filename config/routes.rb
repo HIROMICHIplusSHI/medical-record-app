@@ -23,19 +23,18 @@ Rails.application.routes.draw do
     end
   end
 
+  # パブリックroot（ログイン前のウェルカムページ）
+  root 'welcome#index'
+
   # ユーザー（施術者）専用ルート
   # 認証はApplicationControllerのbefore_action :authenticate_user!で保護
 
-  # ホームページ（認証済みユーザー専用root）
-  authenticated :user do
-    root to: 'home#index', as: :user_root
-  end
+  # ユーザーダッシュボード（ログイン後のホーム画面）
+  get 'dashboard', to: 'user_dashboard#index', as: :user_dashboard
+  post 'dashboard/dismiss_announcement', to: 'user_dashboard#dismiss_announcement', as: :user_dashboard_dismiss_announcement
 
-  get 'home', to: 'home#index', as: :home
-  post 'home/dismiss_announcement', to: 'home#dismiss_announcement'
-
-  # ダッシュボード
-  get 'dashboard', to: 'dashboards#index'
+  # 売上ダッシュボード
+  get 'dashboard/revenue', to: 'dashboards#index', as: :revenue_dashboard
   get 'dashboard/export', to: 'dashboards#export', as: :export_dashboard
 
   # マイページ
@@ -78,11 +77,6 @@ Rails.application.routes.draw do
   # お問い合わせ
   resources :inquiries, only: [:index, :show, :new, :create] do
     resources :inquiry_messages, only: [:create]
-  end
-
-  # 未認証ユーザー用のroot（ログインページにリダイレクト）
-  unauthenticated do
-    root to: redirect('/users/sign_in'), as: :unauthenticated_root
   end
 
   # Reveal health status on /up that returns 200 if the app boots with no exceptions, otherwise 500.
