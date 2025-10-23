@@ -2,11 +2,11 @@
   <!-- ヘッダー -->
   <div class="mb-8 flex justify-between items-center">
     <div>
-      <h1 class="text-3xl font-bold text-gray-900">お知らせ詳細</h1>
+      <h1 class="text-3xl font-bold text-greige-900">お知らせ詳細</h1>
     </div>
     <div class="flex gap-2">
-      <%= link_to "編集", edit_admin_announcement_path(@announcement), class: "inline-flex items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500" %>
-      <%= link_to "一覧に戻る", admin_announcements_path, class: "inline-flex items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500" %>
+      <%= link_to "編集", edit_admin_announcement_path(@announcement), class: "inline-flex items-center px-4 py-2 border border-greige-300 rounded-md shadow-sm text-sm font-medium text-greige-700 bg-white hover:bg-greige-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-accent-primary transition-colors" %>
+      <%= link_to "一覧に戻る", admin_announcements_path, class: "inline-flex items-center px-4 py-2 border border-greige-300 rounded-md shadow-sm text-sm font-medium text-greige-700 bg-white hover:bg-greige-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-accent-primary transition-colors" %>
     </div>
   </div>
 
@@ -16,18 +16,18 @@
       <dl class="grid grid-cols-1 gap-y-6">
         <!-- タイトル -->
         <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <dt class="text-sm font-medium text-gray-500">タイトル</dt>
-          <dd class="text-base text-gray-900 md:col-span-2 font-semibold"><%= @announcement.title %></dd>
+          <dt class="text-sm font-medium text-greige-500">タイトル</dt>
+          <dd class="text-base text-greige-900 md:col-span-2 font-semibold"><%= @announcement.title %></dd>
         </div>
 
         <!-- ステータス -->
         <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <dt class="text-sm font-medium text-gray-500">ステータス</dt>
+          <dt class="text-sm font-medium text-greige-500">ステータス</dt>
           <dd class="md:col-span-2">
             <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium <%= case @announcement.status
-              when 'draft' then 'bg-gray-100 text-gray-800'
-              when 'published' then 'bg-green-100 text-green-800'
-              when 'archived' then 'bg-gray-100 text-gray-600'
+              when 'draft' then 'bg-greige-100 text-greige-800'
+              when 'published' then 'bg-accent-success/10 text-accent-success/90'
+              when 'archived' then 'bg-greige-100 text-greige-600'
               end %>">
               <%= @announcement.status_i18n %>
             </span>
@@ -36,12 +36,12 @@
 
         <!-- 重要度 -->
         <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <dt class="text-sm font-medium text-gray-500">重要度</dt>
+          <dt class="text-sm font-medium text-greige-500">重要度</dt>
           <dd class="md:col-span-2">
             <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium <%= case @announcement.severity
               when 'info' then 'bg-blue-100 text-blue-800'
-              when 'warning' then 'bg-yellow-100 text-yellow-800'
-              when 'critical' then 'bg-red-100 text-red-800'
+              when 'warning' then 'bg-accent-warning/10 text-yellow-800'
+              when 'critical' then 'bg-accent-danger/10 text-red-800'
               end %>">
               <%= @announcement.severity_i18n %>
             </span>
@@ -50,52 +50,52 @@
 
         <!-- 本文 -->
         <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <dt class="text-sm font-medium text-gray-500">本文</dt>
+          <dt class="text-sm font-medium text-greige-500">本文</dt>
           <dd class="md:col-span-2">
-            <div class="p-4 bg-gray-50 rounded-md whitespace-pre-wrap text-sm text-gray-900"><%= @announcement.body %></div>
+            <div class="p-4 bg-greige-50 rounded-md whitespace-pre-wrap text-sm text-greige-900"><%= @announcement.body %></div>
           </dd>
         </div>
 
         <!-- 表示順序 -->
         <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <dt class="text-sm font-medium text-gray-500">表示順序</dt>
-          <dd class="text-base text-gray-900 md:col-span-2"><%= @announcement.display_order %></dd>
+          <dt class="text-sm font-medium text-greige-500">表示順序</dt>
+          <dd class="text-base text-greige-900 md:col-span-2"><%= @announcement.display_order %></dd>
         </div>
 
         <!-- 公開開始日時 -->
         <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <dt class="text-sm font-medium text-gray-500">公開開始日時</dt>
-          <dd class="text-base text-gray-900 md:col-span-2"><%= @announcement.published_at&.strftime('%Y/%m/%d %H:%M') || '未設定' %></dd>
+          <dt class="text-sm font-medium text-greige-500">公開開始日時</dt>
+          <dd class="text-base text-greige-900 md:col-span-2"><%= @announcement.published_at&.strftime('%Y/%m/%d %H:%M') || '未設定' %></dd>
         </div>
 
         <!-- 公開終了日時 -->
         <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <dt class="text-sm font-medium text-gray-500">公開終了日時</dt>
-          <dd class="text-base text-gray-900 md:col-span-2"><%= @announcement.expires_at&.strftime('%Y/%m/%d %H:%M') || '無期限' %></dd>
+          <dt class="text-sm font-medium text-greige-500">公開終了日時</dt>
+          <dd class="text-base text-greige-900 md:col-span-2"><%= @announcement.expires_at&.strftime('%Y/%m/%d %H:%M') || '無期限' %></dd>
         </div>
 
         <!-- 作成者 -->
         <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <dt class="text-sm font-medium text-gray-500">作成者</dt>
-          <dd class="text-base text-gray-900 md:col-span-2 break-all"><%= @announcement.author.email %></dd>
+          <dt class="text-sm font-medium text-greige-500">作成者</dt>
+          <dd class="text-base text-greige-900 md:col-span-2 break-all"><%= @announcement.author.email %></dd>
         </div>
 
         <!-- 作成日時 -->
         <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <dt class="text-sm font-medium text-gray-500">作成日時</dt>
-          <dd class="text-base text-gray-900 md:col-span-2"><%= @announcement.created_at.strftime('%Y/%m/%d %H:%M') %></dd>
+          <dt class="text-sm font-medium text-greige-500">作成日時</dt>
+          <dd class="text-base text-greige-900 md:col-span-2"><%= @announcement.created_at.strftime('%Y/%m/%d %H:%M') %></dd>
         </div>
       </dl>
 
       <!-- 区切り線 -->
-      <div class="mt-8 pt-6 border-t border-gray-200">
-        <h3 class="text-sm font-medium text-gray-900 mb-3">操作</h3>
+      <div class="mt-8 pt-6 border-t border-greige-200">
+        <h3 class="text-sm font-medium text-greige-900 mb-3">操作</h3>
         <div class="flex gap-2">
           <% if @announcement.draft? %>
             <%= button_to "公開する", publish_admin_announcement_path(@announcement), method: :patch, class: "inline-flex items-center justify-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 transition-colors duration-200" %>
           <% end %>
           <% if @announcement.published? %>
-            <%= button_to "アーカイブする", archive_admin_announcement_path(@announcement), method: :patch, class: "inline-flex items-center justify-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors duration-200" %>
+            <%= button_to "アーカイブする", archive_admin_announcement_path(@announcement), method: :patch, class: "inline-flex items-center justify-center px-4 py-2 border border-greige-300 rounded-md shadow-sm text-sm font-medium text-greige-700 bg-white hover:bg-greige-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-accent-primary transition-colors duration-200 transition-colors" %>
           <% end %>
         </div>
       </div>

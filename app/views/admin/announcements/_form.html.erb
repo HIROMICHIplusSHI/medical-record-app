@@ -1,6 +1,6 @@
 <%= form_with(model: [:admin, announcement], class: "space-y-6") do |form| %>
   <% if announcement.errors.any? %>
-    <div class="rounded-md bg-red-50 border-l-4 border-red-400 p-4">
+    <div class="rounded-md bg-red-50 border-l-4 border-accent-danger p-4">
       <div class="flex">
         <div class="flex-shrink-0">
           <svg class="h-5 w-5 text-red-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
@@ -9,7 +9,7 @@
         </div>
         <div class="ml-3">
           <h3 class="text-sm font-medium text-red-800">エラーがあります:</h3>
-          <ul class="mt-2 text-sm text-red-700 list-disc list-inside">
+          <ul class="mt-2 text-sm text-accent-danger list-disc list-inside">
             <% announcement.errors.full_messages.each do |message| %>
               <li><%= message %></li>
             <% end %>
@@ -20,54 +20,54 @@
   <% end %>
 
   <div>
-    <%= form.label :title, "タイトル", class: "block text-sm font-medium text-gray-700 mb-2" %>
-    <%= form.text_field :title, class: "appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm", maxlength: 100, required: true, placeholder: "お知らせのタイトルを入力" %>
+    <%= form.label :title, "タイトル", class: "block text-sm font-medium text-greige-700 mb-2" %>
+    <%= form.text_field :title, class: "appearance-none block w-full px-3 py-2 border border-greige-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-accent-primary focus:border-accent-primary sm:text-sm", maxlength: 100, required: true, placeholder: "お知らせのタイトルを入力" %>
   </div>
 
   <div>
-    <%= form.label :body, "本文", class: "block text-sm font-medium text-gray-700 mb-2" %>
-    <%= form.text_area :body, class: "appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm", rows: 6, maxlength: 1000, required: true, placeholder: "お知らせの本文を入力" %>
+    <%= form.label :body, "本文", class: "block text-sm font-medium text-greige-700 mb-2" %>
+    <%= form.text_area :body, class: "appearance-none block w-full px-3 py-2 border border-greige-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-accent-primary focus:border-accent-primary sm:text-sm", rows: 6, maxlength: 1000, required: true, placeholder: "お知らせの本文を入力" %>
   </div>
 
   <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
     <div>
-      <%= form.label :severity, "重要度", class: "block text-sm font-medium text-gray-700 mb-2" %>
+      <%= form.label :severity, "重要度", class: "block text-sm font-medium text-greige-700 mb-2" %>
       <%= form.select :severity,
         [['情報（青）', 'info'], ['警告（黄）', 'warning'], ['重要（赤）', 'critical']],
         {},
-        class: "appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm" %>
+        class: "appearance-none block w-full px-3 py-2 border border-greige-300 rounded-md shadow-sm focus:outline-none focus:ring-accent-primary focus:border-accent-primary sm:text-sm" %>
     </div>
 
     <div>
-      <%= form.label :display_order, "表示順序", class: "block text-sm font-medium text-gray-700 mb-2" %>
-      <%= form.number_field :display_order, class: "appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm", min: 0, value: announcement.display_order || 0 %>
-      <p class="mt-1 text-sm text-gray-500">小さい数字ほど上に表示されます</p>
+      <%= form.label :display_order, "表示順序", class: "block text-sm font-medium text-greige-700 mb-2" %>
+      <%= form.number_field :display_order, class: "appearance-none block w-full px-3 py-2 border border-greige-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-accent-primary focus:border-accent-primary sm:text-sm", min: 0, value: announcement.display_order || 0 %>
+      <p class="mt-1 text-sm text-greige-500">小さい数字ほど上に表示されます</p>
     </div>
   </div>
 
   <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
     <div>
-      <%= form.label :published_at, "公開開始日時", class: "block text-sm font-medium text-gray-700 mb-2" %>
-      <%= form.datetime_field :published_at, class: "appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm" %>
+      <%= form.label :published_at, "公開開始日時", class: "block text-sm font-medium text-greige-700 mb-2" %>
+      <%= form.datetime_field :published_at, class: "appearance-none block w-full px-3 py-2 border border-greige-300 rounded-md shadow-sm focus:outline-none focus:ring-accent-primary focus:border-accent-primary sm:text-sm" %>
     </div>
 
     <div>
-      <%= form.label :expires_at, "公開終了日時", class: "block text-sm font-medium text-gray-700 mb-2" %>
-      <%= form.datetime_field :expires_at, class: "appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm" %>
-      <p class="mt-1 text-sm text-gray-500">未設定の場合は無期限</p>
+      <%= form.label :expires_at, "公開終了日時", class: "block text-sm font-medium text-greige-700 mb-2" %>
+      <%= form.datetime_field :expires_at, class: "appearance-none block w-full px-3 py-2 border border-greige-300 rounded-md shadow-sm focus:outline-none focus:ring-accent-primary focus:border-accent-primary sm:text-sm" %>
+      <p class="mt-1 text-sm text-greige-500">未設定の場合は無期限</p>
     </div>
   </div>
 
   <div>
-    <%= form.label :status, "ステータス", class: "block text-sm font-medium text-gray-700 mb-2" %>
+    <%= form.label :status, "ステータス", class: "block text-sm font-medium text-greige-700 mb-2" %>
     <%= form.select :status,
       [['下書き', 'draft'], ['公開', 'published'], ['アーカイブ', 'archived']],
       {},
-      class: "appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm" %>
+      class: "appearance-none block w-full px-3 py-2 border border-greige-300 rounded-md shadow-sm focus:outline-none focus:ring-accent-primary focus:border-accent-primary sm:text-sm" %>
   </div>
 
-  <div class="flex gap-3 pt-4 border-t border-gray-200">
-    <%= form.submit announcement.persisted? ? "更新する" : "作成する", class: "inline-flex items-center justify-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors duration-200" %>
-    <%= link_to "キャンセル", admin_announcements_path, class: "inline-flex items-center justify-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors duration-200" %>
+  <div class="flex gap-3 pt-4 border-t border-greige-200">
+    <%= form.submit announcement.persisted? ? "更新する" : "作成する", class: "inline-flex items-center justify-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-accent-primary hover:bg-accent-primary/90 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-accent-primary transition-colors duration-200" %>
+    <%= link_to "キャンセル", admin_announcements_path, class: "inline-flex items-center justify-center px-4 py-2 border border-greige-300 rounded-md shadow-sm text-sm font-medium text-greige-700 bg-white hover:bg-greige-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-accent-primary transition-colors duration-200 transition-colors" %>
   </div>
 <% end %>
