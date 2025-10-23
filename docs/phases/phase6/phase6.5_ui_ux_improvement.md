@@ -1221,5 +1221,318 @@ end
 
 ---
 
+## 📊 実装完了報告
+
+### Phase 6.5-1: InkFolioブランドデザイン適用（完了）
+
+**実施期間**: 2025-10-23
+**PR**: #33（マージ済み）
+**ブランチ**: `feature/phase6.5-ui-ux-improvement`
+
+#### 実施内容
+
+1. **InkFolioロゴ＆ファビコン作成**
+   - SVGロゴデザイン（app/assets/images/inkfolio-logo.svg）
+   - ファビコン作成（public/inkfolio-favicon.svg）
+
+2. **Tailwind CSS v4カスタムテーマ設定**
+   - InkFolioカラーパレット定義（app/assets/tailwind/application.css）
+   - グレージュ色系統（greige-50〜900）
+   - アクセントカラー（accent-primary, secondary, success, warning, danger）
+
+3. **全ページInkFolioカラー適用**（80+ファイル）
+   - 管理画面（admin/dashboard, users, announcements, inquiries）
+   - ユーザー画面（patients, medical_records, facilities, invoices）
+   - 認証画面（Devise: login, signup, password reset）
+   - その他（home, questionnaires, consent_form_templates, tags, mypage）
+
+4. **ヘッダー＆フッター改善**
+   - InkFolioロゴ配置
+   - ナビゲーションホバー効果統一
+   - フッター作成（app/views/shared/_footer.html.erb）
+
+#### スコア
+
+**frontend-architect初回評価**: 78/100
+
+| カテゴリ | スコア |
+|---------|--------|
+| アクセシビリティ | 65/100 |
+| カラー一貫性 | 75/100 |
+| WCAG準拠度 | 60/100 |
+| コンポーネント品質 | 82/100 |
+
+#### Critical Issues（レビュー指摘）
+
+1. ❌ 非InkFolioカラー残存（6ファイル）
+2. ❌ WCAGコントラスト基準未達（text-accent-primary: 3.8:1）
+3. ❌ ARIA属性不足（フォームエラー、ナビゲーション）
+4. ❌ フォーカスステート不統一
+
+#### コミット履歴
+
+```
+c8318ba feat(ui): 残りページのInkFolioデザイン適用
+712c260 feat(ui): 管理画面・Devise認証画面のInkFolioデザイン適用
+5a3348b fix(ui): 管理者ダッシュボードのSVGアイコンとカラー修正
+51380fd refactor(ui): 管理者ダッシュボードのSVGアイコンを廃止
+7f7eb1c style: RuboCop Layout/LineLength違反を修正
+```
+
+---
+
+### Phase 6.5-2: アクセシビリティ・品質向上（完了）
+
+**実施期間**: 2025-10-23
+**PR**: #34（マージ済み）
+**ブランチ**: `feature/phase6.5-2-accessibility-quality-v2`
+
+#### 実施内容
+
+1. **非InkFolioカラー修正**（6ファイル）
+   - patients/show.html.erb: blue/green/yellow → InkFolio
+   - patients/_form.html.erb: blue/gray → InkFolio
+   - patients/index.html.erb: blue/indigo → InkFolio
+   - home/index.html.erb: purple/yellow → accent colors
+   - invoices/index.html.erb: blue/green/gray → InkFolio
+   - shared/_header.html.erb: gray → greige
+
+2. **WCAGコントラスト対応**
+   - text-accent-primary (#8b7355, 3.8:1) → text-ink-dark (#6b5a3f, 5.2:1)
+   - 対象: リンク、小サイズテキスト
+   - 準拠: WCAG 2.1 AA Level（4.5:1以上）
+
+3. **ARIA属性追加**（主要5フォーム）
+   - エラーメッセージ: `id="form-errors"` + `role="alert"`
+   - フォームタグ: `aria-describedby="form-errors"`
+   - 対象: patients, medical_records, facilities, invoices, cost_sheets
+
+4. **フォーカスステート統一**（7ファイル）
+   - 統一スタイル: `focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-accent-primary`
+   - WCAG 2.4.7 Focus Visible準拠
+
+#### スコア改善
+
+**frontend-architect最終評価**: 90/100 (+12点)
+
+| カテゴリ | Phase 6.5-1 | Phase 6.5-2 | 改善 |
+|---------|-------------|-------------|------|
+| **アクセシビリティ** | 65/100 | 90/100 | +25 ⬆️ |
+| **カラー一貫性** | 75/100 | 100/100 | +25 ⬆️ |
+| **WCAG準拠度** | 60/100 | 85/100 | +25 ⬆️ |
+| **コンポーネント品質** | 82/100 | 82/100 | 0 |
+
+#### Critical Issues解決
+
+- ✅ 非InkFolioカラー修正（100%解決）
+- ✅ WCAGコントラスト対応（85%達成）
+- ✅ ARIA属性追加（主要フォーム100%実装）
+- ✅ フォーカスステート統一（90%達成）
+
+#### コミット履歴
+
+```
+7cc3a10 fix(ui): invoices/index.html.erb の非InkFolioカラー修正
+c0dea20 feat(a11y): フォーカスステート統一（WCAG 2.1準拠）
+e010a33 feat(a11y): フォームエラーにARIA属性追加（主要5フォーム）
+749639d feat(a11y): WCAGコントラスト基準対応
+77ad28f fix(ui): 非InkFolioカラーを修正（6ファイル）
+5a4768a docs: Phase 6.5 UI/UX改善実装計画書を作成
+```
+
+---
+
+### Phase 6.5-3: コンポーネント統一・ボタンヘルパー実装（進行中）
+
+**実施期間**: 2025-10-23〜
+**ブランチ**: `feature/phase6.5-3-component-unification`
+**推定工数**: 6-10時間
+
+#### ユーザーフィードバック
+
+> 特に一覧ページ等はいまだにテキストリンクなのでその辺りを改善したいです
+
+#### 実施予定
+
+##### 1. ボタンヘルパー実装（3-4時間）
+
+**目的**: 編集・削除・表示ボタンを統一ヘルパーに
+
+**実装ファイル**: `app/helpers/button_helper.rb`
+
+```ruby
+# app/helpers/button_helper.rb
+module ButtonHelper
+  # 表示ボタン
+  def show_button(text, path, options = {})
+    default_class = "bg-accent-primary hover:bg-accent-primary/90 text-white font-medium py-2 px-4 rounded transition-colors"
+    link_to text, path, { class: default_class }.merge(options)
+  end
+
+  # 編集ボタン
+  def edit_button(text, path, options = {})
+    default_class = "bg-accent-secondary hover:bg-accent-secondary/90 text-white font-medium py-2 px-4 rounded transition-colors"
+    link_to text, path, { class: default_class }.merge(options)
+  end
+
+  # 削除ボタン
+  def delete_button(text, path, options = {})
+    default_class = "bg-accent-danger hover:bg-accent-danger/90 text-white font-medium py-2 px-4 rounded transition-colors"
+    default_data = { turbo_confirm: "本当に削除しますか？" }
+
+    button_to text, path, {
+      method: :delete,
+      class: default_class,
+      data: default_data.merge(options.delete(:data) || {})
+    }.merge(options)
+  end
+
+  # 新規作成ボタン
+  def new_button(text, path, options = {})
+    default_class = "bg-accent-primary hover:bg-accent-primary/90 text-white font-bold py-2 px-4 rounded transition-colors"
+    link_to text, path, { class: default_class }.merge(options)
+  end
+
+  # 一覧戻るボタン
+  def back_button(text, path, options = {})
+    default_class = "bg-accent-secondary hover:bg-accent-secondary/90 text-white font-bold py-2 px-4 rounded transition-colors"
+    link_to text, path, { class: default_class }.merge(options)
+  end
+
+  # キャンセルボタン
+  def cancel_button(text, path, options = {})
+    default_class = "bg-greige-300 hover:bg-greige-400 text-greige-800 font-bold py-2 px-4 rounded transition-colors"
+    link_to text, path, { class: default_class }.merge(options)
+  end
+
+  # 検索ボタン
+  def search_button(text = "検索", options = {})
+    default_class = "bg-accent-primary hover:bg-accent-primary/90 text-white font-bold py-2 px-6 rounded-lg transition-colors"
+    submit_tag text, { class: default_class }.merge(options)
+  end
+
+  # クリアボタン
+  def clear_button(text, path, options = {})
+    default_class = "bg-accent-secondary hover:bg-accent-secondary/90 text-white font-bold py-2 px-6 rounded-lg transition-colors"
+    link_to text, path, { class: default_class }.merge(options)
+  end
+end
+```
+
+**置換対象例**:
+
+```erb
+<!-- Before -->
+<%= link_to "表示", patient, class: "text-ink-dark hover:text-accent-primary transition-colors" %>
+<%= link_to "編集", edit_patient_path(patient), class: "text-accent-secondary hover:text-accent-secondary/80" %>
+<%= button_to "削除", patient, method: :delete, data: { turbo_confirm: "本当に削除しますか？" }, class: "text-accent-danger hover:text-accent-danger/80" %>
+
+<!-- After -->
+<%= show_button "表示", patient %>
+<%= edit_button "編集", edit_patient_path(patient) %>
+<%= delete_button "削除", patient %>
+```
+
+**影響範囲**: 40+箇所
+- patients/index.html.erb（一覧ページ）
+- medical_records/index.html.erb
+- facilities/index.html.erb
+- invoices/index.html.erb
+- cost_sheets/index.html.erb
+- tags/index.html.erb
+- admin/users/index.html.erb
+- admin/announcements/index.html.erb
+- admin/inquiries/index.html.erb
+
+##### 2. テキストリンク→ボタン化（2-3時間）
+
+**目的**: 一覧ページの操作リンクをボタンコンポーネントに統一
+
+**before**（テキストリンク）:
+```erb
+<td class="px-6 py-4 whitespace-nowrap text-sm">
+  <%= link_to "表示", patient, class: "text-ink-dark hover:text-accent-primary transition-colors mr-3" %>
+  <%= link_to "編集", edit_patient_path(patient), class: "text-accent-secondary hover:text-accent-secondary/80 mr-3" %>
+  <%= button_to "削除", patient, method: :delete, class: "text-accent-danger hover:text-accent-danger/80" %>
+</td>
+```
+
+**after**（ボタンコンポーネント）:
+```erb
+<td class="px-6 py-4 whitespace-nowrap">
+  <div class="flex gap-2">
+    <%= show_button "表示", patient, class: "flex-1 text-center text-sm" %>
+    <%= edit_button "編集", edit_patient_path(patient), class: "flex-1 text-center text-sm" %>
+    <%= delete_button "削除", patient, class: "flex-1 text-sm" %>
+  </div>
+</td>
+```
+
+**対象ページ**: 全一覧ページ（9ページ）
+
+##### 3. TomSelect統一（2-3時間）
+
+**目的**: プルダウンをTomSelectで統一
+
+**調査項目**:
+- TomSelect実装済み箇所の洗い出し
+- 未実装プルダウンの特定
+- 統一スタイル定義
+
+**実装パターン**:
+```erb
+<%= form.collection_select :facility_id, @facilities, :id, :name,
+    { prompt: "施設を選択してください" },
+    { class: "mt-1 block w-full rounded-md border-greige-300 shadow-sm focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-accent-primary",
+      data: { controller: "tom-select" } } %>
+```
+
+##### 4. navigation_helper.rb改善（30分）
+
+**目的**: aria-current属性実装
+
+**実装**:
+```ruby
+# app/helpers/navigation_helper.rb
+def link_to_nav_item(text, path, disabled: false)
+  css_class = if disabled
+                'px-3 py-2 rounded-md text-sm font-medium text-greige-300 cursor-not-allowed'
+              elsif current_page?(path)
+                'px-3 py-2 rounded-md text-sm font-medium bg-greige-100 text-accent-primary'
+              else
+                'px-3 py-2 rounded-md text-sm font-medium text-greige-700 hover:text-accent-primary hover:bg-greige-100 transition-colors'
+              end
+
+  if disabled
+    content_tag(:span, text, class: css_class)
+  else
+    link_to text, path, class: css_class, 'aria-current': (current_page?(path) ? 'page' : nil)
+  end
+end
+```
+
+#### 期待効果
+
+| 指標 | 現状 | 目標 |
+|------|------|------|
+| **frontend-architectスコア** | 90/100 | 93-95/100 |
+| **コード重複率** | 高 | 中〜低 |
+| **保守性** | 中 | 高 |
+| **UX一貫性** | 中 | 高 |
+
+#### タスク詳細
+
+- [ ] ButtonHelperモジュール作成
+- [ ] 一覧ページボタン置換（9ページ）
+- [ ] 詳細ページボタン置換（9ページ）
+- [ ] フォームページボタン置換（9ページ）
+- [ ] TomSelect洗い出し・統一
+- [ ] navigation_helper.rb改善
+- [ ] RuboCop実行・修正
+- [ ] 動作確認（全ページ）
+- [ ] PR作成
+
+---
+
 **最終更新**: 2025-10-23
-**次回更新**: Phase 6.5-2完了時
+**現在フェーズ**: Phase 6.5-3（進行中）
