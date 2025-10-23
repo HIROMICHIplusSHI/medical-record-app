@@ -1,9 +1,9 @@
 <div class="container mx-auto px-4 py-8">
   <div class="flex justify-between items-center mb-6">
     <h1 class="text-3xl font-bold text-greige-900">患者詳細</h1>
-    <div>
-      <%= link_to "編集", edit_patient_path(@patient), class: "bg-accent-primary hover:bg-accent-primary/90 text-white font-bold py-2 px-4 rounded mr-2 transition-colors" %>
-      <%= link_to "一覧に戻る", patients_path, class: "bg-accent-secondary hover:bg-accent-secondary/90 text-white font-bold py-2 px-4 rounded transition-colors" %>
+    <div class="flex space-x-3">
+      <%= edit_button "編集", edit_patient_path(@patient) %>
+      <%= back_button "一覧に戻る", patients_path %>
     </div>
   </div>
 
@@ -143,18 +143,18 @@
       <h2 class="text-xl font-bold text-greige-900 mb-4">問診票</h2>
       <% if @patient.questionnaire.present? %>
         <div class="flex space-x-3">
-          <%= link_to "問診票を表示", patient_questionnaire_path(@patient), class: "bg-accent-success hover:bg-accent-success/90 text-white font-bold py-2 px-4 rounded transition-colors" %>
-          <%= link_to "問診票を編集", edit_patient_questionnaire_path(@patient), class: "bg-accent-primary hover:bg-accent-primary/90 text-white font-bold py-2 px-4 rounded transition-colors" %>
-          <%= button_to "問診票を削除", patient_questionnaire_path(@patient), method: :delete, data: { turbo_confirm: "本当に削除しますか？" }, class: "bg-accent-warning hover:bg-accent-warning/90 text-white font-bold py-2 px-4 rounded transition-colors" %>
+          <%= show_button "問診票を表示", patient_questionnaire_path(@patient) %>
+          <%= edit_button "問診票を編集", edit_patient_questionnaire_path(@patient) %>
+          <%= delete_button "問診票を削除", patient_questionnaire_path(@patient) %>
         </div>
       <% else %>
         <p class="text-greige-600 mb-4">まだ問診票が登録されていません。</p>
-        <%= link_to "問診票を作成", new_patient_questionnaire_path(@patient), class: "bg-accent-primary hover:bg-accent-primary/90 text-white font-bold py-2 px-4 rounded transition-colors" %>
+        <%= new_button "問診票を作成", new_patient_questionnaire_path(@patient) %>
       <% end %>
     </div>
 
     <div class="mt-6 pt-6 border-t border-greige-200">
-      <%= button_to "この患者を削除", @patient, method: :delete, data: { turbo_confirm: "本当に削除しますか？この操作は取り消せません。" }, class: "bg-accent-danger hover:bg-accent-danger/90 text-white font-bold py-2 px-4 rounded transition-colors" %>
+      <%= delete_button "この患者を削除", @patient, data: { turbo_confirm: "本当に削除しますか？この操作は取り消せません。" } %>
     </div>
   </div>
 </div>
