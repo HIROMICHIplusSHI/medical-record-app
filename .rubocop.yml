@@ -49,6 +49,8 @@ Metrics/MethodLength:
     - 'build_patient_consent'
     - 'create'  # PatientConsentsController#create - 複数同意書の一括作成処理
     - 'toggle_role'  # Admin::UsersController#toggle_role - エッジケース処理を含む
+    - 'unread_inquiry_count'  # ApplicationHelper - 役割別の未読判定ロジックのため
+    - 'unread_indicator_for'  # ApplicationHelper - 役割別の未読表示ロジックのため
 
 Metrics/ClassLength:
   Max: 155
