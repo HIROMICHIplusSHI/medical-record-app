@@ -10,7 +10,7 @@ RSpec.describe 'Authentication Flow', type: :system do
 
     it 'ウェルカムページが正しく表示される' do
       expect(page).to have_selector('img[alt="InkFolio"]')
-      expect(page).to have_content('美容施術者のための')
+      expect(page).to have_content('アートメイク施術者のための')
       expect(page).to have_content('ポートフォリオ＆業務管理システム')
     end
 
@@ -170,7 +170,7 @@ RSpec.describe 'Authentication Flow', type: :system do
       click_link 'ログアウト'
 
       expect(page).to have_current_path(root_path)
-      expect(page).to have_content('美容施術者のための')
+      expect(page).to have_content('アートメイク施術者のための')
       expect(page).to have_field('メールアドレス')
       # Deviseの翻訳が不足している場合も考慮
       expect(page).to have_content('signed_out').or have_content('ログアウトしました')

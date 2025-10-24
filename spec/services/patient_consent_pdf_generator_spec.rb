@@ -1,7 +1,7 @@
 require 'rails_helper'
 
 RSpec.describe PatientConsentPdfGenerator, type: :service do
-  let(:user) { create(:user, company_name: '美容施術者 田中') }
+  let(:user) { create(:user, company_name: 'アートメイク施術者 田中') }
   let(:patient) { create(:patient, user: user, name: '山田太郎', date_of_birth: '1985-05-15') }
   let(:facility) { create(:facility, user: user, name: 'サロンA', address: '東京都渋谷区1-2-3', phone: '03-1234-5678') }
   let(:medical_record) { create(:medical_record, user: user, patient: patient, facility: facility) }
@@ -112,7 +112,7 @@ RSpec.describe PatientConsentPdfGenerator, type: :service do
       expect(consent.facility_name).to eq('サロンA')
       expect(consent.facility_address).to eq('東京都渋谷区1-2-3')
       expect(consent.facility_phone).to eq('03-1234-5678')
-      expect(consent.practitioner_name).to eq('美容施術者 田中')
+      expect(consent.practitioner_name).to eq('アートメイク施術者 田中')
 
       pdf_string = generator.generate_to_string
 

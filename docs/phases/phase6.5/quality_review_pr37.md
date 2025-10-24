@@ -322,7 +322,7 @@ end
 3. **読みやすいアサーション**:
    ```ruby
    expect(page).to have_selector('img[alt="InkFolio"]')
-   expect(page).to have_content('美容施術者のための')
+   expect(page).to have_content('アートメイク施術者のための')
    expect(page).to have_content('ポートフォリオ＆業務管理システム')
    ```
    - ✅ 検証内容が明確

@@ -6,6 +6,16 @@ class ApplicationController < ActionController::Base
   # Pundit未認可エラーハンドリング
   rescue_from Pundit::NotAuthorizedError, with: :user_not_authorized
 
+  helper_method :show_footer?
+
+  def show_footer?
+    user_signed_in? || public_pages?
+  end
+
+  def public_pages?
+    controller_name == 'pages' && %w[terms privacy].include?(action_name)
+  end
+
   private
 
   def user_not_authorized

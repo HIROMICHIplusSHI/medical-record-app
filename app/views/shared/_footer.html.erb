@@ -11,9 +11,11 @@
 
       <!-- リンク -->
       <div class="flex space-x-6 text-sm">
-        <%= link_to '利用規約', '#', class: 'text-greige-600 hover:text-accent-primary transition-colors' %>
-        <%= link_to 'プライバシーポリシー', '#', class: 'text-greige-600 hover:text-accent-primary transition-colors' %>
-        <%= link_to 'お問い合わせ', inquiries_path, class: 'text-greige-600 hover:text-accent-primary transition-colors' %>
+        <%= link_to '利用規約', terms_path, class: 'text-greige-600 hover:text-accent-primary transition-colors' %>
+        <%= link_to 'プライバシーポリシー', privacy_path, class: 'text-greige-600 hover:text-accent-primary transition-colors' %>
+        <% if user_signed_in? %>
+          <%= link_to 'お問い合わせ', inquiries_path, class: 'text-greige-600 hover:text-accent-primary transition-colors' %>
+        <% end %>
       </div>
     </div>
   </div>

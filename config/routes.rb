@@ -26,6 +26,10 @@ Rails.application.routes.draw do
   # パブリックroot（ログイン前のウェルカムページ）
   root 'welcome#index'
 
+  # 利用規約・プライバシーポリシー（未認証でもアクセス可能）
+  get 'terms', to: 'pages#terms'
+  get 'privacy', to: 'pages#privacy'
+
   # ユーザー（施術者）専用ルート
   # 認証はApplicationControllerのbefore_action :authenticate_user!で保護
 

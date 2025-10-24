@@ -1,0 +1,258 @@
+<div class="max-w-4xl mx-auto py-8 px-4">
+  <div class="bg-white rounded-lg shadow-sm border border-greige-200 p-8">
+    <h1 class="text-3xl font-bold text-greige-900 mb-6 border-b border-greige-200 pb-4">
+      デモ版利用規約
+    </h1>
+
+    <div class="text-sm text-greige-600 mb-8">
+      <strong>最終更新日：<%= l(TermsConstants::TERMS_UPDATED_AT, format: :long) %></strong>
+    </div>
+
+    <div class="prose max-w-none space-y-8 text-greige-800">
+      <!-- 第1条 本規約の適用 -->
+      <section class="space-y-4">
+        <h2 class="text-xl font-bold text-greige-900 border-l-4 border-accent-primary pl-3">
+          第1条（本規約の適用）
+        </h2>
+        <ol class="list-decimal list-inside space-y-2 ml-4">
+          <li>
+            本規約は、「InkFolio」（以下「本デモシステム」といいます）の利用に関する条件を、
+            本デモシステムの開発者（以下「開発者」といいます）と閲覧者（以下「ユーザー」といいます）
+            との間で定めるものです。
+          </li>
+          <li>
+            本デモシステムは、<strong class="text-accent-primary">技術デモンストレーション・ポートフォリオ展示を目的としたデモ版</strong>であり、
+            実際の医療・美容業務における使用を想定していません。
+          </li>
+          <li>
+            ユーザーは、本デモシステムにアクセスまたは利用することにより、本規約の全ての内容に同意したものとみなされます。
+          </li>
+        </ol>
+      </section>
+
+      <!-- 第2条 デモ版の位置づけ -->
+      <section class="space-y-4">
+        <h2 class="text-xl font-bold text-greige-900 border-l-4 border-accent-primary pl-3">
+          第2条（デモ版の位置づけ）
+        </h2>
+        <ol class="list-decimal list-inside space-y-2 ml-4">
+          <li>
+            本デモシステムは、開発者の技術スキルを証明するためのポートフォリオ作品です。
+          </li>
+          <li>
+            本デモシステムで提供される機能は、参考実装・概念実証（PoC）の範囲に留まり、
+            実際の業務での使用に必要な法令遵守、セキュリティ、可用性を保証するものではありません。
+          </li>
+          <li>
+            <strong class="text-red-600">本デモシステムは、医療行為・美容施術に関する実際の業務には使用しないでください。</strong>
+          </li>
+        </ol>
+        <div class="bg-red-50 border-l-4 border-red-600 p-4 mt-4">
+          <p class="text-red-800 font-semibold text-sm">
+            ⚠️ <strong>重要な注意事項</strong><br>
+            本デモシステムは、アートメイク施術や医療行為の電子カルテとして実際に使用することを想定していません。
+            あくまで技術的な実装例を示すポートフォリオ作品です。
+          </p>
+        </div>
+      </section>
+
+      <!-- 第3条 利用目的 -->
+      <section class="space-y-4">
+        <h2 class="text-xl font-bold text-greige-900 border-l-4 border-accent-primary pl-3">
+          第3条（利用目的）
+        </h2>
+        <p>本デモシステムは、以下の目的での利用を想定しています：</p>
+        <ul class="list-disc list-inside space-y-2 ml-4">
+          <li>技術的な実装内容の確認・評価</li>
+          <li>UI/UXデザインの参考・研究</li>
+          <li>開発者のスキルレベルの判断材料</li>
+          <li>類似システム開発時の参考実装</li>
+          <li>採用選考における技術力の評価</li>
+        </ul>
+      </section>
+
+      <!-- 第4条 禁止事項 -->
+      <section class="space-y-4">
+        <h2 class="text-xl font-bold text-greige-900 border-l-4 border-accent-primary pl-3">
+          第4条（禁止事項）
+        </h2>
+        <p>ユーザーは、本デモシステムの利用にあたり、以下の行為を行ってはなりません：</p>
+        <ol class="list-decimal list-inside space-y-2 ml-4">
+          <li><strong class="text-red-600">実在する患者・顧客の個人情報を入力する行為</strong></li>
+          <li><strong class="text-red-600">実際の医療・美容業務で本デモシステムを使用する行為</strong></li>
+          <li>本デモシステムを商用目的で使用する行為</li>
+          <li>本デモシステムの機能を悪用する行為</li>
+          <li>他のユーザーまたは第三者の権利を侵害する行為</li>
+          <li>法令または公序良俗に違反する行為</li>
+          <li>本デモシステムの運営を妨害する行為</li>
+          <li>不正アクセス、クラッキング等の行為</li>
+          <li>本デモシステムのソースコードを無断で複製・改変・再配布する行為</li>
+        </ol>
+      </section>
+
+      <!-- 第5条 データの取扱い -->
+      <section class="space-y-4">
+        <h2 class="text-xl font-bold text-greige-900 border-l-4 border-accent-primary pl-3">
+          第5条（データの取扱い）
+        </h2>
+        <ol class="list-decimal list-inside space-y-2 ml-4">
+          <li>
+            本デモシステムに入力されたデータは、<strong>デモンストレーション目的のテストデータ</strong>
+            として取り扱われます。
+          </li>
+          <li>
+            開発者は、ユーザーが入力したデータについて、保存期間、バックアップ、復旧等を保証しません。
+          </li>
+          <li>
+            ユーザーは、入力したデータがいつでも削除される可能性があることを理解し、
+            重要なデータは本デモシステムに入力しないものとします。
+          </li>
+          <li>
+            <strong class="text-red-600">実在する個人の情報（氏名、住所、電話番号、メールアドレス、健康情報等）を入力することは固く禁じます。</strong>
+          </li>
+          <li>
+            テストデータを使用する場合は、架空の情報のみを使用してください。
+          </li>
+        </ol>
+        <div class="bg-yellow-50 border-l-4 border-yellow-600 p-4 mt-4">
+          <p class="text-yellow-800 font-semibold text-sm">
+            💡 <strong>テストデータの例</strong><br>
+            - 氏名: 山田太郎、田中花子 など架空の名前<br>
+            - 電話番号: 000-0000-0000<br>
+            - メールアドレス: test@example.com<br>
+            - 住所: 東京都テスト区サンプル町1-1-1
+          </p>
+        </div>
+      </section>
+
+      <!-- 第6条 知的財産権 -->
+      <section class="space-y-4">
+        <h2 class="text-xl font-bold text-greige-900 border-l-4 border-accent-primary pl-3">
+          第6条（知的財産権）
+        </h2>
+        <ol class="list-decimal list-inside space-y-2 ml-4">
+          <li>
+            本デモシステムに関する著作権、商標権その他の知的財産権は、開発者または正当な権利者に帰属します。
+          </li>
+          <li>
+            ユーザーは、本デモシステムのソースコード、デザイン、コンテンツ等を、
+            開発者の許可なく複製、改変、再配布することはできません。
+          </li>
+          <li>
+            ただし、技術的な学習・研究目的での閲覧・参照は妨げません。
+          </li>
+        </ol>
+      </section>
+
+      <!-- 第7条 免責事項 -->
+      <section class="space-y-4">
+        <h2 class="text-xl font-bold text-greige-900 border-l-4 border-accent-primary pl-3">
+          第7条（免責事項）
+        </h2>
+        <ol class="list-decimal list-inside space-y-2 ml-4">
+          <li>
+            <strong>本デモシステムは「現状有姿（AS IS）」で提供されます。</strong>
+            開発者は、本デモシステムの完全性、正確性、有用性、安全性、信頼性、特定目的への適合性等について、
+            いかなる明示的・黙示的保証も行いません。
+          </li>
+          <li>
+            開発者は、本デモシステムの利用によりユーザーに生じた損害（データの消失、
+            業務の中断、逸失利益、その他の直接的・間接的・付随的・特別損害を含みます）について、
+            たとえ開発者がその可能性を知らされていたとしても、一切の責任を負いません。
+          </li>
+          <li>
+            本デモシステムは、予告なく変更、中断、終了される場合があります。
+          </li>
+          <li>
+            開発者は、本デモシステムが常に利用可能であることを保証しません。
+          </li>
+          <li>
+            <strong class="text-red-600">
+              本デモシステムを実際の業務で使用したことにより生じた一切の損害（医療事故、
+              個人情報漏洩、法令違反等を含みます）について、開発者は一切の責任を負いません。
+            </strong>
+          </li>
+          <li>
+            本デモシステムはセキュリティ対策を完全に保証するものではなく、
+            データ漏洩、不正アクセス等のリスクが存在します。
+          </li>
+        </ol>
+      </section>
+
+      <!-- 第8条 サポートの不提供 -->
+      <section class="space-y-4">
+        <h2 class="text-xl font-bold text-greige-900 border-l-4 border-accent-primary pl-3">
+          第8条（サポートの不提供）
+        </h2>
+        <ol class="list-decimal list-inside space-y-2 ml-4">
+          <li>
+            本デモシステムは、技術デモンストレーション目的であり、
+            ユーザーサポート、バグ修正、機能追加、保守運用等のサービスは提供されません。
+          </li>
+          <li>
+            開発者は、ユーザーからの問い合わせに対して、回答する義務を負いません。
+          </li>
+          <li>
+            フィードバックや技術的な質問は受け付ける場合がありますが、対応を保証するものではありません。
+          </li>
+        </ol>
+      </section>
+
+      <!-- 第9条 規約の変更 -->
+      <section class="space-y-4">
+        <h2 class="text-xl font-bold text-greige-900 border-l-4 border-accent-primary pl-3">
+          第9条（規約の変更）
+        </h2>
+        <ol class="list-decimal list-inside space-y-2 ml-4">
+          <li>
+            開発者は、必要に応じて本規約を変更することができます。
+          </li>
+          <li>
+            変更後の規約は、本デモシステム上に掲載された時点で効力を生じます。
+          </li>
+          <li>
+            ユーザーは、規約変更後も本デモシステムを継続して利用することにより、
+            変更後の規約に同意したものとみなされます。
+          </li>
+        </ol>
+      </section>
+
+      <!-- 第10条 準拠法・管轄裁判所 -->
+      <section class="space-y-4">
+        <h2 class="text-xl font-bold text-greige-900 border-l-4 border-accent-primary pl-3">
+          第10条（準拠法・管轄裁判所）
+        </h2>
+        <ol class="list-decimal list-inside space-y-2 ml-4">
+          <li>
+            本規約の解釈・適用については、日本法に準拠するものとします。
+          </li>
+          <li>
+            本デモシステムに関する一切の紛争については、東京地方裁判所を第一審の専属的合意管轄裁判所とします。
+          </li>
+        </ol>
+      </section>
+
+      <!-- お問い合わせ -->
+      <section class="bg-greige-50 p-6 rounded-lg border border-greige-200 space-y-3">
+        <h2 class="text-lg font-bold text-greige-900">お問い合わせ</h2>
+        <p class="text-sm">
+          本デモシステムに関するご質問・フィードバックは、以下の連絡先までお願いいたします。
+        </p>
+        <ul class="text-sm space-y-1">
+          <li><strong>開発者：</strong>InkFolio開発チーム</li>
+          <li><strong>メール：</strong><%= TermsConstants::CONTACT_EMAIL %></li>
+          <li><strong>受付時間：</strong><%= TermsConstants::SUPPORT_HOURS %></li>
+        </ul>
+        <p class="text-xs text-greige-600 mt-4">
+          ※本デモシステムはポートフォリオ作品のため、サポート対応は限定的です。
+        </p>
+      </section>
+
+      <div class="text-center mt-8 pt-6 border-t border-greige-200">
+        <p class="text-sm text-greige-600">
+          本規約に同意いただいた上で、デモ版をご利用ください。
+        </p>
+      </div>
+    </div>
+  </div>
+</div>
