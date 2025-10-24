@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2025_10_23_091628) do
+ActiveRecord::Schema[7.2].define(version: 2025_10_24_134616) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -155,6 +155,8 @@ ActiveRecord::Schema[7.2].define(version: 2025_10_23_091628) do
     t.datetime "updated_at", null: false
     t.integer "category", default: 0, null: false
     t.integer "last_message_by", default: 0, null: false, comment: "最後にメッセージを送った人 (0: user, 1: admin)"
+    t.datetime "admin_read_at"
+    t.datetime "user_read_at"
     t.index ["status", "last_message_by"], name: "index_inquiries_on_status_and_last_message_by"
     t.index ["status"], name: "index_inquiries_on_status"
     t.index ["updated_at"], name: "index_inquiries_on_updated_at"
