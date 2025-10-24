@@ -28,7 +28,7 @@ class Inquiry < ApplicationRecord
   scope :by_category, ->(category) { where(category: category) if category.present? }
 
   after_create :clear_unread_count_cache
-  after_save :clear_unread_count_cache, if: :saved_change_to_status_or_last_message_by?
+  after_save :clear_unread_count_cache, if: :saved_change_to_read_status?
   after_destroy :clear_unread_count_cache
 
   def status_i18n
@@ -41,9 +41,12 @@ class Inquiry < ApplicationRecord
 
   private
 
-  # ステータスまたは最後のメッセージ送信者が変更されたかチェック
-  def saved_change_to_status_or_last_message_by?
-    saved_change_to_status? || saved_change_to_last_message_by?
+  # ステータスまたは既読状態が変更されたかチェック
+  def saved_change_to_read_status?
+    saved_change_to_status? ||
+      saved_change_to_last_message_by? ||
+      saved_change_to_admin_read_at? ||
+      saved_change_to_user_read_at?
   end
 
   # お問い合わせの作成・更新・削除時に未読件数キャッシュをクリア
