@@ -49,27 +49,22 @@ class MedicalRecord < ApplicationRecord
     %w[patient facility patient_consents tags]
   end
 
-  # 売上集計メソッド
+  # 売上集計メソッド（請求割合を適用）
   def self.total_revenue(start_date, end_date)
-    in_period(start_date, end_date)
-      .joins(:cost_items)
-      .sum('cost_items.total_price')
+    # 施設別売上を合計
+    revenue_by_facility(start_date, end_date).sum(&:revenue)
   end
 
   def self.revenue_by_facility(start_date, end_date)
     in_period(start_date, end_date)
       .joins(:facility, :cost_items)
-      .group('facilities.id', 'facilities.name')
-      .select('facilities.id as facility_id, facilities.name as facility_name,
-               SUM(cost_items.total_price) as revenue')
-      .order('revenue DESC')
-      .map do |result|
-        OpenStruct.new(
-          id: result.facility_id,
-          name: result.facility_name,
-          revenue: result.revenue
-        )
-      end
+      .group('facilities.id', 'facilities.name', 'facilities.billing_rate')
+      .select('facilities.id as facility_id,
+               facilities.name as facility_name,
+               facilities.billing_rate,
+               SUM(cost_items.total_price) as cost_sum')
+      .order('cost_sum DESC')
+      .map { |result| build_facility_revenue(result) }
   end
 
   def self.monthly_revenue(year)
@@ -77,14 +72,34 @@ class MedicalRecord < ApplicationRecord
       start_date = Date.new(year, month, 1)
       end_date = start_date.end_of_month
 
-      records_in_month = in_period(start_date, end_date)
+      records_in_month = in_period(start_date, end_date).includes(:facility, :cost_items)
+
+      # 各カルテの請求割合適用済み売上を計算
+      revenue = records_in_month.sum do |record|
+        total_cost = record.cost_items.sum(&:total_price)
+        billing_rate = record.facility.billing_rate || 100.0
+        total_cost * (billing_rate / 100.0)
+      end
 
       {
         month: month,
-        revenue: records_in_month.joins(:cost_items).sum('cost_items.total_price'),
+        revenue: revenue,
         count: records_in_month.count,
       }
     end
+  end
+
+  # 施設別売上データの構築（請求割合を適用）
+  def self.build_facility_revenue(result)
+    billing_rate = result.billing_rate || 100.0
+    actual_revenue = result.cost_sum * (billing_rate / 100.0)
+
+    OpenStruct.new(
+      id: result.facility_id,
+      name: result.facility_name,
+      billing_rate: billing_rate,
+      revenue: actual_revenue
+    )
   end
 
   private
