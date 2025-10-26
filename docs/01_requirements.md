@@ -291,27 +291,67 @@
 
 ### 6.1 主要エンティティ
 
-| エンティティ | 説明 |
-|-------------|------|
-| User | 施術者（ログインユーザー） |
-| Facility | 施術場所（クリニック・病院） |
-| Patient | 患者 |
-| MedicalRecord | カルテ（施術記録） |
-| CostSheet | コストシートテンプレート |
-| CostItem | カルテ内のコスト項目 |
-| Invoice | 請求書 |
-| Tag | カスタムタグ |
+| エンティティ | 説明 | Phase |
+|-------------|------|-------|
+| **ユーザー・認証** |
+| User | 施術者（ログインユーザー）+ 管理者権限 | 1, 6 |
+| **基本データ** |
+| Facility | 施術場所（クリニック・病院）+ 請求割合 | 1, 5-B |
+| Patient | 患者 | 1 |
+| Questionnaire | 問診票（暗号化） | 2 |
+| **カルテ・施術** |
+| MedicalRecord | カルテ（施術記録） | 1 |
+| CostSheet | コストシートテンプレート | 1 |
+| CostItem | カルテ内のコスト項目 | 1 |
+| Tag | カスタムタグ | 1 |
+| MedicalRecordTag | カルテ-タグ中間テーブル | 1 |
+| **請求書** |
+| Invoice | 請求書 | 5-B |
+| InvoiceItem | 請求書明細 | 5-B |
+| **同意書** |
+| ConsentFormTemplate | 同意書テンプレート | 5-C |
+| ConsentFormItem | 同意書チェック項目 | 5-C |
+| PatientConsent | 患者同意書 | 5-C |
+| ConsentItemResponse | チェック項目回答 | 5-C |
+| FacilityDoctor | 施設医師 | 5-C |
+| **管理機能** |
+| Announcement | お知らせ（管理者） | 6 |
+| Inquiry | お問い合わせ | 6 |
+| InquiryMessage | お問い合わせメッセージ | 6 |
 
 ### 6.2 主要な関連
 
-- User has_many MedicalRecords
+**ユーザー・基本データ:**
+- User has_many Facilities, Patients, MedicalRecords
 - Patient has_many MedicalRecords（複数の施術場所で受診可能）
-- Facility has_many MedicalRecords（請求先として）
-- MedicalRecord belongs_to Patient, Facility
-- MedicalRecord has_many CostItems
-- CostItem references CostSheet（テンプレート）
-- Invoice belongs_to Facility（請求先）
-- Invoice has_many MedicalRecords（請求対象の施術）
+- Patient has_one Questionnaire（問診票、暗号化）
+- Facility has_many MedicalRecords, Invoices, FacilityDoctors
+
+**カルテ関連:**
+- MedicalRecord belongs_to Patient, Facility, User
+- MedicalRecord has_many CostItems, PatientConsents
+- MedicalRecord has_many Tags (through: MedicalRecordTags)
+- MedicalRecord has_many_attached :photos
+
+**コスト・請求書:**
+- CostItem belongs_to MedicalRecord, CostSheet (optional)
+- Invoice belongs_to Facility, User
+- Invoice has_many InvoiceItems
+- InvoiceItem belongs_to Invoice, MedicalRecord
+
+**同意書:**
+- ConsentFormTemplate belongs_to User
+- ConsentFormTemplate has_many ConsentFormItems
+- PatientConsent belongs_to Patient, MedicalRecord, User
+- PatientConsent belongs_to ConsentFormTemplate, FacilityDoctor (optional)
+- PatientConsent has_many ConsentItemResponses
+- ConsentItemResponse belongs_to PatientConsent, ConsentFormItem
+
+**管理機能:**
+- Announcement belongs_to User (admin)
+- Inquiry belongs_to User
+- Inquiry has_many InquiryMessages
+- InquiryMessage belongs_to Inquiry, User
 
 詳細なER図は別ドキュメント（`02_data_model.md`）を参照。
 
@@ -493,6 +533,9 @@
 
 ---
 
-**Document Version**: 1.0
-**Last Updated**: 2025-10-12
-**Next Review**: Phase 1完了時
+**Document Version**: 2.0
+**Last Updated**: 2025-10-26
+**Next Review**: Phase 6完了時
+**Change Log**:
+- v2.0 (2025-10-26): 同意書機能・権限管理・お知らせ機能を追加（Phase 5-C, 6完了反映）
+- v1.0 (2025-10-12): 初版作成

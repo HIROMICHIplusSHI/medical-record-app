@@ -2,7 +2,24 @@
 
 **プロジェクト名**: フリーランスアートメイク施術者向け電子カルテアプリ
 **作成日**: 2025-10-12
-**バージョン**: 1.0
+**バージョン**: 2.0
+**最終更新**: 2025-10-26
+
+**変更履歴**:
+- v2.0 (2025-10-26): 同意書機能・権限管理・お知らせ機能を追加（Phase 5-C, 6完了反映）
+- v1.0 (2025-10-12): 初版作成
+
+**追加テーブル（Phase 5-C, 6）**:
+- consent_form_templates, consent_form_items（同意書テンプレート）
+- patient_consents, consent_item_responses（患者同意書）
+- facility_doctors（施設医師）
+- announcements（お知らせ）
+- inquiries, inquiry_messages（お問い合わせ）
+
+**追加カラム**:
+- users: role（admin/user）, company_*（会社情報）
+- facilities: billing_rate（請求割合）
+- patient_consents: pdf_checksum（PDF改ざん検証）
 
 ---
 
@@ -954,6 +971,10 @@ end
 
 ---
 
-**Document Version**: 1.0
-**Last Updated**: 2025-10-12
-**Next Review**: 実装フェーズ開始時
+**Document Version**: 2.0
+**Last Updated**: 2025-10-26
+**Next Review**: Phase 6完了時
+
+**変更履歴**:
+- v2.0 (2025-10-26): 同意書機能・権限管理・お知らせ機能を追加
+- v1.0 (2025-10-12): 初版作成
