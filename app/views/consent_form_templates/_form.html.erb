@@ -41,11 +41,11 @@
 
     <div
       data-nested-form-target="container"
-      class="space-y-3"
+      data-controller="sortable"
       <% if consent_form_template.persisted? %>
-        data-controller="sortable"
         data-sortable-url-value="<%= sort_items_consent_form_template_path(consent_form_template) %>"
       <% end %>
+      class="space-y-3"
     >
       <%= form.fields_for :consent_form_items do |item_form| %>
         <%= render 'consent_form_item_fields', f: item_form %>
