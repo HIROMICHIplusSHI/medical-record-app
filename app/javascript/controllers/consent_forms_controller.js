@@ -1,4 +1,5 @@
 import { Controller } from "@hotwired/stimulus"
+import TomSelect from "tom-select"
 
 // Connects to data-controller="consent-forms"
 export default class extends Controller {
@@ -37,6 +38,9 @@ export default class extends Controller {
       if (checkbox.checked) {
         form.classList.remove("hidden")
         this.enableFormInputs(form)
+
+        // TomSelectを再初期化（hidden解除後に必要）
+        this.reinitializeTomSelect(form)
       } else {
         form.classList.add("hidden")
         this.disableFormInputs(form)
@@ -257,5 +261,38 @@ export default class extends Controller {
     }
 
     return true
+  }
+
+  // TomSelectを再初期化（hidden解除後に必要）
+  reinitializeTomSelect(form) {
+    const selectElements = form.querySelectorAll('[data-controller="tom-select"]')
+    selectElements.forEach(selectElement => {
+      // 既にTomSelectが初期化されている場合は破棄
+      if (selectElement.tomselect) {
+        selectElement.tomselect.destroy()
+      }
+
+      // TomSelectを直接初期化
+      const defaultOptions = {
+        create: false,
+        sortField: {
+          field: "text",
+          direction: "asc"
+        },
+        maxOptions: 200,
+        controlInput: '<input type="text" autocomplete="off" size="1" class="text-xl">',
+        dropdownParent: 'body',
+        render: {
+          option: (data, escape) => {
+            return `<div class="option text-xl py-3 px-4">${escape(data.text)}</div>`;
+          },
+          item: (data, escape) => {
+            return `<div class="item text-xl">${escape(data.text)}</div>`;
+          }
+        }
+      }
+
+      new TomSelect(selectElement, defaultOptions)
+    })
   }
 }
