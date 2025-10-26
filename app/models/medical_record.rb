@@ -62,7 +62,8 @@ class MedicalRecord < ApplicationRecord
       .select('facilities.id as facility_id,
                facilities.name as facility_name,
                facilities.billing_rate,
-               SUM(cost_items.total_price) as cost_sum')
+               SUM(cost_items.total_price) as cost_sum,
+               COUNT(DISTINCT medical_records.id) as record_count')
       .order('cost_sum DESC')
       .map { |result| build_facility_revenue(result) }
   end
@@ -98,7 +99,9 @@ class MedicalRecord < ApplicationRecord
       id: result.facility_id,
       name: result.facility_name,
       billing_rate: billing_rate,
-      revenue: actual_revenue
+      total_cost: result.cost_sum,
+      revenue: actual_revenue,
+      record_count: result.record_count
     )
   end
 
