@@ -25,6 +25,11 @@ module Admin
       @announcement = Announcement.new(announcement_params)
       @announcement.author = current_user
 
+      # statusがpublishedの場合、published_atを自動設定
+      if @announcement.status == 'published' && @announcement.published_at.blank?
+        @announcement.published_at = Time.current
+      end
+
       authorize @announcement
 
       if @announcement.save
@@ -41,7 +46,13 @@ module Admin
     def update
       authorize @announcement
 
-      if @announcement.update(announcement_params)
+      # statusがpublishedに変更される場合、published_atを自動設定
+      attrs = announcement_params
+      if attrs[:status] == 'published' && @announcement.published_at.blank?
+        attrs = attrs.merge(published_at: Time.current)
+      end
+
+      if @announcement.update(attrs)
         redirect_to admin_announcement_path(@announcement), notice: 'お知らせを更新しました。'
       else
         render :edit, status: :unprocessable_entity
