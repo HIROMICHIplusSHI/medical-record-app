@@ -19,6 +19,7 @@ class PatientConsentsController < ApplicationController
   # GET /medical_records/:medical_record_id/patient_consents/new
   def new
     @consent_form_templates = current_user.consent_form_templates
+                                          .active
                                           .includes(:consent_form_items)
                                           .order(created_at: :desc)
     @facility_doctors = @medical_record.facility.facility_doctors.order(:name)
@@ -236,6 +237,7 @@ class PatientConsentsController < ApplicationController
   # フォームデータの読み込み
   def load_form_data
     @consent_form_templates = current_user.consent_form_templates
+                                          .active
                                           .includes(:consent_form_items)
                                           .order(created_at: :desc)
     @facility_doctors = @medical_record.facility.facility_doctors.order(:name)
