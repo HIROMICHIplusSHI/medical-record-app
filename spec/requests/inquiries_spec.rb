@@ -52,8 +52,8 @@ RSpec.describe 'Inquiries', type: :request do
       end
 
       it '再度開くとuser_read_atが再更新される' do
-        initial_read_at = 1.hour.ago
-        inquiry.update(user_read_at: initial_read_at)
+        inquiry.update(user_read_at: 1.hour.ago)
+        initial_read_at = inquiry.reload.user_read_at
 
         expect do
           get inquiry_path(inquiry)

@@ -114,8 +114,8 @@ RSpec.describe 'Admin::Inquiries', type: :request do
         end
 
         it '再度開くとadmin_read_atが再更新される' do
-          initial_read_at = 1.hour.ago
-          inquiry.update(admin_read_at: initial_read_at)
+          inquiry.update(admin_read_at: 1.hour.ago)
+          initial_read_at = inquiry.reload.admin_read_at
 
           expect do
             get admin_inquiry_path(inquiry)
