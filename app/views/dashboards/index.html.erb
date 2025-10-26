@@ -34,27 +34,46 @@
   <!-- 施設別売上 -->
   <div class="bg-white rounded-lg shadow-sm border border-greige-200 p-6 mb-6">
     <h2 class="text-xl font-bold text-greige-900 mb-4">施設別売上</h2>
-    <div class="overflow-x-auto">
-      <table class="min-w-full divide-y divide-greige-200">
-        <thead class="bg-greige-50">
-          <tr>
-            <th class="px-6 py-3 text-left text-xs font-medium text-greige-600 uppercase tracking-wider">施設名</th>
-            <th class="px-6 py-3 text-right text-xs font-medium text-greige-600 uppercase tracking-wider">売上金額</th>
-          </tr>
-        </thead>
-        <tbody class="bg-white divide-y divide-greige-200">
-          <% @facility_data.each do |facility| %>
-            <tr class="hover:bg-greige-50 transition-colors">
-              <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-greige-900">
-                <%= facility.name %>
-              </td>
-              <td class="px-6 py-4 whitespace-nowrap text-sm text-greige-900 text-right">
-                ¥<%= number_with_delimiter(facility.revenue.to_i) %>
-              </td>
-            </tr>
-          <% end %>
-        </tbody>
-      </table>
+    <div class="space-y-2">
+      <% @facility_data.each do |facility| %>
+        <div data-controller="accordion" class="border border-greige-200 rounded-lg">
+          <!-- 施設行（クリック可能） -->
+          <div class="px-6 py-4 cursor-pointer hover:bg-greige-50 transition-colors flex justify-between items-center"
+               data-action="click->accordion#toggle">
+            <div class="flex-1">
+              <span class="text-sm font-medium text-greige-900"><%= facility.name %></span>
+            </div>
+            <div class="flex items-center gap-4">
+              <span class="text-sm text-greige-900">¥<%= number_with_delimiter(facility.revenue.to_i) %></span>
+              <svg class="w-5 h-5 text-greige-400 transform transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+              </svg>
+            </div>
+          </div>
+
+          <!-- 詳細情報（アコーディオン） -->
+          <div data-accordion-target="content" class="hidden px-6 py-4 bg-greige-50 border-t border-greige-200">
+            <dl class="grid grid-cols-2 gap-4 text-sm">
+              <div>
+                <dt class="text-greige-600 font-medium mb-1">コスト合計</dt>
+                <dd class="text-greige-900">¥<%= number_with_delimiter(facility.total_cost.to_i) %></dd>
+              </div>
+              <div>
+                <dt class="text-greige-600 font-medium mb-1">請求割合</dt>
+                <dd class="text-greige-900"><%= facility.billing_rate.to_f.round(1) %>%</dd>
+              </div>
+              <div>
+                <dt class="text-greige-600 font-medium mb-1">実売上金額</dt>
+                <dd class="text-greige-900 font-semibold">¥<%= number_with_delimiter(facility.revenue.to_i) %></dd>
+              </div>
+              <div>
+                <dt class="text-greige-600 font-medium mb-1">カルテ件数</dt>
+                <dd class="text-greige-900"><%= facility.record_count %>件</dd>
+              </div>
+            </dl>
+          </div>
+        </div>
+      <% end %>
     </div>
   </div>
 
