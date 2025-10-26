@@ -107,3 +107,8 @@ Style/TrailingCommaInHashLiteral:
 # in revenue_by_facility method (MedicalRecord model)
 Style/OpenStructUse:
   Enabled: false
+
+# Specファイルでは billing_rate の値を明示するため数字を含む変数名を許可
+Naming/VariableNumber:
+  Exclude:
+    - 'spec/**/*'

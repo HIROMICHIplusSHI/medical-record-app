@@ -78,7 +78,7 @@ class MedicalRecord < ApplicationRecord
       # 各カルテの請求割合適用済み売上を計算
       revenue = records_in_month.sum do |record|
         total_cost = record.cost_items.sum(&:total_price)
-        billing_rate = record.facility.billing_rate || 100.0
+        billing_rate = record.facility.billing_rate.presence || 100.0
         total_cost * (billing_rate / 100.0)
       end
 
@@ -92,7 +92,7 @@ class MedicalRecord < ApplicationRecord
 
   # 施設別売上データの構築（請求割合を適用）
   def self.build_facility_revenue(result)
-    billing_rate = result.billing_rate || 100.0
+    billing_rate = result.billing_rate.presence || 100.0
     actual_revenue = result.cost_sum * (billing_rate / 100.0)
 
     OpenStruct.new(

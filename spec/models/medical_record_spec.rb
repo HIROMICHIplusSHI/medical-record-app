@@ -288,6 +288,201 @@ RSpec.describe MedicalRecord, type: :model do
         expect(apr_data[:count]).to eq(0)
       end
     end
+
+    describe '売上集計（billing_rate考慮）' do
+      # 独立したテスト用ユーザーと患者を作成
+      let(:billing_test_user) { create(:user) }
+      let(:billing_test_patient) { create(:patient, user: billing_test_user) }
+
+      let(:facility_100) { create(:facility, user: billing_test_user, name: '施設100%', billing_rate: 100) }
+      let(:facility_80) { create(:facility, user: billing_test_user, name: '施設80%', billing_rate: 80) }
+      let(:facility_50) { create(:facility, user: billing_test_user, name: '施設50%', billing_rate: 50) }
+      let(:facility_0) { create(:facility, user: billing_test_user, name: '施設0%', billing_rate: 0) }
+      let(:facility_nil) { create(:facility, user: billing_test_user, name: '施設nil', billing_rate: nil) }
+
+      let!(:record_100) do
+        create(:medical_record, user: billing_test_user, patient: billing_test_patient, facility: facility_100,
+                                visit_date: Date.new(2024, 1, 15))
+      end
+      let!(:cost_item_100) do
+        create(:cost_item, medical_record: record_100, item_name: '施術A', quantity: 1, unit_price: 100_000)
+      end
+
+      let!(:record_80) do
+        create(:medical_record, user: billing_test_user, patient: billing_test_patient, facility: facility_80,
+                                visit_date: Date.new(2024, 1, 20))
+      end
+      let!(:cost_item_80) do
+        create(:cost_item, medical_record: record_80, item_name: '施術B', quantity: 1, unit_price: 100_000)
+      end
+
+      let!(:record_50) do
+        create(:medical_record, user: billing_test_user, patient: billing_test_patient, facility: facility_50,
+                                visit_date: Date.new(2024, 2, 10))
+      end
+      let!(:cost_item_50) do
+        create(:cost_item, medical_record: record_50, item_name: '施術C', quantity: 1, unit_price: 100_000)
+      end
+
+      let!(:record_0) do
+        create(:medical_record, user: billing_test_user, patient: billing_test_patient, facility: facility_0,
+                                visit_date: Date.new(2024, 3, 5))
+      end
+      let!(:cost_item_0) do
+        create(:cost_item, medical_record: record_0, item_name: '施術D', quantity: 1, unit_price: 100_000)
+      end
+
+      let!(:record_nil) do
+        create(:medical_record, user: billing_test_user, patient: billing_test_patient, facility: facility_nil,
+                                visit_date: Date.new(2024, 4, 12))
+      end
+      let!(:cost_item_nil) do
+        create(:cost_item, medical_record: record_nil, item_name: '施術E', quantity: 1, unit_price: 100_000)
+      end
+
+      # 他のテストデータの影響を受けないように、このコンテキスト専用のデータのみを使用
+      before do
+        # 既存のテストデータをクリア（destroy_all で関連する cost_items も削除）
+        MedicalRecord.where.not(user: billing_test_user).destroy_all
+      end
+
+      describe '.revenue_by_facility' do
+        it 'billing_rate=100の施設は全額が売上になる' do
+          start_date = Date.new(2024, 1, 1)
+          end_date = Date.new(2024, 12, 31)
+
+          result = MedicalRecord.revenue_by_facility(start_date, end_date).find { |r| r.name == '施設100%' }
+
+          expect(result.total_cost).to eq(100_000)
+          expect(result.billing_rate).to eq(100.0)
+          expect(result.revenue).to eq(100_000)
+          expect(result.record_count).to eq(1)
+        end
+
+        it 'billing_rate=80の施設は80%が売上になる' do
+          start_date = Date.new(2024, 1, 1)
+          end_date = Date.new(2024, 12, 31)
+
+          result = MedicalRecord.revenue_by_facility(start_date, end_date).find { |r| r.name == '施設80%' }
+
+          expect(result.total_cost).to eq(100_000)
+          expect(result.billing_rate).to eq(80.0)
+          expect(result.revenue).to eq(80_000)
+          expect(result.record_count).to eq(1)
+        end
+
+        it 'billing_rate=50の施設は50%が売上になる' do
+          start_date = Date.new(2024, 1, 1)
+          end_date = Date.new(2024, 12, 31)
+
+          result = MedicalRecord.revenue_by_facility(start_date, end_date).find { |r| r.name == '施設50%' }
+
+          expect(result.total_cost).to eq(100_000)
+          expect(result.billing_rate).to eq(50.0)
+          expect(result.revenue).to eq(50_000)
+          expect(result.record_count).to eq(1)
+        end
+
+        it 'billing_rate=0の施設は売上0になる' do
+          start_date = Date.new(2024, 1, 1)
+          end_date = Date.new(2024, 12, 31)
+
+          result = MedicalRecord.revenue_by_facility(start_date, end_date).find { |r| r.name == '施設0%' }
+
+          expect(result.total_cost).to eq(100_000)
+          expect(result.billing_rate).to eq(0.0)
+          expect(result.revenue).to eq(0)
+          expect(result.record_count).to eq(1)
+        end
+
+        it 'billing_rate=nilの施設はデフォルト100%として扱われる' do
+          start_date = Date.new(2024, 1, 1)
+          end_date = Date.new(2024, 12, 31)
+
+          result = MedicalRecord.revenue_by_facility(start_date, end_date).find { |r| r.name == '施設nil' }
+
+          expect(result.total_cost).to eq(100_000)
+          expect(result.billing_rate).to eq(100.0)
+          expect(result.revenue).to eq(100_000)
+          expect(result.record_count).to eq(1)
+        end
+
+        it 'total_costとrevenueが正しく区別される' do
+          start_date = Date.new(2024, 1, 1)
+          end_date = Date.new(2024, 12, 31)
+
+          results = MedicalRecord.revenue_by_facility(start_date, end_date)
+
+          # 全施設のtotal_costは100,000円
+          results.each do |result|
+            expect(result.total_cost).to eq(100_000)
+          end
+
+          # revenueはbilling_rateによって異なる
+          result_100 = results.find { |r| r.name == '施設100%' }
+          result_80 = results.find { |r| r.name == '施設80%' }
+          result_50 = results.find { |r| r.name == '施設50%' }
+          result_0 = results.find { |r| r.name == '施設0%' }
+          result_nil = results.find { |r| r.name == '施設nil' }
+
+          expect(result_100.revenue).to eq(100_000)
+          expect(result_80.revenue).to eq(80_000)
+          expect(result_50.revenue).to eq(50_000)
+          expect(result_0.revenue).to eq(0)
+          expect(result_nil.revenue).to eq(100_000)
+        end
+      end
+
+      describe '.total_revenue' do
+        it '全施設の売上合計がbilling_rate適用後の金額になる' do
+          start_date = Date.new(2024, 1, 1)
+          end_date = Date.new(2024, 12, 31)
+
+          # 期待値: 100,000 + 80,000 + 50,000 + 0 + 100,000 = 330,000
+          result = MedicalRecord.total_revenue(start_date, end_date)
+
+          expect(result).to eq(330_000)
+        end
+
+        it '期間を絞った場合、該当期間の売上のみ集計される' do
+          start_date = Date.new(2024, 1, 1)
+          end_date = Date.new(2024, 1, 31)
+
+          # 期待値: 1月のレコードのみ（100% + 80% = 180,000）
+          result = MedicalRecord.total_revenue(start_date, end_date)
+
+          expect(result).to eq(180_000)
+        end
+      end
+
+      describe '.monthly_revenue' do
+        it '各月の売上がbilling_rate適用後の金額になる' do
+          result = MedicalRecord.monthly_revenue(2024)
+
+          # 1月: 100,000 + 80,000 = 180,000
+          expect(result[0][:revenue]).to eq(180_000)
+          expect(result[0][:count]).to eq(2)
+
+          # 2月: 50,000
+          expect(result[1][:revenue]).to eq(50_000)
+          expect(result[1][:count]).to eq(1)
+
+          # 3月: 0
+          expect(result[2][:revenue]).to eq(0)
+          expect(result[2][:count]).to eq(1)
+
+          # 4月: 100,000 (nil -> 100%)
+          expect(result[3][:revenue]).to eq(100_000)
+          expect(result[3][:count]).to eq(1)
+
+          # 5月以降: 0
+          (4..11).each do |month_index|
+            expect(result[month_index][:revenue]).to eq(0)
+            expect(result[month_index][:count]).to eq(0)
+          end
+        end
+      end
+    end
   end
 
   describe 'nested attributes' do
