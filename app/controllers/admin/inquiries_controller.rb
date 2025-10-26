@@ -12,8 +12,8 @@ module Admin
     end
 
     def show
-      # 既読処理：ユーザーが最後に返信していたら、管理者が既読にする
-      @inquiry.update(last_message_by: :admin) if @inquiry.user?
+      # 管理者が既読にする
+      @inquiry.update(admin_read_at: Time.current)
 
       # 未対応の場合は対応中に変更
       @inquiry.update(status: :in_progress) if @inquiry.open?

@@ -43,20 +43,21 @@ RSpec.describe 'Inquiries', type: :request do
     end
 
     context '既読処理' do
-      it '管理者が最後に返信していた場合、ユーザーが既読にする' do
-        inquiry.update(last_message_by: :admin)
-
-        get inquiry_path(inquiry)
-
-        expect(inquiry.reload.last_message_by).to eq('user')
-      end
-
-      it 'ユーザーが最後に返信していた場合、既読処理は行わない' do
-        inquiry.update(last_message_by: :user)
+      it '問い合わせを開くとuser_read_atが更新される' do
+        inquiry.update(user_read_at: nil)
 
         expect do
           get inquiry_path(inquiry)
-        end.not_to(change { inquiry.reload.last_message_by })
+        end.to change { inquiry.reload.user_read_at }.from(nil)
+      end
+
+      it '再度開くとuser_read_atが再更新される' do
+        inquiry.update(user_read_at: 1.hour.ago)
+        initial_read_at = inquiry.reload.user_read_at
+
+        expect do
+          get inquiry_path(inquiry)
+        end.to change { inquiry.reload.user_read_at }.from(initial_read_at)
       end
     end
 

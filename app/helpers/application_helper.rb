@@ -25,25 +25,52 @@ module ApplicationHelper
 
     Rails.cache.fetch(cache_key, expires_in: 5.minutes) do
       if user.admin?
-        # 管理者：未対応 OR 対応中でユーザーが最後に返信
-        Inquiry.where(status: :open)
-               .or(Inquiry.where(status: :in_progress, last_message_by: :user))
+        # 管理者：admin_read_atがNULL OR ユーザーが送った最後のメッセージがadmin_read_atより新しい
+        Inquiry.joins(:inquiry_messages)
+               .joins('INNER JOIN users ON inquiry_messages.user_id = users.id')
+               .where(
+                 'admin_read_at IS NULL OR (users.role = ? AND inquiry_messages.created_at > admin_read_at)',
+                 User.roles[:user]
+               )
+               .distinct
                .count
       else
-        # ユーザー：管理者が最後に返信したお問い合わせ
-        user.inquiries.where(last_message_by: :admin).count
+        # ユーザー：user_read_atがNULL OR 管理者が送った最後のメッセージがuser_read_atより新しい
+        user.inquiries
+            .joins(:inquiry_messages)
+            .joins('INNER JOIN users ON inquiry_messages.user_id = users.id')
+            .where(
+              'user_read_at IS NULL OR (users.role = ? AND inquiry_messages.created_at > user_read_at)',
+              User.roles[:admin]
+            )
+            .distinct
+            .count
       end
     end
   end
 
   def unread_indicator_for(inquiry, current_user)
-    show_unread = if current_user.admin?
-                    # 管理者：未対応 OR 対応中でユーザーが最後に返信
-                    inquiry.open? || (inquiry.in_progress? && inquiry.user?)
-                  else
-                    # ユーザー：管理者が最後に返信
-                    inquiry.admin?
-                  end
+    if current_user.admin?
+      # 管理者：ユーザーが送った最後のメッセージを確認
+      last_user_message = inquiry.inquiry_messages
+                                 .joins(:user)
+                                 .where(users: { role: :user })
+                                 .order(created_at: :desc)
+                                 .first
+      return unless last_user_message
+
+      show_unread = inquiry.admin_read_at.nil? || last_user_message.created_at > inquiry.admin_read_at
+    else
+      # ユーザー：管理者が送った最後のメッセージを確認
+      last_admin_message = inquiry.inquiry_messages
+                                  .joins(:user)
+                                  .where(users: { role: :admin })
+                                  .order(created_at: :desc)
+                                  .first
+      return unless last_admin_message
+
+      show_unread = inquiry.user_read_at.nil? || last_admin_message.created_at > inquiry.user_read_at
+    end
 
     return unless show_unread
 

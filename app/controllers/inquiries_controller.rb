@@ -7,8 +7,8 @@ class InquiriesController < ApplicationController
   end
 
   def show
-    # 既読処理：管理者が最後に返信していたら、ユーザーが既読にする
-    @inquiry.update(last_message_by: :user) if @inquiry.admin?
+    # ユーザーが既読にする
+    @inquiry.update(user_read_at: Time.current)
 
     @inquiry_messages = @inquiry.inquiry_messages.chronological
     @inquiry_message = @inquiry.inquiry_messages.build
