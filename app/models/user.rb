@@ -92,31 +92,19 @@ class User < ApplicationRecord
   def invitation_code_must_be_valid
     return if invitation_code_input.blank?
 
-    # 大文字に正規化
     normalized_code = invitation_code_input.upcase.strip
-
-    # 招待コードを検索
     code = InvitationCode.find_by(code: normalized_code)
 
-    # コードが存在しない場合
     unless code
       errors.add(:invitation_code_input, '有効な招待コードではありません')
       return
     end
 
-    # コードが使用可能でない場合
     unless code.available?
-      if code.inactive?
-        errors.add(:invitation_code_input, '無効な招待コードです')
-      elsif code.expired?
-        errors.add(:invitation_code_input, '有効期限が切れています')
-      elsif code.max_uses_reached?
-        errors.add(:invitation_code_input, '使用回数の上限に達しています')
-      end
+      add_code_unavailable_error(code)
       return
     end
 
-    # バリデーション成功：招待コードをインスタンス変数に保存
     @validated_invitation_code = code
   end
 
@@ -128,6 +116,17 @@ class User < ApplicationRecord
     InvitationCode.transaction do
       self.invitation_code = @validated_invitation_code
       @validated_invitation_code.increment_used_count!
+    end
+  end
+
+  # 使用不可能な招待コードのエラーメッセージを追加
+  def add_code_unavailable_error(code)
+    if code.inactive?
+      errors.add(:invitation_code_input, '無効な招待コードです')
+    elsif code.expired?
+      errors.add(:invitation_code_input, '有効期限が切れています')
+    elsif code.max_uses_reached?
+      errors.add(:invitation_code_input, '使用回数の上限に達しています')
     end
   end
 end
