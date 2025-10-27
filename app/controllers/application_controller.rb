@@ -2,6 +2,7 @@ class ApplicationController < ActionController::Base
   include Pundit::Authorization
 
   before_action :authenticate_user!
+  before_action :check_terms_acceptance
 
   # Pundit未認可エラーハンドリング
   rescue_from Pundit::NotAuthorizedError, with: :user_not_authorized
@@ -17,6 +18,19 @@ class ApplicationController < ActionController::Base
   end
 
   private
+
+  # 規約同意確認
+  def check_terms_acceptance
+    return unless user_signed_in?
+    return if devise_controller?
+    return if controller_name == 'pages' # PagesControllerは全アクションスキップ
+    return if controller_name == 'welcome'
+
+    # 規約未同意の場合は規約同意確認ページへリダイレクト
+    return if current_user.terms_privacy_accepted?
+
+    redirect_to accept_terms_path, alert: '利用規約とプライバシーポリシーへの同意が必要です。'
+  end
 
   def user_not_authorized
     flash[:alert] = 'この操作を実行する権限がありません。'

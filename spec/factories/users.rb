@@ -5,6 +5,8 @@ FactoryBot.define do
     password { 'password123' }
     password_confirmation { 'password123' }
     role { :user }
+    terms_accepted_at { Time.current }
+    privacy_accepted_at { Time.current }
 
     trait :admin do
       role { :admin }
@@ -13,6 +15,11 @@ FactoryBot.define do
     trait :with_oauth do
       provider { 'google_oauth2' }
       uid { Faker::Number.number(digits: 10) }
+    end
+
+    trait :without_terms_acceptance do
+      terms_accepted_at { nil }
+      privacy_accepted_at { nil }
     end
   end
 end

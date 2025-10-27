@@ -126,6 +126,8 @@ RSpec.describe 'Authentication Flow', type: :system do
       fill_in 'メールアドレス', with: 'newuser@example.com'
       fill_in 'パスワード', with: 'password123'
       fill_in 'パスワード（確認）', with: 'password123'
+      check 'user_terms_accepted'
+      check 'user_privacy_accepted'
       click_button '新規登録'
 
       expect(page).to have_current_path(user_dashboard_path)

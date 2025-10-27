@@ -57,7 +57,7 @@ RSpec.describe 'Footer', type: :system do
       end
 
       expect(page).to have_current_path(terms_path)
-      expect(page).to have_selector('h1', text: 'ベータ版利用規約')
+      expect(page).to have_selector('h1', text: '電子カルテシステム利用規約')
     end
 
     it 'フッターからプライバシーポリシーへアクセスできる' do

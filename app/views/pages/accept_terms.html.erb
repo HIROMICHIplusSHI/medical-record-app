@@ -1,0 +1,79 @@
+<div class="min-h-screen bg-gradient-to-br from-greige-50 via-white to-greige-50 flex items-center justify-center px-4 -mt-28 pt-28">
+  <div class="w-full max-w-2xl">
+    <!-- Logo Section -->
+    <div class="text-center mb-8">
+      <%= image_tag 'inkfolio-logo.svg', alt: 'InkFolio', class: 'h-24 w-auto mx-auto mb-6' %>
+      <h1 class="text-2xl text-greige-800 tracking-wide mb-2" style="font-family: 'Shippori Mincho', serif; font-weight: 500;">
+        利用規約への同意
+      </h1>
+      <p class="text-sm text-greige-600 mt-2">
+        サービスをご利用いただくには、利用規約とプライバシーポリシーへの同意が必要です。
+      </p>
+    </div>
+
+    <!-- Terms Card -->
+    <div class="bg-white/80 backdrop-blur-sm rounded-2xl shadow-xl border border-greige-100 p-8 mb-6">
+      <%= form_with url: accept_terms_path, method: :patch, local: true, html: { class: "space-y-6" } do |f| %>
+        <!-- 利用規約プレビュー -->
+        <div class="bg-greige-50 border border-greige-200 rounded-xl p-6 max-h-80 overflow-y-auto">
+          <h2 class="text-lg font-bold text-greige-900 mb-4">利用規約</h2>
+          <div class="text-sm text-greige-700 space-y-2">
+            <p>利用規約の内容は<%= link_to "こちら", terms_path, target: "_blank", class: "text-accent-primary hover:text-ink-dark font-medium underline" %>からご確認ください。</p>
+          </div>
+        </div>
+
+        <!-- プライバシーポリシープレビュー -->
+        <div class="bg-greige-50 border border-greige-200 rounded-xl p-6 max-h-80 overflow-y-auto">
+          <h2 class="text-lg font-bold text-greige-900 mb-4">プライバシーポリシー</h2>
+          <div class="text-sm text-greige-700 space-y-2">
+            <p>プライバシーポリシーの内容は<%= link_to "こちら", privacy_path, target: "_blank", class: "text-accent-primary hover:text-ink-dark font-medium underline" %>からご確認ください。</p>
+          </div>
+        </div>
+
+        <!-- 規約同意チェックボックス -->
+        <div class="space-y-3 pt-4 border-t border-greige-200">
+          <div class="flex items-start">
+            <div class="flex items-center h-5">
+              <%= check_box_tag :terms_accepted, 'true', false, class: "h-4 w-4 text-accent-primary focus:ring-accent-primary border-greige-300 rounded transition-all" %>
+            </div>
+            <div class="ml-3 text-sm">
+              <label for="terms_accepted" class="text-greige-700">
+                <%= link_to "利用規約", terms_path, target: "_blank", class: "text-accent-primary hover:text-ink-dark font-medium underline" %>に同意する
+                <span class="text-red-600">*</span>
+              </label>
+            </div>
+          </div>
+
+          <div class="flex items-start">
+            <div class="flex items-center h-5">
+              <%= check_box_tag :privacy_accepted, 'true', false, class: "h-4 w-4 text-accent-primary focus:ring-accent-primary border-greige-300 rounded transition-all" %>
+            </div>
+            <div class="ml-3 text-sm">
+              <label for="privacy_accepted" class="text-greige-700">
+                <%= link_to "プライバシーポリシー", privacy_path, target: "_blank", class: "text-accent-primary hover:text-ink-dark font-medium underline" %>に同意する
+                <span class="text-red-600">*</span>
+              </label>
+            </div>
+          </div>
+        </div>
+
+        <!-- 送信ボタン -->
+        <div class="mt-8">
+          <%= submit_tag "同意して続ける", class: "w-full py-3 px-4 bg-accent-primary text-white font-medium rounded-xl shadow-md hover:bg-accent-primary/90 hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-accent-primary transition-all duration-200" %>
+        </div>
+      <% end %>
+
+      <!-- ログアウトリンク -->
+      <div class="mt-6 text-center">
+        <p class="text-sm text-greige-600">
+          <%= link_to "ログアウト", destroy_user_session_path, method: :delete, class: "text-accent-primary hover:text-ink-dark font-medium transition-colors" %>
+        </p>
+      </div>
+    </div>
+
+    <!-- Footer -->
+    <div class="text-center text-xs text-greige-500">
+      &copy; <%= Time.current.year %> InkFolio. All rights reserved.
+    </div>
+  </div>
+</div>

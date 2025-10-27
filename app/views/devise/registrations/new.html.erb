@@ -46,6 +46,37 @@
               placeholder: "••••••••" %>
         </div>
 
+        <!-- 規約同意 -->
+        <div class="space-y-3 pt-2">
+          <div class="flex items-start">
+            <div class="flex items-center h-5">
+              <%= f.check_box :terms_accepted,
+                  { class: "h-4 w-4 text-accent-primary focus:ring-accent-primary border-greige-300 rounded transition-all" },
+                  'true', 'false' %>
+            </div>
+            <div class="ml-3 text-sm">
+              <label for="user_terms_accepted" class="text-greige-700">
+                <%= link_to "利用規約", terms_path, target: "_blank", class: "text-accent-primary hover:text-ink-dark font-medium underline" %>に同意する
+                <span class="text-red-600">*</span>
+              </label>
+            </div>
+          </div>
+
+          <div class="flex items-start">
+            <div class="flex items-center h-5">
+              <%= f.check_box :privacy_accepted,
+                  { class: "h-4 w-4 text-accent-primary focus:ring-accent-primary border-greige-300 rounded transition-all" },
+                  'true', 'false' %>
+            </div>
+            <div class="ml-3 text-sm">
+              <label for="user_privacy_accepted" class="text-greige-700">
+                <%= link_to "プライバシーポリシー", privacy_path, target: "_blank", class: "text-accent-primary hover:text-ink-dark font-medium underline" %>に同意する
+                <span class="text-red-600">*</span>
+              </label>
+            </div>
+          </div>
+        </div>
+
         <!-- 登録ボタン -->
         <div class="mt-8">
           <%= f.submit "新規登録", class: "w-full py-3 px-4 bg-accent-primary text-white font-medium rounded-xl shadow-md hover:bg-accent-primary/90 hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-accent-primary transition-all duration-200" %>
