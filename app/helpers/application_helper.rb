@@ -80,4 +80,9 @@ module ApplicationHelper
       title: '未読', 'aria-label': '未読'
     )
   end
+
+  def render_markdown(file_path)
+    markdown_content = File.read(Rails.root.join(file_path))
+    Kramdown::Document.new(markdown_content).to_html.html_safe
+  end
 end

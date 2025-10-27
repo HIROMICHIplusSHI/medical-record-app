@@ -33,6 +33,9 @@ gem 'image_processing', '~> 1.12'
 gem 'prawn', '~> 2.4'
 gem 'prawn-table', '~> 0.2'
 
+# Markdownレンダリング
+gem 'kramdown', '~> 2.4'
+
 # UI
 gem 'view_component', '~> 3.0'
 
