@@ -79,7 +79,9 @@ RSpec.describe 'Pages', type: :request do
           patch accept_terms_path, params: { terms_accepted: 'true', privacy_accepted: 'true' }
           user_without_acceptance.reload
         end.to change { user_without_acceptance.terms_accepted_at }.from(nil)
-                                                                    .and change { user_without_acceptance.privacy_accepted_at }.from(nil)
+                                                                   .and change {
+                                                                          user_without_acceptance.privacy_accepted_at
+                                                                        }.from(nil)
 
         expect(response).to redirect_to(user_dashboard_path)
         expect(flash[:notice]).to eq('利用規約とプライバシーポリシーに同意いただきありがとうございます。')

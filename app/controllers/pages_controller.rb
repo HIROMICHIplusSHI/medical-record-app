@@ -1,6 +1,6 @@
 class PagesController < ApplicationController
   # 利用規約・プライバシーポリシーは未認証でもアクセス可能
-  skip_before_action :authenticate_user!, only: [:terms, :privacy]
+  skip_before_action :authenticate_user!, only: %i[terms privacy]
 
   def terms; end
 
@@ -9,9 +9,9 @@ class PagesController < ApplicationController
   # 既存ユーザー向け規約同意確認ページ
   def accept_terms
     # 既に同意済みの場合はダッシュボードへリダイレクト
-    if current_user.terms_privacy_accepted?
-      redirect_to after_sign_in_path_for(current_user)
-    end
+    return unless current_user.terms_privacy_accepted?
+
+    redirect_to after_sign_in_path_for(current_user)
   end
 
   # 規約同意の更新

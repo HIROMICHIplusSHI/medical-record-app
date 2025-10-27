@@ -27,9 +27,9 @@ class ApplicationController < ActionController::Base
     return if controller_name == 'welcome'
 
     # 規約未同意の場合は規約同意確認ページへリダイレクト
-    unless current_user.terms_privacy_accepted?
-      redirect_to accept_terms_path, alert: '利用規約とプライバシーポリシーへの同意が必要です。'
-    end
+    return if current_user.terms_privacy_accepted?
+
+    redirect_to accept_terms_path, alert: '利用規約とプライバシーポリシーへの同意が必要です。'
   end
 
   def user_not_authorized
