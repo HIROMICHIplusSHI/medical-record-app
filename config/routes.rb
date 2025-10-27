@@ -1,5 +1,7 @@
 Rails.application.routes.draw do
-  devise_for :users
+  devise_for :users, controllers: {
+    registrations: 'users/registrations'
+  }
 
   # 管理者専用ルート（管理者のみアクセス可能）
   namespace :admin do
@@ -29,6 +31,10 @@ Rails.application.routes.draw do
   # 利用規約・プライバシーポリシー（未認証でもアクセス可能）
   get 'terms', to: 'pages#terms'
   get 'privacy', to: 'pages#privacy'
+
+  # 既存ユーザー向け規約同意確認ページ（認証必須）
+  get 'accept_terms', to: 'pages#accept_terms'
+  patch 'accept_terms', to: 'pages#update_terms_acceptance'
 
   # ユーザー（施術者）専用ルート
   # 認証はApplicationControllerのbefore_action :authenticate_user!で保護
