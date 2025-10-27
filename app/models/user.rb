@@ -15,6 +15,9 @@ class User < ApplicationRecord
   # Mass Assignment対策: roleの変更を保護
   attr_accessor :skip_role_protection
 
+  # 規約同意用の仮想属性（フォームからの送信値を受け取るため）
+  attr_accessor :terms_accepted, :privacy_accepted
+
   before_update :prevent_role_change, unless: :skip_role_protection
 
   # Associations
@@ -33,6 +36,8 @@ class User < ApplicationRecord
   # Validations
   validates :company_email, format: { with: URI::MailTo::EMAIL_REGEXP, allow_blank: true }
   validates :company_phone, length: { maximum: 30 }, allow_blank: true
+  validates :terms_accepted_at, presence: { message: '利用規約への同意が必要です' }, on: :create
+  validates :privacy_accepted_at, presence: { message: 'プライバシーポリシーへの同意が必要です' }, on: :create
 
   # OmniAuth
   def self.from_omniauth(auth)
@@ -40,12 +45,28 @@ class User < ApplicationRecord
       user.email = auth.info.email
       user.password = Devise.friendly_token[0, 20]
       user.name = auth.info.name
+      # OAuth認証時は利用規約・プライバシーポリシーに自動同意とみなす
+      user.terms_accepted_at = Time.current
+      user.privacy_accepted_at = Time.current
     end
   end
 
   # 管理者によるロール変更を許可するメソッド
   def allow_role_change!
     self.skip_role_protection = true
+  end
+
+  # 規約同意確認メソッド
+  def terms_accepted?
+    terms_accepted_at.present?
+  end
+
+  def privacy_accepted?
+    privacy_accepted_at.present?
+  end
+
+  def terms_privacy_accepted?
+    terms_accepted? && privacy_accepted?
   end
 
   private
