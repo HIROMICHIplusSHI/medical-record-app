@@ -9,11 +9,11 @@ module TermsConstants
   # 連絡先情報
   SERVICE_NAME = 'InkFolio'
   CONTACT_EMAIL = 'inkfolio.sup@gmail.com'
-  PRIVACY_EMAIL = 'privacy@inkfolio.example.com' # TODO: 本番環境用メールアドレスに変更
+  PRIVACY_EMAIL = 'inkfolio.sup@gmail.com'
   SUPPORT_HOURS = '平日10:00〜17:00（土日祝日、年末年始を除く）'
 
   # 事業者情報（プライバシーポリシー用）
   OPERATOR_NAME = 'InkFolio開発チーム'
-  OPERATOR_ADDRESS = '（運営者住所）' # TODO: 実際の住所に変更
-  PRIVACY_MANAGER = 'InkFolio 個人情報保護管理者' # TODO: 実際の担当者名に変更
+  OPERATOR_ADDRESS = '宮崎県在住の個人開発者'
+  PRIVACY_MANAGER = 'InkFolio 開発責任者'
 end
