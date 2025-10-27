@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2025_10_27_112022) do
+ActiveRecord::Schema[7.2].define(version: 2025_10_27_140817) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -174,6 +174,22 @@ ActiveRecord::Schema[7.2].define(version: 2025_10_27_112022) do
     t.index ["created_at"], name: "index_inquiry_messages_on_created_at"
     t.index ["inquiry_id"], name: "index_inquiry_messages_on_inquiry_id"
     t.index ["user_id"], name: "index_inquiry_messages_on_user_id"
+  end
+
+  create_table "invitation_codes", force: :cascade do |t|
+    t.string "code", null: false
+    t.integer "max_uses"
+    t.integer "used_count", default: 0, null: false
+    t.datetime "expires_at"
+    t.bigint "created_by_id", null: false
+    t.integer "status", default: 0, null: false
+    t.text "memo"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["code"], name: "index_invitation_codes_on_code", unique: true
+    t.index ["created_by_id"], name: "index_invitation_codes_on_created_by_id"
+    t.index ["expires_at"], name: "index_invitation_codes_on_expires_at"
+    t.index ["status"], name: "index_invitation_codes_on_status"
   end
 
   create_table "invoice_items", force: :cascade do |t|
@@ -362,6 +378,7 @@ ActiveRecord::Schema[7.2].define(version: 2025_10_27_112022) do
   add_foreign_key "inquiries", "users"
   add_foreign_key "inquiry_messages", "inquiries"
   add_foreign_key "inquiry_messages", "users"
+  add_foreign_key "invitation_codes", "users", column: "created_by_id"
   add_foreign_key "invoice_items", "invoices"
   add_foreign_key "invoice_items", "medical_records"
   add_foreign_key "invoices", "facilities"
