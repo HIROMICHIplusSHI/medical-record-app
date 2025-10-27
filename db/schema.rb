@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2025_10_27_140817) do
+ActiveRecord::Schema[7.2].define(version: 2025_10_27_143220) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -358,7 +358,9 @@ ActiveRecord::Schema[7.2].define(version: 2025_10_27_140817) do
     t.integer "role", default: 0, null: false
     t.datetime "terms_accepted_at"
     t.datetime "privacy_accepted_at"
+    t.bigint "invitation_code_id"
     t.index ["email"], name: "index_users_on_email", unique: true
+    t.index ["invitation_code_id"], name: "index_users_on_invitation_code_id"
     t.index ["provider", "uid"], name: "index_users_on_provider_and_uid", unique: true
     t.index ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true
   end
@@ -396,4 +398,5 @@ ActiveRecord::Schema[7.2].define(version: 2025_10_27_140817) do
   add_foreign_key "patients", "users"
   add_foreign_key "questionnaires", "patients"
   add_foreign_key "tags", "users"
+  add_foreign_key "users", "invitation_codes"
 end

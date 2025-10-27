@@ -18,9 +18,14 @@ class User < ApplicationRecord
   # 規約同意用の仮想属性（フォームからの送信値を受け取るため）
   attr_accessor :terms_accepted, :privacy_accepted
 
+  # 招待コード入力用の仮想属性
+  attr_accessor :invitation_code_input
+
   before_update :prevent_role_change, unless: :skip_role_protection
+  before_create :set_invitation_code_and_increment_usage
 
   # Associations
+  belongs_to :invitation_code, optional: true
   has_many :facilities, dependent: :destroy
   has_many :patients, dependent: :destroy
   has_many :medical_records, dependent: :destroy
@@ -38,6 +43,8 @@ class User < ApplicationRecord
   validates :company_phone, length: { maximum: 30 }, allow_blank: true
   validates :terms_accepted_at, presence: { message: '利用規約への同意が必要です' }, on: :create
   validates :privacy_accepted_at, presence: { message: 'プライバシーポリシーへの同意が必要です' }, on: :create
+  validates :invitation_code_input, presence: { message: '招待コードを入力してください' }, on: :create, unless: :admin?
+  validate :invitation_code_must_be_valid, on: :create, unless: :admin?
 
   # OmniAuth
   def self.from_omniauth(auth)
@@ -79,5 +86,48 @@ class User < ApplicationRecord
 
     errors.add(:role, 'は変更できません')
     throw(:abort)
+  end
+
+  # 招待コードのカスタムバリデーション
+  def invitation_code_must_be_valid
+    return if invitation_code_input.blank?
+
+    # 大文字に正規化
+    normalized_code = invitation_code_input.upcase.strip
+
+    # 招待コードを検索
+    code = InvitationCode.find_by(code: normalized_code)
+
+    # コードが存在しない場合
+    unless code
+      errors.add(:invitation_code_input, '有効な招待コードではありません')
+      return
+    end
+
+    # コードが使用可能でない場合
+    unless code.available?
+      if code.inactive?
+        errors.add(:invitation_code_input, '無効な招待コードです')
+      elsif code.expired?
+        errors.add(:invitation_code_input, '有効期限が切れています')
+      elsif code.max_uses_reached?
+        errors.add(:invitation_code_input, '使用回数の上限に達しています')
+      end
+      return
+    end
+
+    # バリデーション成功：招待コードをインスタンス変数に保存
+    @validated_invitation_code = code
+  end
+
+  # 招待コードを設定し、使用回数をインクリメント
+  def set_invitation_code_and_increment_usage
+    return unless @validated_invitation_code
+
+    # トランザクション内で実行
+    InvitationCode.transaction do
+      self.invitation_code = @validated_invitation_code
+      @validated_invitation_code.increment_used_count!
+    end
   end
 end
