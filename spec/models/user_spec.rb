@@ -38,7 +38,9 @@ RSpec.describe User, type: :model do
       new_user = User.create!(
         email: 'test@example.com',
         password: 'password123',
-        password_confirmation: 'password123'
+        password_confirmation: 'password123',
+        terms_accepted_at: Time.current,
+        privacy_accepted_at: Time.current
       )
       expect(new_user.role).to eq('user')
       expect(new_user.user?).to be true
@@ -111,6 +113,95 @@ RSpec.describe User, type: :model do
       expect do
         User.from_omniauth(auth)
       end.not_to change(User, :count)
+    end
+
+    it 'OAuth認証時に規約同意タイムスタンプが自動設定される' do
+      user = User.from_omniauth(auth)
+
+      expect(user.terms_accepted_at).to be_present
+      expect(user.privacy_accepted_at).to be_present
+      expect(user.terms_privacy_accepted?).to be true
+    end
+  end
+
+  describe '規約同意' do
+    describe 'バリデーション' do
+      it '規約同意なしでは新規作成できない' do
+        user = User.new(
+          email: 'test@example.com',
+          password: 'password123',
+          password_confirmation: 'password123'
+        )
+
+        expect(user.valid?).to be false
+        expect(user.errors[:terms_accepted_at]).to include('利用規約への同意が必要です')
+        expect(user.errors[:privacy_accepted_at]).to include('プライバシーポリシーへの同意が必要です')
+      end
+
+      it '規約同意ありで新規作成できる' do
+        user = User.new(
+          email: 'test@example.com',
+          password: 'password123',
+          password_confirmation: 'password123',
+          terms_accepted_at: Time.current,
+          privacy_accepted_at: Time.current
+        )
+
+        expect(user.valid?).to be true
+      end
+
+      it '既存ユーザーの更新時はバリデーションされない' do
+        user = create(:user)
+        user.terms_accepted_at = nil
+        user.privacy_accepted_at = nil
+
+        expect(user.valid?).to be true
+      end
+    end
+
+    describe 'ヘルパーメソッド' do
+      let(:user_with_acceptance) { create(:user) }
+      let(:user_without_acceptance) { build(:user, :without_terms_acceptance) }
+
+      describe '#terms_accepted?' do
+        it '利用規約同意済みの場合trueを返す' do
+          expect(user_with_acceptance.terms_accepted?).to be true
+        end
+
+        it '利用規約未同意の場合falseを返す' do
+          expect(user_without_acceptance.terms_accepted?).to be false
+        end
+      end
+
+      describe '#privacy_accepted?' do
+        it 'プライバシーポリシー同意済みの場合trueを返す' do
+          expect(user_with_acceptance.privacy_accepted?).to be true
+        end
+
+        it 'プライバシーポリシー未同意の場合falseを返す' do
+          expect(user_without_acceptance.privacy_accepted?).to be false
+        end
+      end
+
+      describe '#terms_privacy_accepted?' do
+        it '両方同意済みの場合trueを返す' do
+          expect(user_with_acceptance.terms_privacy_accepted?).to be true
+        end
+
+        it '利用規約のみ未同意の場合falseを返す' do
+          user = build(:user, privacy_accepted_at: Time.current, terms_accepted_at: nil)
+          expect(user.terms_privacy_accepted?).to be false
+        end
+
+        it 'プライバシーポリシーのみ未同意の場合falseを返す' do
+          user = build(:user, terms_accepted_at: Time.current, privacy_accepted_at: nil)
+          expect(user.terms_privacy_accepted?).to be false
+        end
+
+        it '両方未同意の場合falseを返す' do
+          expect(user_without_acceptance.terms_privacy_accepted?).to be false
+        end
+      end
     end
   end
 end
