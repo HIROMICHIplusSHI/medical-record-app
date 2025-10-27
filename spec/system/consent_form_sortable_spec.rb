@@ -52,9 +52,10 @@ RSpec.describe 'ConsentFormItemsSortable', type: :system do
       # チェック項目を追加
       click_button '項目を追加'
 
-      # ドラッグハンドルは表示されるが、sortable controllerは適用されない
+      # ドラッグハンドルは表示されるが、sortable URLは設定されない
       expect(page).to have_css('.drag-handle')
-      expect(page).not_to have_css('[data-controller*="sortable"]')
+      expect(page).to have_css('[data-controller*="sortable"]')
+      expect(page).not_to have_css('[data-sortable-url-value]')
     end
   end
 end
