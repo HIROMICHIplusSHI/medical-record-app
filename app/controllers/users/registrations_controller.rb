@@ -36,9 +36,9 @@ module Users
 
     protected
 
-    # 規約同意パラメータを許可
+    # 規約同意・招待コードパラメータを許可
     def configure_sign_up_params
-      devise_parameter_sanitizer.permit(:sign_up, keys: %i[terms_accepted privacy_accepted])
+      devise_parameter_sanitizer.permit(:sign_up, keys: %i[terms_accepted privacy_accepted invitation_code_input])
     end
   end
 end
