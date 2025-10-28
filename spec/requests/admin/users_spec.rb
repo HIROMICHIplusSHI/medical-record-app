@@ -1,15 +1,16 @@
 require 'rails_helper'
 
 RSpec.describe 'Admin::Users', type: :request do
-  let(:admin) { create(:user, role: :admin) }
-  let(:user) { create(:user) }
+  let(:admin) { create(:user, :admin, create_invitation_code: false) }
+  let!(:invitation_code) { create(:invitation_code, created_by: admin) }
+  let(:user) { create(:user, invitation_code_input: invitation_code.code) }
 
   describe 'GET /admin/users' do
     context '管理者の場合' do
       before { sign_in admin }
 
       it 'ユーザー一覧が表示される' do
-        create_list(:user, 3)
+        create_list(:user, 3, invitation_code_input: invitation_code.code)
 
         get admin_users_path
 
