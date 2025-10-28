@@ -152,7 +152,9 @@ RSpec.describe 'Admin Users Management', type: :system do
     end
 
     context '最後の管理者の場合' do
-      let!(:another_admin) { create(:user, :admin, create_invitation_code: false, invitation_code_input: invitation_code.code) }
+      let!(:another_admin) do
+        create(:user, :admin, create_invitation_code: false, invitation_code_input: invitation_code.code)
+      end
 
       before do
         # admin_user以外の管理者を全て削除して、admin_userを最後の管理者にする
