@@ -35,12 +35,16 @@ RSpec.describe User, type: :model do
     let(:admin) { create(:user, role: :admin) }
 
     it 'デフォルトでuserロールが設定される' do
+      admin = create(:user, :admin, create_invitation_code: false)
+      create(:invitation_code, created_by: admin, code: 'ROLETEST1')
+
       new_user = User.create!(
         email: 'test@example.com',
         password: 'password123',
         password_confirmation: 'password123',
         terms_accepted_at: Time.current,
-        privacy_accepted_at: Time.current
+        privacy_accepted_at: Time.current,
+        invitation_code_input: 'ROLETEST1'
       )
       expect(new_user.role).to eq('user')
       expect(new_user.user?).to be true
@@ -139,12 +143,16 @@ RSpec.describe User, type: :model do
       end
 
       it '規約同意ありで新規作成できる' do
+        admin = create(:user, :admin, create_invitation_code: false)
+        create(:invitation_code, created_by: admin, code: 'TESTCODE')
+
         user = User.new(
           email: 'test@example.com',
           password: 'password123',
           password_confirmation: 'password123',
           terms_accepted_at: Time.current,
-          privacy_accepted_at: Time.current
+          privacy_accepted_at: Time.current,
+          invitation_code_input: 'TESTCODE'
         )
 
         expect(user.valid?).to be true

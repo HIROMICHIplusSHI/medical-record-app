@@ -43,8 +43,9 @@ class User < ApplicationRecord
   validates :company_phone, length: { maximum: 30 }, allow_blank: true
   validates :terms_accepted_at, presence: { message: '利用規約への同意が必要です' }, on: :create
   validates :privacy_accepted_at, presence: { message: 'プライバシーポリシーへの同意が必要です' }, on: :create
-  validates :invitation_code_input, presence: { message: '招待コードを入力してください' }, on: :create, unless: :admin?
-  validate :invitation_code_must_be_valid, on: :create, unless: :admin?
+  validates :invitation_code_input, presence: { message: '招待コードを入力してください' }, on: :create,
+                                    unless: :skip_invitation_code_validation?
+  validate :invitation_code_must_be_valid, on: :create, unless: :skip_invitation_code_validation?
 
   # OmniAuth
   def self.from_omniauth(auth)
@@ -74,6 +75,11 @@ class User < ApplicationRecord
 
   def terms_privacy_accepted?
     terms_accepted? && privacy_accepted?
+  end
+
+  # 招待コードバリデーションをスキップすべきか判定
+  def skip_invitation_code_validation?
+    admin? || provider.present?
   end
 
   private
