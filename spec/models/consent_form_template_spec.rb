@@ -56,7 +56,8 @@ RSpec.describe ConsentFormTemplate, type: :model do
 
   describe 'ネストフォーム' do
     it 'チェック項目を含めて作成できる' do
-      template = build(:consent_form_template)
+      user = create(:user)
+      template = build(:consent_form_template, user: user)
       template.consent_form_items.build(content: '施術リスクを理解しました', position: 1)
 
       expect(template.save).to be true
