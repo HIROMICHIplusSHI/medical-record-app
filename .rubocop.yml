@@ -26,6 +26,7 @@ Metrics/BlockLength:
     - 'spec/**/*'
     - 'config/environments/*'
     - 'config/routes.rb'
+    - 'config/initializers/*'  # Rack::Attack等の初期化ファイルは長いブロックを含む
     - 'lib/tasks/**/*'  # Rakeタスクは複数のタスク定義を含むため
 
 Lint/Debugger:
