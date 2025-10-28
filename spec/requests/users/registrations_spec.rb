@@ -87,7 +87,7 @@ RSpec.describe 'Users::Registrations', type: :request do
       end
 
       it '無効（inactive）な招待コードで登録失敗' do
-        inactive_code = create(:invitation_code, :inactive, created_by: admin, code: 'INACTIVE1')
+        create(:invitation_code, :inactive, created_by: admin, code: 'INACTIVE1')
         attributes = valid_attributes.merge(invitation_code_input: 'INACTIVE1')
 
         expect do
@@ -96,7 +96,7 @@ RSpec.describe 'Users::Registrations', type: :request do
       end
 
       it '期限切れの招待コードで登録失敗' do
-        expired_code = create(:invitation_code, :expired, created_by: admin, code: 'EXPIRED99')
+        create(:invitation_code, :expired, created_by: admin, code: 'EXPIRED99')
         attributes = valid_attributes.merge(invitation_code_input: 'EXPIRED99')
 
         expect do
@@ -105,7 +105,7 @@ RSpec.describe 'Users::Registrations', type: :request do
       end
 
       it '使用回数上限に達した招待コードで登録失敗' do
-        maxed_code = create(:invitation_code, :max_uses_reached, created_by: admin, code: 'MAXOUT123')
+        create(:invitation_code, :max_uses_reached, created_by: admin, code: 'MAXOUT123')
         attributes = valid_attributes.merge(invitation_code_input: 'MAXOUT123')
 
         expect do

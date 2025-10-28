@@ -100,7 +100,7 @@ RSpec.describe 'User Registration', type: :system do
       end
 
       it '無効（inactive）な招待コードでエラーメッセージが表示される' do
-        inactive_code = create(:invitation_code, :inactive, created_by: admin, code: 'INACTIVE1')
+        create(:invitation_code, :inactive, created_by: admin, code: 'INACTIVE1')
 
         fill_in 'メールアドレス', with: 'newuser@example.com'
         fill_in '招待コード', with: 'INACTIVE1'
@@ -117,7 +117,7 @@ RSpec.describe 'User Registration', type: :system do
       end
 
       it '期限切れの招待コードでエラーメッセージが表示される' do
-        expired_code = create(:invitation_code, :expired, created_by: admin, code: 'EXPIRED99')
+        create(:invitation_code, :expired, created_by: admin, code: 'EXPIRED99')
 
         fill_in 'メールアドレス', with: 'newuser@example.com'
         fill_in '招待コード', with: 'EXPIRED99'
@@ -134,7 +134,7 @@ RSpec.describe 'User Registration', type: :system do
       end
 
       it '使用回数上限に達した招待コードでエラーメッセージが表示される' do
-        maxed_code = create(:invitation_code, :max_uses_reached, created_by: admin, code: 'MAXOUT123')
+        create(:invitation_code, :max_uses_reached, created_by: admin, code: 'MAXOUT123')
 
         fill_in 'メールアドレス', with: 'newuser@example.com'
         fill_in '招待コード', with: 'MAXOUT123'
