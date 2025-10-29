@@ -3,13 +3,11 @@
 require 'rails_helper'
 
 RSpec.describe InvitationCode, type: :model do
-  let(:admin) { create(:user, :admin) }
+  let(:admin) { create(:user, :admin, create_invitation_code: false) }
 
   describe 'アソシエーション' do
     it { is_expected.to belong_to(:created_by).class_name('User').with_foreign_key('created_by_id') }
-
-    # Phase 2で実装予定（Userモデルにinvitation_code_idカラム追加後）
-    xit { is_expected.to have_many(:users).dependent(:nullify) }
+    it { is_expected.to have_many(:users).dependent(:nullify) }
   end
 
   describe 'バリデーション' do

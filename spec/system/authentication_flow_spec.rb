@@ -3,7 +3,12 @@
 require 'rails_helper'
 
 RSpec.describe 'Authentication Flow', type: :system do
-  let(:user) { create(:user, email: 'test@example.com', password: 'password123') }
+  let!(:admin) { create(:user, :admin, create_invitation_code: false) }
+  let!(:invitation_code) { create(:invitation_code, created_by: admin) }
+  let(:user) do
+    create(:user, email: 'test@example.com', password: 'password123', invitation_code_input: invitation_code.code,
+                  create_invitation_code: false)
+  end
 
   describe 'ウェルカムページ' do
     before { visit root_path }
@@ -126,6 +131,7 @@ RSpec.describe 'Authentication Flow', type: :system do
       fill_in 'メールアドレス', with: 'newuser@example.com'
       fill_in 'パスワード', with: 'password123'
       fill_in 'パスワード（確認）', with: 'password123'
+      fill_in '招待コード', with: invitation_code.code
       check 'user_terms_accepted'
       check 'user_privacy_accepted'
       click_button '新規登録'

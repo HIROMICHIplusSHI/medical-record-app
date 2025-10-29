@@ -1,8 +1,9 @@
 require 'rails_helper'
 
 RSpec.describe 'Admin Dashboard', type: :system do
-  let(:admin_user) { create(:user, :admin) }
-  let(:regular_user) { create(:user) }
+  let!(:admin_user) { create(:user, :admin, create_invitation_code: false) }
+  let!(:invitation_code) { create(:invitation_code, created_by: admin_user) }
+  let(:regular_user) { create(:user, invitation_code_input: invitation_code.code, create_invitation_code: false) }
 
   describe 'アクセス制御' do
     context '管理者の場合' do
@@ -32,7 +33,7 @@ RSpec.describe 'Admin Dashboard', type: :system do
     before do
       sign_in admin_user
       # テストデータの作成
-      create_list(:user, 3)
+      create_list(:user, 3, invitation_code_input: invitation_code.code, create_invitation_code: false)
     end
 
     it '総ユーザー数が表示される', js: true do

@@ -25,6 +25,9 @@ gem 'omniauth-rails_csrf_protection', '~> 1.0'
 # 認可
 gem 'pundit', '~> 2.3'
 
+# レート制限（ブルートフォース攻撃対策）
+gem 'rack-attack', '~> 6.7'
+
 # ファイルアップロード・画像処理
 gem 'aws-sdk-s3', '~> 1.130', require: false # Cloudflare R2（S3互換）用
 gem 'image_processing', '~> 1.12'

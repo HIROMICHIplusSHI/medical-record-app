@@ -287,8 +287,10 @@ RSpec.describe PatientConsent, type: :model do
   # Critical Issue 1: 看護師確認のサーバーサイドバリデーション
   describe '看護師確認バリデーション' do
     it 'nurse_confirmedがtrueの場合、作成できる' do
-      consent_with_nurse = build(:patient_consent, nurse_confirmed: true)
+      user = create(:user)
+      consent_with_nurse = build(:patient_consent, user: user, nurse_confirmed: true)
       expect(consent_with_nurse.save).to be true
+      expect(consent_with_nurse).to be_persisted
     end
 
     it 'nurse_confirmedがfalseの場合、作成できない' do

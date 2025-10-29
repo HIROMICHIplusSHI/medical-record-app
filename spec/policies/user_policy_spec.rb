@@ -67,10 +67,11 @@ RSpec.describe UserPolicy, type: :policy do
   end
 
   describe 'Scope' do
-    let!(:admin1) { create(:user, role: :admin) }
-    let!(:admin2) { create(:user, role: :admin) }
-    let!(:user1) { create(:user, role: :user) }
-    let!(:user2) { create(:user, role: :user) }
+    let!(:admin1) { create(:user, :admin, create_invitation_code: false) }
+    let!(:invitation_code) { create(:invitation_code, created_by: admin1) }
+    let!(:admin2) { create(:user, role: :admin, invitation_code_input: invitation_code.code) }
+    let!(:user1) { create(:user, role: :user, invitation_code_input: invitation_code.code) }
+    let!(:user2) { create(:user, role: :user, invitation_code_input: invitation_code.code) }
 
     context '管理者の場合' do
       it 'すべてのユーザーにアクセスできる' do

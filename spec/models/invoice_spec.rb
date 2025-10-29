@@ -8,7 +8,7 @@ RSpec.describe Invoice, type: :model do
   end
 
   describe 'validations' do
-    subject { build(:invoice) }
+    subject { create(:invoice) }
 
     it { should validate_uniqueness_of(:invoice_number) }
     it { should validate_presence_of(:issued_at) }

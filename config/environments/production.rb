@@ -49,6 +49,16 @@ Rails.application.configure do
   # Can be used together with config.force_ssl for Strict-Transport-Security and secure cookies.
   # config.assume_ssl = true
 
+  # Trust proxies to correctly identify client IP addresses from X-Forwarded-For header
+  # This is critical for Rack::Attack rate limiting to work correctly
+  # Render/Heroku/AWS ALB等のプロキシサーバーを経由する場合に必須
+  config.action_dispatch.trusted_proxies = [
+    '10.0.0.0/8',      # RFC1918 private networks
+    '172.16.0.0/12',   # RFC1918 private networks
+    '192.168.0.0/16',  # RFC1918 private networks
+    '127.0.0.1'        # localhost
+  ]
+
   # Force all access to the app over SSL, use Strict-Transport-Security, and use secure cookies.
   config.force_ssl = true
 

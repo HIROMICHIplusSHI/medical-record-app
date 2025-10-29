@@ -1,15 +1,16 @@
 require 'rails_helper'
 
 RSpec.describe 'Admin Users Management', type: :system do
-  let(:admin_user) { create(:user, :admin) }
-  let(:regular_user) { create(:user) }
+  let!(:admin_user) { create(:user, :admin, create_invitation_code: false) }
+  let!(:invitation_code) { create(:invitation_code, created_by: admin_user) }
+  let(:regular_user) { create(:user, invitation_code_input: invitation_code.code, create_invitation_code: false) }
 
   before do
     sign_in admin_user
   end
 
   describe 'ユーザー一覧画面' do
-    let!(:users) { create_list(:user, 3) }
+    let!(:users) { create_list(:user, 3, invitation_code_input: invitation_code.code, create_invitation_code: false) }
 
     it 'ユーザー一覧が表示される', js: true do
       visit admin_users_path
@@ -48,7 +49,9 @@ RSpec.describe 'Admin Users Management', type: :system do
              name: 'テストユーザー',
              email: 'test@example.com',
              company_email: 'company@example.com',
-             company_phone: '03-1234-5678')
+             company_phone: '03-1234-5678',
+             invitation_code_input: invitation_code.code,
+             create_invitation_code: false)
     end
     let!(:facility) { create(:facility, user: user, name: 'テスト施設') }
     let!(:patient) { create(:patient, user: user) }
@@ -100,7 +103,7 @@ RSpec.describe 'Admin Users Management', type: :system do
   end
 
   describe '権限管理' do
-    let!(:user) { create(:user) }
+    let!(:user) { create(:user, invitation_code_input: invitation_code.code, create_invitation_code: false) }
 
     context '自分以外のユーザーの場合' do
       it '権限変更ボタンが表示される', js: true do
@@ -149,7 +152,9 @@ RSpec.describe 'Admin Users Management', type: :system do
     end
 
     context '最後の管理者の場合' do
-      let!(:another_admin) { create(:user, :admin) }
+      let!(:another_admin) do
+        create(:user, :admin, create_invitation_code: false, invitation_code_input: invitation_code.code)
+      end
 
       before do
         # admin_user以外の管理者を全て削除して、admin_userを最後の管理者にする
