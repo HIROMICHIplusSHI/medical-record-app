@@ -1,7 +1,7 @@
 # ギャップ分析: 当初計画 vs 実装済み機能
 
 **作成日**: 2025-10-15
-**最終更新**: 2025-10-23
+**最終更新**: 2025-10-29
 **目的**: 当初の開発計画（`docs/04_development_plan.md`）と実際の実装状況を比較し、次のフェーズの優先順位を決定する
 
 ---
@@ -18,7 +18,8 @@
 | Phase 6-B | お問い合わせ機能 | ✅ 完了 | 100% |
 | Phase 6.5-1 | InkFolioブランドデザイン適用 | ✅ 完了 | 100% |
 | Phase 6.5-2 | アクセシビリティ・品質向上 | ✅ 完了 | 100% |
-| Phase 6.5-3 | コンポーネント統一・ボタンヘルパー | 🔄 **実装中** | 0% |
+| Phase 6.5-3 | コンポーネント統一・ボタンヘルパー | 🔄 **実装中** | 80% |
+| Phase 7 | 招待コード機能・認証強化 | ✅ 完了 | 100% |
 
 ---
 
@@ -236,6 +237,49 @@
 
 ---
 
+### ✅ Phase 7: 招待コード機能・認証強化（完了）
+
+**実装期間**: 2025-10-24〜29
+**PR番号**: #48, #56, #57, feature/phase7-invitation-code-registration
+
+#### Phase 7-A: 利用規約・プライバシーポリシー（完了）
+- ✅ デモ版実装（PR #48、2025-10-24）
+- ✅ 本実装とクローズドベータ移行（PR #56、2025-10-27）
+  - Kramdownによるマークダウンレンダリング
+  - Database columns: `terms_accepted_at`, `privacy_accepted_at`
+  - 会員登録時の同意チェックボックス
+  - 既存ユーザー向け同意確認ページ
+  - OAuth自動同意対応
+
+#### Phase 7-B-1: InvitationCodeモデル基盤（完了）
+- ✅ InvitationCodeモデル実装（PR #57、2025-10-27）
+  - Columns: code, max_uses, used_count, expires_at, created_by_id, status, memo
+  - Business logic: available?, expired?, max_uses_reached?, increment_used_count!, remaining_uses
+  - 7 FactoryBot traits for testing
+  - Comprehensive model specs
+
+#### Phase 7-B-2: 招待コード完全実装 + セキュリティ強化（完了）
+- ✅ 管理者：招待コード管理機能（CRUD）
+- ✅ 会員登録：招待コード必須化
+- ✅ Rack::Attack導入（レート制限）
+  - IP-based rate limiting: 5 req/min
+  - Email-based rate limiting: 5 req/30min
+- ✅ M-1: Proxy設定（trusted_proxies）
+- ✅ M-2: Email-based rate limiting
+- ✅ セキュリティリスク低減
+  - ブルートフォース攻撃: 500回/10分 → 5回/分
+  - IP切替攻撃: 20回/30分 → 5回/30分
+
+#### 品質指標
+- テスト: 1121 examples, 3 failures（フレーキーテスト、今回の変更とは無関係）
+- RuboCop: 161 files, 0 offenses
+- Brakeman: 0 warnings
+- CI: ✅ All checks passed
+
+**詳細ドキュメント**: `docs/phases/phase7/`
+
+---
+
 ### 🔄 Phase 6.5: UI/UX改善（実装中）
 
 **実装期間**: 2025-10-23〜
@@ -270,7 +314,7 @@
 
 | フェーズ | 実装内容 | 推定工数 | 状態 |
 |---------|---------|---------|------|
-| **Phase 7** | ログイン機能関連（利用規約・プライバシーポリシー） | 1.5-3日 | 未実装 |
+| **Phase 7** | 招待コード機能・認証強化 | 5-6日 | ✅ **完了**（2025-10-24〜29） |
 | **Phase 8** | フロー改善と統合（実務フロー想定） | 2-3日 | 未実装 |
 | **Phase 9** | 動作確認・品質チェック | 1-2日 | 未実装 |
 | **Phase 10** | デプロイ準備・本番環境テスト | 2-3日 | 未実装 |
@@ -301,10 +345,9 @@
 ### 優先度: 低（提出後の拡張）
 
 #### セキュリティ・認証関連
-- **紹介制度**: 会員登録を紹介制にして不特定多数の登録を防ぐ（Phase 6-Bから棚上げ）
-  - InvitationCodeモデル
-  - 会員登録フロー変更
-  - 管理者：紹介コード管理
+- ~~**招待コード機能**: Phase 7で実装完了~~
+- **2FA（二段階認証）**: セキュリティ強化の次のステップ
+- **セッション管理強化**: セッションタイムアウト、複数デバイス管理
 
 #### 機能拡張
 - グラフ表示（Chart.js / Chartkick）
@@ -318,4 +361,4 @@
 ---
 
 **作成者**: Claude
-**最終更新**: 2025-10-23
+**最終更新**: 2025-10-29
