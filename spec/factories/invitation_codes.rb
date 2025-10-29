@@ -8,7 +8,9 @@ FactoryBot.define do
     expires_at { nil } # デフォルトは無期限
     status { :active }
     memo { 'テスト用招待コード' }
-    association :created_by, factory: :user
+
+    # 無限ループを避けるため、admin traitで create_invitation_code: false を指定
+    association :created_by, factory: [:user, :admin, { create_invitation_code: false }]
 
     # 使用回数制限ありの招待コード
     trait :with_max_uses do

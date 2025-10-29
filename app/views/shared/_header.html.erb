@@ -14,6 +14,7 @@
           <% badge_count = unread_inquiry_count(current_user) %>
           <%= link_to_nav_item('ダッシュボード', admin_root_path) %>
           <%= link_to_nav_item('ユーザー管理', admin_users_path) %>
+          <%= link_to_nav_item('招待コード管理', admin_invitation_codes_path) %>
           <%= link_to_nav_item('お知らせ管理', admin_announcements_path) %>
           <%= link_to admin_inquiries_path, class: "px-3 py-2 rounded-md text-sm font-medium text-greige-700 hover:text-accent-primary transition-colors #{current_page?(admin_inquiries_path) ? 'bg-greige-100 text-accent-primary' : 'hover:bg-greige-100'}" do %>
             お問い合わせ
@@ -104,6 +105,7 @@
         <% mobile_badge_count = unread_inquiry_count(current_user) %>
         <%= link_to_mobile_nav_item('ダッシュボード', admin_root_path) %>
         <%= link_to_mobile_nav_item('ユーザー管理', admin_users_path) %>
+        <%= link_to_mobile_nav_item('招待コード管理', admin_invitation_codes_path) %>
         <%= link_to_mobile_nav_item('お知らせ管理', admin_announcements_path) %>
         <%= link_to admin_inquiries_path, class: "block px-3 py-2 rounded-md text-base font-medium text-greige-700 hover:text-accent-primary transition-colors #{current_page?(admin_inquiries_path) ? 'bg-greige-100 text-accent-primary' : 'hover:bg-greige-100'}" do %>
           お問い合わせ

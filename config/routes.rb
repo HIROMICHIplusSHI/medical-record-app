@@ -14,6 +14,16 @@ Rails.application.routes.draw do
       end
     end
 
+    resources :invitation_codes do
+      collection do
+        get :export
+      end
+      member do
+        patch :suspend
+        patch :activate
+      end
+    end
+
     resources :users, only: [:index, :show] do
       member do
         patch :toggle_role

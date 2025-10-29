@@ -76,4 +76,11 @@ class InvitationCode < ApplicationRecord
       break code unless exists?(code: code)
     end
   end
+
+  # Ransackで検索可能な属性を定義
+  # @param _auth_object [Object] 認証オブジェクト（未使用）
+  # @return [Array<String>] 検索可能な属性名の配列
+  def self.ransackable_attributes(_auth_object = nil)
+    %w[code created_at created_by_id expires_at id max_uses memo status updated_at used_count]
+  end
 end
