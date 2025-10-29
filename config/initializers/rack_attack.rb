@@ -18,19 +18,39 @@ module Rack
 
     ### Throttleルール（レート制限） ###
 
-    # 1. 会員登録エンドポイント
+    # 1. 会員登録エンドポイント（IPベース）
     # 招待コード総当たり攻撃を防ぐため、1分間に5回までに制限
     throttle('registrations/ip', limit: 5, period: 1.minute) do |req|
       req.ip if req.path == '/users' && req.post?
     end
 
-    # 2. ログインエンドポイント
+    # 2. 会員登録エンドポイント（Emailベース）
+    # IP切替攻撃を防ぐため、同一メールアドレスでの試行を30分間に5回までに制限
+    throttle('registrations/email', limit: 5, period: 30.minutes) do |req|
+      if req.path == '/users' && req.post?
+        # POSTパラメータからメールアドレスを取得
+        email = req.params.dig('user', 'email')
+        email&.to_s&.downcase&.presence
+      end
+    end
+
+    # 3. ログインエンドポイント（IPベース）
     # クレデンシャルスタッフィング攻撃を防ぐため、1分間に5回までに制限
     throttle('logins/ip', limit: 5, period: 1.minute) do |req|
       req.ip if req.path == '/users/sign_in' && req.post?
     end
 
-    # 3. 一般リクエスト
+    # 4. ログインエンドポイント（Emailベース）
+    # IP切替攻撃を防ぐため、同一メールアドレスでの試行を30分間に5回までに制限
+    throttle('logins/email', limit: 5, period: 30.minutes) do |req|
+      if req.path == '/users/sign_in' && req.post?
+        # POSTパラメータからメールアドレスを取得
+        email = req.params.dig('user', 'email')
+        email&.to_s&.downcase&.presence
+      end
+    end
+
+    # 5. 一般リクエスト
     # DDoS攻撃を防ぐため、5分間に300回までに制限
     throttle('req/ip', limit: 300, period: 5.minutes, &:ip)
 
