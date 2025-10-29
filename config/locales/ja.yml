@@ -56,6 +56,7 @@ ja:
       invoice_item: 請求明細
       inquiry: お問い合わせ
       inquiry_message: お問い合わせメッセージ
+      invitation_code: 招待コード
     attributes:
       patient:
         name: 氏名
@@ -164,3 +165,15 @@ ja:
         user: ユーザー
         user_id: ユーザー
         body: 本文
+      invitation_code:
+        code: コード
+        status: ステータス
+        max_uses: 最大使用回数
+        used_count: 使用回数
+        expires_at: 有効期限
+        created_by: 作成者
+        created_by_id: 作成者
+        memo: メモ
+        statuses:
+          active: 有効
+          inactive: 停止
