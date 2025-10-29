@@ -6,7 +6,7 @@ module Admin
 
     def index
       @q = InvitationCode.ransack(params[:q])
-      @invitation_codes = @q.result.includes(:created_by).order(created_at: :desc).page(params[:page])
+      @invitation_codes = @q.result.includes(:created_by).order(created_at: :desc).page(params[:page]).per(20)
       authorize InvitationCode
     end
 
