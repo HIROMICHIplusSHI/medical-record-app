@@ -23,9 +23,18 @@ services:
         fromDatabase:
           name: medical-record-db
           property: connectionString
-      # 唯一手動で入れるシークレット。config/master.key の中身をそのまま貼る。
-      # これが credentials を解錠し、Active Record Encryption キーも読み込まれる。
+      # config/master.key の中身をそのまま貼る（前後の空白・改行が入らないように注意）。
+      # production は config/credentials.yml.enc を使い、中身は secret_key_base のみ。
       - key: RAILS_MASTER_KEY
+        sync: false
+      # Active Record Encryption のキー3種。
+      # production 用 credentials には含まれていないため、環境変数での指定が必須。
+      # 値は `bin/rails db:encryption:init` で生成する（未設定だと db:seed / 患者データ操作で失敗する）。
+      - key: ACTIVE_RECORD_ENCRYPTION_PRIMARY_KEY
+        sync: false
+      - key: ACTIVE_RECORD_ENCRYPTION_DETERMINISTIC_KEY
+        sync: false
+      - key: ACTIVE_RECORD_ENCRYPTION_KEY_DERIVATION_SALT
         sync: false
       - key: RAILS_ENV
         value: production
