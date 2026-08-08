@@ -1,0 +1,49 @@
+# Render Blueprint — このファイルを読み込むだけで Web サービス + PostgreSQL を再現できる
+# 使い方: Render Dashboard → New → Blueprint → このリポジトリを選択
+# 詳細な手順は docs/DEPLOY.md を参照
+databases:
+  - name: medical-record-db
+    databaseName: medical_record_production
+    user: medical_record
+    plan: free # 無料プラン（有効期限あり。長期運用時は有料プランへ）
+    region: singapore
+
+services:
+  - type: web
+    name: medical-record-app
+    runtime: ruby
+    plan: free
+    region: singapore
+    buildCommand: "./bin/render-build.sh"
+    startCommand: "bundle exec puma -C config/puma.rb"
+    healthCheckPath: /up
+    envVars:
+      # DB 接続文字列は上の DB から自動注入（手入力不要）
+      - key: DATABASE_URL
+        fromDatabase:
+          name: medical-record-db
+          property: connectionString
+      # 唯一手動で入れるシークレット。config/master.key の中身をそのまま貼る。
+      # これが credentials を解錠し、Active Record Encryption キーも読み込まれる。
+      - key: RAILS_MASTER_KEY
+        sync: false
+      - key: RAILS_ENV
+        value: production
+      - key: RACK_ENV
+        value: production
+      - key: RAILS_LOG_TO_STDOUT
+        value: "true"
+      - key: RAILS_SERVE_STATIC_FILES
+        value: "true"
+      - key: WEB_CONCURRENCY
+        value: "2"
+      # 画像アップロード（Active Storage + Cloudflare R2）を使う場合のみ設定。
+      # 未設定でもアプリは起動する（画像保存だけが無効になる）。
+      - key: R2_ACCESS_KEY_ID
+        sync: false
+      - key: R2_SECRET_ACCESS_KEY
+        sync: false
+      - key: R2_ENDPOINT
+        sync: false
+      - key: R2_BUCKET_NAME
+        sync: false
