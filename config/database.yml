@@ -79,6 +79,6 @@ test:
 #
 production:
   <<: *default
-  database: _app_production
-  username: _app
-  password: <%= ENV["_APP_DATABASE_PASSWORD"] %>
+  # Render の PostgreSQL が提供する DATABASE_URL をそのまま使用する。
+  # render.yaml の fromDatabase で自動注入される。
+  url: <%= ENV["DATABASE_URL"] %>
