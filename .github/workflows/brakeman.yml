@@ -31,9 +31,12 @@ jobs:
 
       - name: Run Brakeman scan
         run: |
+          # EOLRuby/EOLRails は時間経過で発火する依存の陳腐化警告（コード脆弱性ではない）。
+          # CI ゲートから除外する。Ruby/Rails アップグレード後にこの除外を解消する予定。
           bundle exec brakeman \
             --format json \
             --output brakeman-report.json \
+            --except EOLRuby,EOLRails \
             --no-exit-on-warn \
             --no-exit-on-error
 
