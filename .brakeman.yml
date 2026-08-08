@@ -7,8 +7,11 @@
 
 # 除外するチェック（false positiveが多い場合のみ追加）
 :skip_checks:
-  # Rails 7.1サポート終了警告を一時的に除外（Phase 5でRails 7.2へアップグレード予定）
-  - UndocumentedAndUnusedAttributes
+  # Ruby/Rails の EOL（サポート終了）警告を一時的に除外。
+  # コードの脆弱性ではなく時間経過による依存の陳腐化警告のため CI ゲートからは除く。
+  # ※本 PR マージ後に Ruby/Rails を最新へアップグレードして本除外を解消する予定。
+  - EOLRuby
+  - EOLRails
 
 # 除外するファイル/ディレクトリ
 :skip_files:
