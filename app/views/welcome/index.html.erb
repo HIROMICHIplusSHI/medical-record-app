@@ -1,6 +1,6 @@
 <div class="min-h-screen bg-gradient-to-br from-greige-50 via-white to-greige-50 flex items-center justify-center px-4 -mt-28 pt-28">
   <div class="w-full max-w-md">
-    <!-- Closed Beta Notice -->
+    <!-- Portfolio Notice -->
     <div class="bg-blue-50 rounded-lg p-4 mb-6">
       <div class="flex items-start">
         <div class="flex-shrink-0">
@@ -10,11 +10,11 @@
         </div>
         <div class="ml-3">
           <h3 class="text-sm font-semibold text-blue-800">
-            クローズドベータ版のお知らせ
+            ポートフォリオとして公開中のデモ環境です
           </h3>
           <div class="mt-2 text-xs text-blue-700 space-y-1">
-            <p>本システムは<strong>招待制のクローズドベータ版</strong>として運用中です。</p>
-            <p>ご利用にあたっては利用規約とプライバシーポリシーへの同意が必要です。</p>
+            <p>本システムは<strong>技術デモンストレーション目的</strong>で公開しています。実運用には使用していません。</p>
+            <p>表示されるデータはすべて架空のサンプルです。実在する個人の情報は入力しないでください。</p>
           </div>
           <div class="mt-3 flex gap-3 text-xs">
             <%= link_to "利用規約", terms_path, class: "text-blue-800 hover:text-blue-900 font-medium underline", target: "_blank" %>
@@ -68,6 +68,8 @@
           <%= f.submit "ログイン", class: "w-full py-3 px-4 bg-accent-primary text-white font-medium rounded-xl shadow-md hover:bg-accent-primary/90 hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-accent-primary transition-all duration-200" %>
         </div>
       <% end %>
+
+      <%= render 'shared/demo_login_button' %>
 
       <!-- 新規登録リンク -->
       <div class="mt-6 text-center">

@@ -38,6 +38,9 @@ Rails.application.routes.draw do
   # パブリックroot（ログイン前のウェルカムページ）
   root 'welcome#index'
 
+  # デモアカウントへのワンクリックログイン（DEMO_LOGIN_ENABLED=true の環境のみ機能する）
+  post 'demo_login', to: 'demo_sessions#create'
+
   # 利用規約・プライバシーポリシー（未認証でもアクセス可能）
   get 'terms', to: 'pages#terms'
   get 'privacy', to: 'pages#privacy'
