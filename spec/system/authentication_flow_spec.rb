@@ -32,12 +32,13 @@ RSpec.describe 'Authentication Flow', type: :system do
       expect(page).to have_content('データ暗号化')
     end
 
-    it '新規登録リンクが表示される' do
-      expect(page).to have_link('新規登録', href: new_user_registration_path)
-    end
-
-    it 'パスワードを忘れたリンクが表示される' do
-      expect(page).to have_link('パスワードを忘れた？', href: new_user_password_path)
+    # デモ環境ではアカウント操作を無効化している（Issue #64）
+    it '新規登録・パスワード再設定が無効表示になっている' do
+      expect(page).to have_content('新規登録')
+      expect(page).to have_content('パスワードの再設定')
+      expect(page).to have_content('デモ環境のため無効です')
+      expect(page).to have_no_link('新規登録')
+      expect(page).to have_no_link('パスワードを忘れた？')
     end
 
     it 'フッターに著作権表記が表示される' do
@@ -95,8 +96,10 @@ RSpec.describe 'Authentication Flow', type: :system do
       expect(page).to have_button('ログイン')
     end
 
-    it '新規登録リンクが表示される' do
-      expect(page).to have_link('新規登録')
+    # デモ環境ではアカウント操作を無効化している（Issue #64）
+    it '新規登録が無効表示になっている' do
+      expect(page).to have_content('新規登録')
+      expect(page).to have_no_link('新規登録')
     end
 
     it 'ログインに成功してダッシュボードにリダイレクトされる' do
@@ -111,7 +114,9 @@ RSpec.describe 'Authentication Flow', type: :system do
     end
   end
 
-  describe '新規登録ページ', :js do
+  # 新規登録はデモ環境として無効化しているが（Issue #64）、登録フロー自体は実装済みのため
+  # 無効化を解除して検証する（無効化の挙動は disabled_account_links_spec.rb）
+  describe '新規登録ページ', :js, account_actions_enabled: true do
     before { visit new_user_registration_path }
 
     it '新規登録ページが正しく表示される' do
@@ -186,7 +191,9 @@ RSpec.describe 'Authentication Flow', type: :system do
   end
 
   describe 'ナビゲーションフロー', :js do
-    context '未認証ユーザーの場合' do
+    # 新規登録への遷移はデモ環境として無効化しているため（Issue #64）、
+    # 導線自体の検証は無効化を解除して行う
+    context '未認証ユーザーの場合', account_actions_enabled: true do
       it 'ウェルカムページから新規登録ページに遷移できる' do
         visit root_path
         click_link '新規登録'

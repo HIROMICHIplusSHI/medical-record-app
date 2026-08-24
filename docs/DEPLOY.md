@@ -30,6 +30,16 @@
 | `ACTIVE_RECORD_ENCRYPTION_KEY_DERIVATION_SALT` | 同上 | **必須** |
 | `R2_ACCESS_KEY_ID` / `R2_SECRET_ACCESS_KEY` / `R2_ENDPOINT` / `R2_BUCKET_NAME` | Cloudflare R2 の設定 | 任意（画像用） |
 
+デモ公開まわりの環境変数（`render.yaml` に定義済みで手入力は不要）:
+
+| 環境変数 | 役割 | 既定 |
+|---|---|---|
+| `ADMIN_SEED_PASSWORD` | 管理者アカウントのパスワード。Render の `generateValue: true` で自動生成される（値は Render の Environment 画面で確認）。**未設定だと本番の `db:seed` が中断する** | 自動生成 |
+| `DEMO_LOGIN_ENABLED` | ログイン画面の「デモアカウントでログイン」ボタンを有効にする。`true` 以外なら機能ごと無効（エンドポイントも 404） | `true`（本番）/ 無効（開発・テスト） |
+
+> 管理画面は公開デモの対象外という方針のため、管理者の資格情報はコードにも画面にも掲示しない。
+> 訪問者にはデモログインボタン（一般ユーザー権限）だけを提供する（Issue #64）。
+
 > **注意**: production が使う `config/credentials.yml.enc` には `secret_key_base` しか入っていない
 > （Active Record Encryption のキーは development / test 用の credentials 側にのみ存在する）。
 > そのため本番では暗号化キー3種を**環境変数で渡す必要がある**。未設定のままだとビルド中の

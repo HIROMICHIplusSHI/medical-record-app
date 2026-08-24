@@ -36,6 +36,13 @@ services:
         sync: false
       - key: ACTIVE_RECORD_ENCRYPTION_KEY_DERIVATION_SALT
         sync: false
+      # 管理者アカウント（admin@example.com）のパスワード。
+      # 未設定だと本番の db:seed が中断する（資格情報をコードに残さないため）。
+      - key: ADMIN_SEED_PASSWORD
+        generateValue: true
+      # デモアカウントへのワンクリックログインを有効にする（ポートフォリオ公開用）。
+      - key: DEMO_LOGIN_ENABLED
+        value: "true"
       - key: RAILS_ENV
         value: production
       - key: RACK_ENV

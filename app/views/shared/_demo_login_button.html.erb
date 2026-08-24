@@ -1,0 +1,20 @@
+<%# デモアカウントへのワンクリックログイン（DEMO_LOGIN_ENABLED=true の環境でのみ表示） %>
+<% if DemoSession.enabled? %>
+  <div class="mt-6">
+    <div class="relative">
+      <div class="absolute inset-0 flex items-center">
+        <div class="w-full border-t border-greige-200"></div>
+      </div>
+      <div class="relative flex justify-center text-xs">
+        <span class="px-3 bg-white text-greige-500">はじめての方はこちら</span>
+      </div>
+    </div>
+
+    <%= button_to "デモアカウントでログイン", demo_login_path,
+        class: "mt-4 w-full py-3 px-4 bg-white text-accent-primary font-medium rounded-xl border-2 border-accent-primary shadow-sm hover:bg-accent-primary/5 hover:shadow-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-accent-primary transition-all duration-200" %>
+
+    <p class="mt-2 text-center text-xs text-greige-500">
+      登録不要ですべての機能をお試しいただけます（データはすべて架空のサンプルです）
+    </p>
+  </div>
+<% end %>

@@ -1,0 +1,22 @@
+<%# デモ環境ではアカウント操作を無効化している（Issue #64） %>
+<%# 機能は実装済みだが、訪問者にはデモログインだけを使ってもらうため押せない状態にしている %>
+<% if DisabledAccountActions.enabled %>
+  <div class="mt-6 text-center space-y-1">
+    <p class="text-sm text-greige-400">
+      <span class="cursor-not-allowed">新規登録</span>
+      <span class="mx-1 text-greige-300">/</span>
+      <span class="cursor-not-allowed">パスワードの再設定</span>
+    </p>
+    <p class="text-xs text-greige-500">
+      デモ環境のため無効です。上のボタンからお試しください。
+    </p>
+  </div>
+<% else %>
+  <div class="mt-6 text-center space-y-2">
+    <p class="text-sm text-greige-600">
+      アカウントをお持ちでない方は
+      <%= link_to "新規登録", new_user_registration_path, class: "text-accent-primary hover:text-ink-dark font-medium transition-colors" %>
+    </p>
+    <%= link_to "パスワードを忘れた？", new_user_password_path, class: "text-sm text-accent-primary hover:text-ink-dark transition-colors block" %>
+  </div>
+<% end %>

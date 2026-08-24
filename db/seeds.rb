@@ -12,9 +12,19 @@ puts '=========================================='
 # ========================================
 # NOTE: User は作成時に利用規約・プライバシーポリシー同意が必須（Phase 7で追加）。
 #       管理者は招待コードのバリデーションが免除される（skip_invitation_code_validation?）。
+#
+# 管理者パスワードは環境変数から取得する（Issue #64）。
+# 管理画面は公開デモの対象外のため、資格情報をコード・画面に掲示しない。
+# 開発環境では未設定でも動くよう既定値を許容し、本番では未設定なら中断する。
+admin_password = ENV.fetch('ADMIN_SEED_PASSWORD') do
+  raise '本番環境では ADMIN_SEED_PASSWORD の設定が必須です' if Rails.env.production?
+
+  'password123'
+end
+
 admin = User.find_or_create_by!(email: 'admin@example.com') do |u|
-  u.password = 'password123'
-  u.password_confirmation = 'password123'
+  u.password = admin_password
+  u.password_confirmation = admin_password
   u.role = 'admin'
   u.name = '管理者'
   u.terms_accepted_at = Time.current
@@ -47,9 +57,9 @@ announcements_data = [
     published_at: 1.day.ago,
   },
   {
-    title: 'デモアカウント情報',
-    body: "デモユーザーアカウント:\nメールアドレス: demo@example.com\nパスワード: password123\n\n" \
-          '上記アカウントで施術者として各種機能をお試しいただけます。',
+    title: 'デモアカウントについて',
+    body: 'ログイン画面の「デモアカウントでログイン」ボタンから、登録不要で施術者として各種機能をお試しいただけます。' \
+          'このデモ環境のデータは定期的に初期化されます。',
     severity: :info,
     published_at: 2.days.ago,
   },
@@ -69,6 +79,13 @@ announcements_data = [
   },
 ]
 
+# 資格情報を掲示していた旧お知らせを削除する（Issue #64）。
+# find_or_create_by! は title 一致で作成をスキップするだけなので、
+# 既に本番DBにある旧レコードは明示的に削除しないと残り続ける。
+obsolete_announcement_titles = ['デモアカウント情報']
+removed_count = Announcement.where(title: obsolete_announcement_titles).destroy_all.size
+puts "🗑  旧お知らせ削除: #{removed_count}件" if removed_count.positive?
+
 announcements_data.each_with_index do |data, index|
   Announcement.find_or_create_by!(title: data[:title]) do |a|
     a.author = admin
@@ -84,9 +101,12 @@ puts "✅ お知らせ作成: #{Announcement.count}件"
 # ========================================
 # 4. デモユーザー（アートメイク施術者）の作成
 # ========================================
-demo_user = User.find_or_create_by!(email: 'demo@example.com') do |u|
-  u.password = 'password123'
-  u.password_confirmation = 'password123'
+# パスワードはデモログインボタン（DemoSession）経由の利用を前提に、推測されない値を既定とする。
+demo_password = ENV.fetch('DEMO_SEED_PASSWORD') { SecureRandom.base58(24) }
+
+demo_user = User.find_or_create_by!(email: DemoSession::DEMO_EMAIL) do |u|
+  u.password = demo_password
+  u.password_confirmation = demo_password
   u.role = 'user'
   u.name = 'デモ施術者'
   u.terms_accepted_at = Time.current
@@ -303,8 +323,8 @@ puts '✨ デモ版Seedデータ作成完了！'
 puts '=========================================='
 puts ''
 puts '📋 作成されたデータ：'
-puts '  - 管理者アカウント: admin@example.com / password123'
-puts '  - デモユーザー: demo@example.com / password123'
+puts '  - 管理者アカウント: admin@example.com（パスワードは ADMIN_SEED_PASSWORD）'
+puts "  - デモユーザー: #{DemoSession::DEMO_EMAIL}（デモログインボタンから利用）"
 puts "  - 招待コード: #{demo_invitation_code.code}"
 puts "  - お知らせ: #{Announcement.count}件"
 puts "  - 施術場所: #{Facility.where(user: demo_user).count}件"
