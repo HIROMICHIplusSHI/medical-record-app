@@ -55,12 +55,9 @@
         </div>
 
         <!-- ログイン状態を保持 -->
-        <div class="flex items-center justify-between">
-          <div class="flex items-center">
-            <%= f.check_box :remember_me, class: "h-4 w-4 text-accent-primary focus:ring-accent-primary border-greige-300 rounded" %>
-            <%= f.label :remember_me, "ログイン状態を保持", class: "ml-2 block text-sm text-greige-600" %>
-          </div>
-          <%= link_to "パスワードを忘れた？", new_user_password_path, class: "text-sm text-accent-primary hover:text-ink-dark transition-colors" %>
+        <div class="flex items-center">
+          <%= f.check_box :remember_me, class: "h-4 w-4 text-accent-primary focus:ring-accent-primary border-greige-300 rounded" %>
+          <%= f.label :remember_me, "ログイン状態を保持", class: "ml-2 block text-sm text-greige-600" %>
         </div>
 
         <!-- ログインボタン -->
@@ -71,13 +68,7 @@
 
       <%= render 'shared/demo_login_button' %>
 
-      <!-- 新規登録リンク -->
-      <div class="mt-6 text-center">
-        <p class="text-sm text-greige-600">
-          アカウントをお持ちでない方は
-          <%= link_to "新規登録", new_user_registration_path, class: "text-accent-primary hover:text-ink-dark font-medium transition-colors" %>
-        </p>
-      </div>
+      <%= render 'shared/disabled_account_links' %>
     </div>
 
     <!-- Features Tags -->

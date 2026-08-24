@@ -2,7 +2,9 @@
 
 require 'rails_helper'
 
-RSpec.describe 'Users::Registrations', type: :request do
+# 新規登録はデモ環境として無効化しているが（Issue #64）、招待コード制の登録ロジック自体は
+# 実装済みのため、無効化を解除して検証する（無効化の挙動は account_actions_disabled_spec.rb）。
+RSpec.describe 'Users::Registrations', type: :request, account_actions_enabled: true do
   let(:admin) { create(:user, :admin, create_invitation_code: false) }
   let!(:valid_code) { create(:invitation_code, created_by: admin, code: 'TESTCODE', status: :active) }
 

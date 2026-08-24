@@ -1,7 +1,11 @@
 # frozen_string_literal: true
 
 module Users
+  # 新規登録・アカウント編集はデモ環境では無効（Issue #64）。
+  # 招待コード制の登録処理は実装済みのまま残し、入口だけを塞いでいる。
   class RegistrationsController < Devise::RegistrationsController
+    include DisabledAccountActions
+
     before_action :configure_sign_up_params, only: [:create]
 
     # POST /resource
