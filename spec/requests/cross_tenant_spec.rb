@@ -96,6 +96,15 @@ RSpec.describe 'クロステナント境界', type: :request do
       expect(response.body).not_to include('被害者クリニック')
     end
 
+    # 杭D: 検索フォームの選択肢も同様（ビュー内で Facility を直接引いていた）
+    it '一覧の検索フォームに他ユーザーの施設が並ばない' do
+      victim_facility
+
+      get invoices_path
+
+      expect(response.body).not_to include('被害者クリニック')
+    end
+
     # 杭B
     it '他ユーザーの施設では作成できない' do
       expect do

@@ -5,6 +5,8 @@ class InvoicesController < ApplicationController
 
   def index
     @q = current_user.invoices.ransack(params[:q])
+    # 検索フォームの施設選択肢。ビュー内で Facility を直接引かない（他ユーザーの施設が並ぶため）
+    @facilities = current_user.facilities.by_name
     @invoices = @q.result
                   .includes(:facility)
                   .recent
