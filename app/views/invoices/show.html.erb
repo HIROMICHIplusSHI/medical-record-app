@@ -1,4 +1,6 @@
 <div class="py-6 sm:py-8">
+  <%= breadcrumb ['請求書', invoices_path], @invoice.invoice_number %>
+
   <div class="flex flex-col items-start gap-3 sm:flex-row sm:items-center sm:justify-between mb-6">
     <h1 class="text-2xl sm:text-3xl font-bold text-greige-900">請求書詳細</h1>
     <div class="flex flex-wrap items-center gap-2">
@@ -6,7 +8,7 @@
         <%= edit_button "編集", edit_invoice_path(@invoice) %>
       <% end %>
       <% if @invoice.can_refresh_items? %>
-        <%= button_to "明細を更新", refresh_items_invoice_path(@invoice), method: :post, class: "bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded", data: { turbo_confirm: "期間内のカルテから明細を再作成します。既存の明細は削除されますがよろしいですか？" } %>
+        <%= button_to "明細を更新", refresh_items_invoice_path(@invoice), method: :post, class: "bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded", data: { turbo_confirm: "期間内の施術記録から明細を再作成します。既存の明細は削除されますがよろしいですか？" } %>
       <% end %>
       <%= back_button "一覧に戻る", invoices_path %>
     </div>

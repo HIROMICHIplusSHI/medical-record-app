@@ -1,4 +1,6 @@
 <div class="py-6 sm:py-8">
+  <%= breadcrumb ['請求書', invoices_path], [@invoice.invoice_number, invoice_path(@invoice)], '編集' %>
+
   <div class="flex flex-col items-start gap-3 sm:flex-row sm:items-center sm:justify-between mb-6">
     <h1 class="text-2xl sm:text-3xl font-bold text-greige-900">請求書を編集</h1>
     <div class="flex flex-wrap gap-2 sm:gap-3">

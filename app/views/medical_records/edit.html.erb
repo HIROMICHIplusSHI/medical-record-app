@@ -1,7 +1,9 @@
 <div class="w-full mx-auto px-4 py-8">
+  <%= medical_record_breadcrumb @medical_record, '編集' %>
+
   <div class="bg-white shadow sm:rounded-lg">
     <div class="px-4 py-5 sm:px-8">
-      <h1 class="text-2xl font-semibold text-gray-900 mb-6">カルテ編集</h1>
+      <h1 class="text-2xl font-semibold text-gray-900 mb-6">施術記録の編集</h1>
       <%= render 'form', medical_record: @medical_record %>
     </div>
   </div>
@@ -9,7 +11,7 @@
   <!-- 削除セクション -->
   <div class="mt-8 bg-red-50 border border-red-200 rounded-lg p-6">
     <h3 class="text-lg font-semibold text-red-900 mb-2">危険な操作</h3>
-    <p class="text-sm text-red-700 mb-4">このカルテを削除すると、関連する写真や同意書も全て削除されます。この操作は取り消すことができません。</p>
-    <%= button_to "カルテを削除", @medical_record, method: :delete, data: { turbo_confirm: "本当に削除しますか？関連する写真や同意書も全て削除されます。" }, class: "bg-red-600 hover:bg-red-700 text-white font-medium py-2 px-4 rounded transition-colors" %>
+    <p class="text-sm text-red-700 mb-4">この施術記録を削除すると、関連する写真や同意書も全て削除されます。この操作は取り消すことができません。</p>
+    <%= button_to "施術記録を削除", @medical_record, method: :delete, data: { turbo_confirm: "本当に削除しますか？関連する写真や同意書も全て削除されます。" }, class: "bg-red-600 hover:bg-red-700 text-white font-medium py-2 px-4 rounded transition-colors" %>
   </div>
 </div>

@@ -25,6 +25,172 @@ RSpec.describe 'MedicalRecords', type: :request do
     end
   end
 
+  describe 'GET /patients/:patient_id/medical_records（患者ごとの施術履歴）' do
+    it '正常にレスポンスを返す' do
+      get patient_medical_records_path(patient)
+      expect(response).to have_http_status(:success)
+    end
+
+    # 杭: 患者スコープの一覧に他患者の施術記録が混ざらない
+    it 'その患者の施術記録のみを表示する' do
+      create(:medical_record, user: user, patient: patient, facility: facility, treatment_content: '対象患者の施術内容')
+      another_patient = create(:patient, user: user, name: '別患者')
+      create(:medical_record, user: user, patient: another_patient, facility: facility,
+                              treatment_content: '別患者の施術内容')
+
+      get patient_medical_records_path(patient)
+
+      expect(response.body).to include('対象患者の施術内容')
+      expect(response.body).not_to include('別患者の施術内容')
+    end
+
+    # 杭: patient_id を外部から受け取っても他ユーザーのデータには到達できない
+    it '他のユーザーの患者の施術履歴にはアクセスできない' do
+      foreign_user = create(:user)
+      foreign_patient = create(:patient, user: foreign_user)
+
+      get patient_medical_records_path(foreign_patient)
+
+      expect(response).to have_http_status(:not_found)
+    end
+  end
+
+  describe 'GET /patients/:patient_id/medical_records/new（患者を指定した新規作成）' do
+    let(:named_patient) { create(:patient, user: user, name: '田中花子') }
+
+    it '患者が選択済みの状態でフォームを表示する' do
+      get new_patient_medical_record_path(named_patient)
+
+      expect(response).to have_http_status(:success)
+      expect(response.body).to match(/<option[^>]*selected[^>]*value="#{named_patient.id}"[^>]*>/)
+    end
+
+    # 杭: 他ユーザーの患者を指定した施術記録の作成経路を作らない
+    it '他のユーザーの患者を指定して新規作成できない' do
+      foreign_user = create(:user)
+      foreign_patient = create(:patient, user: foreign_user)
+
+      get new_patient_medical_record_path(foreign_patient)
+
+      expect(response).to have_http_status(:not_found)
+    end
+  end
+
+  describe 'パンくず（現在地の階層）' do
+    let(:named_patient) { create(:patient, user: user, name: '佐藤次郎') }
+    let(:record) do
+      create(:medical_record, user: user, patient: named_patient, facility: facility,
+                              visit_date: Date.new(2026, 5, 20))
+    end
+
+    # 杭: 階層は「レコードが属する患者」から導かれる。
+    #     URL は /medical_records/:id で患者の文脈を持たないため、
+    #     クエリパラメータやセッションに頼らず辿れることを固定する。
+    it '施術記録詳細に患者起点の階層が出る' do
+      get medical_record_path(record)
+
+      expect(response.body).to include('aria-label="パンくず"')
+      expect(response.body).to include(patients_path)
+      expect(response.body).to include(patient_path(named_patient))
+      expect(response.body).to include(patient_medical_records_path(named_patient))
+      expect(response.body).to include('佐藤次郎')
+    end
+
+    it '編集画面では施術記録自体がリンクになり現在地が編集になる' do
+      get edit_medical_record_path(record)
+
+      expect(response.body).to include(medical_record_path(record))
+      expect(response.body).to include('aria-current="page"')
+    end
+
+    it '患者スコープの施術履歴では患者がリンクになる' do
+      get patient_medical_records_path(named_patient)
+
+      expect(response.body).to include(patient_path(named_patient))
+      expect(response.body).to include('aria-label="パンくず"')
+    end
+
+    it '全体の施術履歴一覧にはパンくずを出さない' do
+      get medical_records_path
+
+      expect(response.body).not_to include('aria-label="パンくず"')
+    end
+  end
+
+  describe '施術履歴一覧の既定の並び順' do
+    it '指定が無ければ来院日の新しい順になる（患者詳細の並びと一致する）' do
+      create(:medical_record, user: user, patient: patient, facility: facility,
+                              visit_date: Date.new(2020, 1, 1), treatment_content: '古い記録')
+      create(:medical_record, user: user, patient: patient, facility: facility,
+                              visit_date: Date.new(2026, 1, 1), treatment_content: '新しい記録')
+
+      get medical_records_path
+
+      expect(response.body.index('新しい記録')).to be < response.body.index('古い記録')
+    end
+
+    it '患者スコープの一覧でも同じ並び順になる' do
+      create(:medical_record, user: user, patient: patient, facility: facility,
+                              visit_date: Date.new(2020, 1, 1), treatment_content: '古い記録')
+      create(:medical_record, user: user, patient: patient, facility: facility,
+                              visit_date: Date.new(2026, 1, 1), treatment_content: '新しい記録')
+
+      get patient_medical_records_path(patient)
+
+      expect(response.body.index('新しい記録')).to be < response.body.index('古い記録')
+    end
+  end
+
+  describe 'パンくずの構造（DOM で検証）' do
+    let(:named_patient) { create(:patient, user: user, name: '構造検証患者') }
+    let(:record) do
+      create(:medical_record, user: user, patient: named_patient, facility: facility,
+                              visit_date: Date.new(2026, 5, 20))
+    end
+
+    def breadcrumb_links(body)
+      doc = Nokogiri::HTML(body)
+      nav = doc.at('nav[aria-label="パンくず"]')
+      return [] if nav.nil?
+
+      nav.css('a').map { |a| [a.text.strip, a['href']] }
+    end
+
+    # 部分文字列一致では上位パスが下位パスに含まれてしまうため、
+    # パンくず領域内のリンクを順序込みで検証する
+    it '施術記録詳細のパンくずが順序どおりのリンクを持つ' do
+      get medical_record_path(record)
+
+      expect(breadcrumb_links(response.body)).to eq([
+                                                      ['患者', patients_path],
+                                                      ['構造検証患者', patient_path(named_patient)],
+                                                      ['施術履歴', patient_medical_records_path(named_patient)],
+                                                    ])
+    end
+
+    # 杭3の反証形: 文脈を外から与えても階層は変わらない
+    it 'クエリパラメータで別患者を渡してもパンくずは変わらない' do
+      other_patient = create(:patient, user: user, name: '別の患者')
+
+      get medical_record_path(record, patient_id: other_patient.id)
+
+      links = breadcrumb_links(response.body)
+      expect(links.map(&:first)).to include('構造検証患者')
+      expect(links.map(&:first)).not_to include('別の患者')
+    end
+  end
+
+  describe '患者を指定した作成に失敗したとき' do
+    it '患者の文脈（パンくず・戻り先）が保たれる' do
+      post medical_records_path, params: {
+        medical_record: { patient_id: patient.id, facility_id: facility.id, visit_date: '', treatment_content: '' },
+      }
+
+      expect(response).to have_http_status(:unprocessable_content)
+      expect(response.body).to include(patient_path(patient))
+    end
+  end
+
   describe 'GET /medical_records/:id' do
     it '正常にレスポンスを返す' do
       get medical_record_path(medical_record)

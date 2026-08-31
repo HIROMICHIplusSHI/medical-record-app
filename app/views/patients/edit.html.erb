@@ -1,5 +1,7 @@
 <div class="py-6 sm:py-8">
   <div class="max-w-2xl mx-auto">
+    <%= patient_breadcrumb @patient, '編集' %>
+
     <h1 class="text-3xl font-bold text-greige-900 mb-6">患者情報を編集</h1>
 
     <div class="bg-white shadow-md rounded p-6">
@@ -9,8 +11,8 @@
     <!-- 削除セクション -->
     <div class="mt-8 bg-red-50 border border-red-200 rounded-lg p-6">
       <h3 class="text-lg font-semibold text-red-900 mb-2">危険な操作</h3>
-      <p class="text-sm text-red-700 mb-4">この患者を削除すると、関連するカルテや問診票も全て削除されます。この操作は取り消すことができません。</p>
-      <%= button_to "患者を削除", @patient, method: :delete, data: { turbo_confirm: "本当に削除しますか？関連するカルテや問診票も全て削除されます。" }, class: "bg-red-600 hover:bg-red-700 text-white font-medium py-2 px-4 rounded transition-colors" %>
+      <p class="text-sm text-red-700 mb-4">この患者を削除すると、関連する施術記録や問診票も全て削除されます。この操作は取り消すことができません。</p>
+      <%= button_to "患者を削除", @patient, method: :delete, data: { turbo_confirm: "本当に削除しますか？関連する施術記録や問診票も全て削除されます。" }, class: "bg-red-600 hover:bg-red-700 text-white font-medium py-2 px-4 rounded transition-colors" %>
     </div>
   </div>
 </div>

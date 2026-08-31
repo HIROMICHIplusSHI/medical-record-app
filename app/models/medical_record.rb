@@ -75,7 +75,7 @@ class MedicalRecord < ApplicationRecord
 
       records_in_month = in_period(start_date, end_date).includes(:facility, :cost_items)
 
-      # 各カルテの請求割合適用済み売上を計算
+      # 各施術記録の請求割合適用済み売上を計算
       revenue = records_in_month.sum do |record|
         total_cost = record.cost_items.sum(&:total_price)
         billing_rate = record.facility.billing_rate.presence || 100.0

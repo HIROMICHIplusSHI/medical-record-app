@@ -1,4 +1,6 @@
 <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+  <%= admin_breadcrumb ['ユーザー', admin_users_path], '詳細' %>
+
   <!-- ヘッダー -->
   <div class="mb-8 flex justify-between items-center">
     <div>
@@ -76,7 +78,7 @@
 
     <!-- 統計情報 -->
     <div class="lg:col-span-1 space-y-6">
-      <!-- カルテ数 -->
+      <!-- 施術記録数 -->
       <div class="bg-white shadow-sm rounded-lg overflow-hidden">
         <div class="px-6 py-5">
           <div class="flex items-center">
@@ -87,7 +89,7 @@
             </div>
             <div class="ml-5 w-0 flex-1">
               <dl>
-                <dt class="text-sm font-medium text-greige-500 truncate">カルテ数</dt>
+                <dt class="text-sm font-medium text-greige-500 truncate">施術記録数</dt>
                 <dd class="mt-1 text-3xl font-semibold text-greige-900"><%= @stats[:medical_records_count] %></dd>
               </dl>
             </div>

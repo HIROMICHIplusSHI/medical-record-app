@@ -19,10 +19,10 @@
           <svg class="w-5 h-5 mr-2 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
           </svg>
-          カルテを作成
+          施術記録を作成
         <% end %>
       </div>
-      <p class="text-sm text-greige-600 mb-4">※ 来院日を本日に設定したカルテが自動的に表示されます</p>
+      <p class="text-sm text-greige-600 mb-4">※ 来院日を本日に設定した施術記録が自動的に表示されます</p>
 
       <% if @todays_medical_records.any? %>
         <div class="space-y-3">
@@ -129,7 +129,7 @@
       </div>
     <% end %>
 
-    <!-- カルテ管理 -->
+    <!-- 施術履歴 -->
     <%= link_to medical_records_path, class: "block group" do %>
       <div class="bg-white overflow-hidden shadow-sm rounded-lg hover:shadow-md transition-shadow duration-200">
         <div class="p-6">
@@ -141,8 +141,8 @@
             </div>
             <div class="ml-5 w-0 flex-1">
               <dl>
-                <dt class="text-sm font-medium text-greige-500 truncate">カルテ管理</dt>
-                <dd class="mt-1 text-sm text-greige-900">カルテの作成・閲覧</dd>
+                <dt class="text-sm font-medium text-greige-500 truncate">施術履歴</dt>
+                <dd class="mt-1 text-sm text-greige-900">施術記録の作成・閲覧</dd>
               </dl>
             </div>
           </div>
