@@ -132,7 +132,7 @@ RSpec.describe 'Header Navigation', type: :system do
   end
 
   describe 'レスポンシブ対応', js: true do
-    context 'モバイル表示（< 768px）', :mobile do
+    context 'モバイル表示（< 1024px）', :mobile do
       before do
         # ビューポートをモバイルサイズに設定 (Cuprite用)
         page.driver.resize(375, 667)
@@ -167,10 +167,43 @@ RSpec.describe 'Header Navigation', type: :system do
       end
     end
 
-    context 'タブレット/デスクトップ表示（>= 768px）' do
+    context 'タブレット表示（768px 〜 1023px）', js: true do
       before do
-        # ビューポートをタブレットサイズに設定 (Cuprite用)
-        page.driver.resize(1024, 768)
+        # iPad縦。8項目のデスクトップナビが1行に収まらないためハンバーガー側に倒す
+        page.driver.resize(768, 1024)
+      end
+
+      it 'ハンバーガーメニューボタンが表示される' do
+        visit user_dashboard_path
+
+        within('header') do
+          expect(page).to have_css('button[data-action="click->header#toggleMobileMenu"]', visible: :visible)
+        end
+      end
+
+      it 'デスクトップナビゲーションが非表示' do
+        visit user_dashboard_path
+
+        expect(page).not_to have_css('header nav[role="navigation"] a', text: 'カルテ', visible: :visible)
+      end
+
+      it 'ハンバーガーメニューをクリックするとメニューが表示される' do
+        visit user_dashboard_path
+
+        within('header') do
+          find('button[data-action="click->header#toggleMobileMenu"]').click
+
+          expect(page).to have_link('カルテ', visible: :visible)
+          expect(page).to have_link('患者', visible: :visible)
+        end
+      end
+    end
+
+    context 'デスクトップ表示（>= 1024px）' do
+      before do
+        # 境界(1024px)ちょうどはスクロールバー幅とresizeの反映タイミングで
+        # 判定が揺れるため、明確に境界外の幅で検証する
+        page.driver.resize(1280, 800)
       end
 
       it 'ハンバーガーメニューボタンが非表示' do

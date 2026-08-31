@@ -5,6 +5,8 @@ class TagsController < ApplicationController
 
   def index
     @tags = current_user.tags.by_name
+    # 使用回数はカード/テーブルの両方で参照するため、1クエリでまとめて取得する
+    @tag_usage_counts = MedicalRecordTag.where(tag_id: @tags.map(&:id)).group(:tag_id).count
   end
 
   def new

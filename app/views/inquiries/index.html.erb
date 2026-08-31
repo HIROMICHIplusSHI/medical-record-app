@@ -5,12 +5,14 @@
   </div>
 
   <% if @inquiries.any? %>
+    <%# 未読判定はクエリを伴うため、カード表示とテーブル表示で二重に発行しないよう先に評価しておく %>
+    <% unread_indicators = @inquiries.index_with { |i| unread_indicator_for(i, current_user) } %>
     <!-- スマホ・タブレット: カード表示（タブレットは2カラム） -->
     <div class="lg:hidden space-y-3 md:space-y-0 md:grid md:grid-cols-2 md:gap-3">
       <% @inquiries.each do |inquiry| %>
         <div class="bg-white shadow-sm border border-greige-200 rounded-lg p-4 flex flex-col">
           <div class="flex items-start gap-2">
-            <span class="shrink-0 mt-1"><%= unread_indicator_for(inquiry, current_user) %></span>
+            <span class="shrink-0 mt-1"><%= unread_indicators[inquiry] %></span>
             <%= link_to inquiry.subject, inquiry_path(inquiry), class: "text-base font-semibold text-accent-primary hover:text-accent-primary/80 transition-colors break-words" %>
           </div>
           <div class="mt-3 flex flex-wrap items-center gap-2">
@@ -46,7 +48,7 @@
           <% @inquiries.each do |inquiry| %>
             <tr>
               <td class="px-3 py-4 text-center">
-                <%= unread_indicator_for(inquiry, current_user) %>
+                <%= unread_indicators[inquiry] %>
               </td>
               <td class="px-6 py-4">
                 <%= link_to inquiry.subject, inquiry_path(inquiry), class: "text-accent-primary hover:text-accent-primary/80 transition-colors" %>

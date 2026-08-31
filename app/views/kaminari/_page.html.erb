@@ -1,0 +1,9 @@
+<%= link_to page.number, url, {
+      remote: remote,
+      'aria-label': "#{page.number}ページ目",
+      'aria-current': (page.current? ? 'page' : nil),
+      class: [
+        'inline-flex items-center justify-center min-w-[44px] h-11 px-3 rounded-md text-sm font-medium transition-colors',
+        (page.current? ? 'bg-accent-primary text-white' : 'text-greige-700 bg-white border border-greige-300 hover:bg-greige-50')
+      ].join(' ')
+    } %>
