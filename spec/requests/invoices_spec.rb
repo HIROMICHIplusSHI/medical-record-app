@@ -2,7 +2,7 @@ require 'rails_helper'
 
 RSpec.describe 'Invoices', type: :request do
   let(:user) { create(:user) }
-  let(:facility) { create(:facility) }
+  let(:facility) { create(:facility, user: user) }
   let(:invoice) { create(:invoice, user: user, facility: facility) }
 
   describe '認証チェック' do
@@ -95,7 +95,7 @@ RSpec.describe 'Invoices', type: :request do
     end
 
     it '施設一覧が取得される' do
-      facilities = create_list(:facility, 3)
+      facilities = create_list(:facility, 3, user: user)
 
       get new_invoice_path
       facilities.each do |facility|
@@ -118,7 +118,7 @@ RSpec.describe 'Invoices', type: :request do
     context '有効なパラメータの場合' do
       it '請求書が作成される' do
         # InvoiceGeneratorが動作するようにカルテを作成
-        patient = create(:patient)
+        patient = create(:patient, user: user)
         create(:medical_record,
                user: user,
                facility: facility,
@@ -131,7 +131,7 @@ RSpec.describe 'Invoices', type: :request do
       end
 
       it '請求書詳細ページにリダイレクトする' do
-        patient = create(:patient)
+        patient = create(:patient, user: user)
         create(:medical_record,
                user: user,
                facility: facility,
@@ -143,7 +143,7 @@ RSpec.describe 'Invoices', type: :request do
       end
 
       it '成功メッセージが表示される' do
-        patient = create(:patient)
+        patient = create(:patient, user: user)
         create(:medical_record,
                user: user,
                facility: facility,
@@ -183,7 +183,7 @@ RSpec.describe 'Invoices', type: :request do
     end
 
     it '施設一覧が取得される' do
-      facilities = create_list(:facility, 3)
+      facilities = create_list(:facility, 3, user: user)
 
       get edit_invoice_path(invoice)
       facilities.each do |facility|
@@ -255,7 +255,7 @@ RSpec.describe 'Invoices', type: :request do
     before { sign_in user }
 
     context '請求書明細がある場合' do
-      let!(:patient) { create(:patient) }
+      let!(:patient) { create(:patient, user: user) }
       let!(:medical_record) { create(:medical_record, user: user, facility: facility, patient: patient) }
       let!(:invoice_item) { create(:invoice_item, invoice: invoice, medical_record: medical_record) }
 
@@ -300,7 +300,7 @@ RSpec.describe 'Invoices', type: :request do
     before { sign_in user }
 
     context 'PDFが生成済みの場合' do
-      let!(:patient) { create(:patient) }
+      let!(:patient) { create(:patient, user: user) }
       let!(:medical_record) { create(:medical_record, user: user, facility: facility, patient: patient) }
       let!(:invoice_item) { create(:invoice_item, invoice: invoice, medical_record: medical_record) }
 
@@ -347,7 +347,7 @@ RSpec.describe 'Invoices', type: :request do
     before { sign_in user }
 
     context '請求書明細がある場合' do
-      let!(:patient) { create(:patient) }
+      let!(:patient) { create(:patient, user: user) }
       let!(:medical_record) { create(:medical_record, user: user, facility: facility, patient: patient) }
       let!(:invoice_item) { create(:invoice_item, invoice: invoice, medical_record: medical_record) }
 
@@ -401,7 +401,7 @@ RSpec.describe 'Invoices', type: :request do
   describe 'POST /invoices/:id/generate_pdf with tax_display' do
     before { sign_in user }
 
-    let!(:patient) { create(:patient) }
+    let!(:patient) { create(:patient, user: user) }
     let!(:medical_record) { create(:medical_record, user: user, facility: facility, patient: patient) }
     let!(:invoice_item) { create(:invoice_item, invoice: invoice, medical_record: medical_record) }
 
@@ -423,7 +423,7 @@ RSpec.describe 'Invoices', type: :request do
     before { sign_in user }
 
     context 'ドラフト状態の請求書の場合' do
-      let!(:patient) { create(:patient) }
+      let!(:patient) { create(:patient, user: user) }
       let!(:medical_record) do
         create(:medical_record,
                user: user,

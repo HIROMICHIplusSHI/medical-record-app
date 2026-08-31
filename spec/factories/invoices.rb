@@ -1,7 +1,13 @@
 FactoryBot.define do
   factory :invoice do
-    association :user
-    association :facility
+    user
+    # 請求書と施設は同一ユーザーに属している必要がある（Invoice のバリデーション）。
+    # facility だけを指定して呼ばれる箇所があるため、施設が渡された場合は所有者をそちらに合わせる。
+    facility { association :facility, user: user }
+
+    after(:build) do |invoice|
+      invoice.user = invoice.facility.user if invoice.facility&.user.present?
+    end
 
     sequence(:invoice_number) { |n| "INV-#{Date.current.strftime('%Y%m')}-#{n.to_s.rjust(4, '0')}" }
     issued_at { Time.current }

@@ -64,7 +64,8 @@ RSpec.describe InvoiceItem, type: :model do
     describe '#medical_record_info' do
       it 'カルテの基本情報を返す' do
         patient = create(:patient, name: '山田太郎')
-        medical_record = create(:medical_record, patient: patient, visit_date: Date.new(2025, 1, 15))
+        medical_record = create(:medical_record, user: patient.user, patient: patient,
+                                                 visit_date: Date.new(2025, 1, 15))
         item = build(:invoice_item, medical_record: medical_record)
 
         expect(item.medical_record_info).to eq('山田太郎 (2025-01-15)')

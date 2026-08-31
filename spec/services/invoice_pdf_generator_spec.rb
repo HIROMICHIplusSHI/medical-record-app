@@ -22,7 +22,7 @@ RSpec.describe InvoicePdfGenerator do
 
   describe '#generate' do
     context '正常系' do
-      let(:patient) { create(:patient, name: '山田太郎') }
+      let(:patient) { create(:patient, user: user, name: '山田太郎') }
       let(:medical_record) do
         create(:medical_record,
                user: user,
@@ -62,7 +62,7 @@ RSpec.describe InvoicePdfGenerator do
     end
 
     context 'フォントファイルが存在しない場合' do
-      let(:patient) { create(:patient) }
+      let(:patient) { create(:patient, user: user) }
       let(:medical_record) { create(:medical_record, user: user, facility: facility, patient: patient) }
 
       before do
@@ -82,7 +82,7 @@ RSpec.describe InvoicePdfGenerator do
   end
 
   describe '#generate_to_string' do
-    let(:patient) { create(:patient, name: '田中花子') }
+    let(:patient) { create(:patient, user: user, name: '田中花子') }
     let(:medical_record) do
       create(:medical_record,
              user: user,
@@ -122,7 +122,7 @@ RSpec.describe InvoicePdfGenerator do
   end
 
   describe 'PDFコンテンツ検証' do
-    let(:patient) { create(:patient, name: '鈴木一郎') }
+    let(:patient) { create(:patient, user: user, name: '鈴木一郎') }
     let(:medical_record) do
       create(:medical_record,
              user: user,
@@ -177,7 +177,7 @@ RSpec.describe InvoicePdfGenerator do
   end
 
   describe '税表示切替' do
-    let(:patient) { create(:patient) }
+    let(:patient) { create(:patient, user: user) }
     let(:medical_record) { create(:medical_record, user: user, facility: facility, patient: patient) }
 
     before do
@@ -216,7 +216,7 @@ RSpec.describe InvoicePdfGenerator do
   end
 
   describe '請求割合計算' do
-    let(:patient) { create(:patient) }
+    let(:patient) { create(:patient, user: user) }
     let(:medical_record) { create(:medical_record, user: user, facility: facility, patient: patient) }
 
     before do
@@ -249,8 +249,8 @@ RSpec.describe InvoicePdfGenerator do
   end
 
   describe '複数明細の処理' do
-    let(:patient1) { create(:patient, name: '患者A') }
-    let(:patient2) { create(:patient, name: '患者B') }
+    let(:patient1) { create(:patient, user: user, name: '患者A') }
+    let(:patient2) { create(:patient, user: user, name: '患者B') }
     let(:medical_record1) { create(:medical_record, user: user, facility: facility, patient: patient1) }
     let(:medical_record2) { create(:medical_record, user: user, facility: facility, patient: patient2) }
 
@@ -285,7 +285,7 @@ RSpec.describe InvoicePdfGenerator do
   end
 
   describe '説明文の切り詰め処理' do
-    let(:patient) { create(:patient) }
+    let(:patient) { create(:patient, user: user) }
     let(:medical_record) { create(:medical_record, user: user, facility: facility, patient: patient) }
 
     before do
@@ -306,7 +306,7 @@ RSpec.describe InvoicePdfGenerator do
 
   describe 'エッジケース' do
     context '請求明細が0円の場合' do
-      let(:patient) { create(:patient) }
+      let(:patient) { create(:patient, user: user) }
       let(:medical_record) { create(:medical_record, user: user, facility: facility, patient: patient) }
 
       before do
@@ -328,7 +328,7 @@ RSpec.describe InvoicePdfGenerator do
     end
 
     context '特殊文字を含む患者名' do
-      let(:patient) { create(:patient, name: '山田　太郎（仮名）') }
+      let(:patient) { create(:patient, user: user, name: '山田　太郎（仮名）') }
       let(:medical_record) { create(:medical_record, user: user, facility: facility, patient: patient) }
 
       before do
@@ -345,7 +345,7 @@ RSpec.describe InvoicePdfGenerator do
     context '会社情報が未設定の場合' do
       before do
         user.update(company_name: nil, company_address: nil)
-        patient = create(:patient)
+        patient = create(:patient, user: user)
         medical_record = create(:medical_record, user: user, facility: facility, patient: patient)
         create(:invoice_item, invoice: invoice, medical_record: medical_record, amount: 1_000)
       end

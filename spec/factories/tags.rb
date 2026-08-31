@@ -7,7 +7,7 @@ FactoryBot.define do
 
     trait :with_medical_records do
       after(:create) do |tag|
-        create_list(:medical_record, 3, tags: [tag])
+        create_list(:medical_record, 3, user: tag.user, tags: [tag])
       end
     end
   end

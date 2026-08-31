@@ -21,6 +21,7 @@ class MedicalRecord < ApplicationRecord
   validates :visit_date, presence: true
   validates :treatment_content, presence: true
   validate :photos_count_limit
+  validate :associations_belong_to_same_user
   validate :photos_size_limit
 
   # コールバック
@@ -106,6 +107,14 @@ class MedicalRecord < ApplicationRecord
   end
 
   private
+
+  # 施術記録・患者・施設は同一ユーザーに属していなければならない。
+  # user_id だけ current_user に束縛しても、patient_id / facility_id は
+  # リクエストボディから素通しできてしまうため、モデル側を最終防衛線にする。
+  def associations_belong_to_same_user
+    errors.add(:patient_id, 'が不正です') if patient && patient.user_id != user_id
+    errors.add(:facility_id, 'が不正です') if facility && facility.user_id != user_id
+  end
 
   def photos_count_limit
     return unless photos.attached?

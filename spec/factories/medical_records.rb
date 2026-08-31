@@ -1,8 +1,9 @@
 FactoryBot.define do
   factory :medical_record do
-    association :patient
-    association :facility
-    association :user
+    user
+    # 施術記録・患者・施設は同一ユーザーに属している必要がある（MedicalRecord のバリデーション）
+    patient { association :patient, user: user }
+    facility { association :facility, user: user }
     visit_date { Date.today }
     treatment_content { 'ボトックス注射を実施' }
 

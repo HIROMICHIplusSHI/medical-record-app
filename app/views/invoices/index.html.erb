@@ -20,7 +20,7 @@
 
         <div>
           <%= f.label :facility_id_eq, "施設", class: "block text-sm font-medium text-gray-700 mb-1" %>
-          <%= f.collection_select :facility_id_eq, Facility.order(:name), :id, :name,
+          <%= f.collection_select :facility_id_eq, @facilities, :id, :name,
               { include_blank: "すべて" },
               { class: "w-full rounded-lg border-gray-300 shadow-sm focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-accent-primary", data: { controller: "tom-select" } } %>
         </div>

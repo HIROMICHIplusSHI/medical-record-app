@@ -200,8 +200,10 @@ RSpec.describe 'Patients', type: :request do
     it '他ユーザーが作成した施術記録は表示されない' do
       foreign_user = create(:user)
       foreign_facility = create(:facility, user: foreign_user)
-      create(:medical_record, user: foreign_user, patient: patient, facility: foreign_facility,
-                              treatment_content: '他ユーザーが作成した内容')
+      # 所有者一致のバリデーション導入前に作られた越境データを再現する（多層防御の確認）
+      MedicalRecord.new(user: foreign_user, patient: patient, facility: foreign_facility,
+                        visit_date: Date.current,
+                        treatment_content: '他ユーザーが作成した内容').save(validate: false)
 
       get patient_path(patient)
 
