@@ -1,7 +1,7 @@
-<div class="container mx-auto px-4 py-8">
-  <div class="flex justify-between items-center mb-6">
-    <h1 class="text-3xl font-bold text-greige-900">患者一覧</h1>
-    <%= new_button "新しい患者を登録", new_patient_path %>
+<div class="py-6 sm:py-8">
+  <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between mb-6">
+    <h1 class="text-2xl sm:text-3xl font-bold text-greige-900">患者一覧</h1>
+    <div><%= new_button "新しい患者を登録", new_patient_path %></div>
   </div>
 
   <% if notice %>
@@ -11,8 +11,8 @@
   <% end %>
 
   <div class="mb-6">
-    <%= form_with url: patients_path, method: :get, local: true, class: "flex gap-2" do |form| %>
-      <%= form.text_field :query, value: params[:query], placeholder: "氏名または電話番号で検索", class: "flex-1 rounded-lg border-gray-300 shadow-sm focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-accent-primary text-lg p-3" %>
+    <%= form_with url: patients_path, method: :get, local: true, class: "flex flex-wrap gap-2" do |form| %>
+      <%= form.text_field :query, value: params[:query], placeholder: "氏名または電話番号で検索", class: "w-full sm:flex-1 sm:w-auto min-w-0 rounded-lg border-gray-300 shadow-sm focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-accent-primary text-base p-3" %>
       <%= search_button "検索" %>
       <% if params[:query].present? %>
         <%= clear_button "クリア", patients_path %>
@@ -21,7 +21,36 @@
   </div>
 
   <% if @patients.any? %>
-    <div class="bg-white shadow-md rounded transition-colors">
+    <!-- スマホ・タブレット: カード表示（タブレットは2カラム） -->
+    <div class="lg:hidden space-y-3 md:space-y-0 md:grid md:grid-cols-2 md:gap-3">
+      <% @patients.each do |patient| %>
+        <div class="bg-white shadow-sm border border-greige-200 rounded-lg p-4 flex flex-col">
+          <div class="flex items-start justify-between gap-3">
+            <%= link_to patient.name, patient, class: "text-base font-semibold text-ink-dark hover:text-accent-primary transition-colors break-words" %>
+            <span class="shrink-0 px-2 py-0.5 rounded-full bg-greige-100 text-greige-700 text-xs font-medium">
+              <%= t("activerecord.attributes.patient.genders.#{patient.gender}") %>
+            </span>
+          </div>
+          <dl class="mt-3 space-y-1 text-sm text-greige-700">
+            <div class="flex gap-2">
+              <dt class="shrink-0 text-greige-500">生年月日</dt>
+              <dd><%= patient.date_of_birth&.strftime('%Y年%m月%d日') || '—' %></dd>
+            </div>
+            <div class="flex gap-2">
+              <dt class="shrink-0 text-greige-500">電話番号</dt>
+              <dd class="break-all"><%= patient.phone.presence || '—' %></dd>
+            </div>
+          </dl>
+          <div class="mt-4 md:mt-auto md:pt-4 flex flex-wrap gap-2">
+            <%= show_button "表示", patient %>
+            <%= edit_button "編集", edit_patient_path(patient) %>
+          </div>
+        </div>
+      <% end %>
+    </div>
+
+    <!-- デスクトップ(lg以上): テーブル表示 -->
+    <div class="hidden lg:block bg-white shadow-md rounded transition-colors overflow-x-auto">
       <table class="min-w-full">
         <thead class="bg-gray-50">
           <tr>
@@ -38,9 +67,9 @@
               <td class="px-6 py-4 whitespace-nowrap">
                 <%= link_to patient.name, patient, class: "text-ink-dark hover:text-accent-primary transition-colors" %>
               </td>
-              <td class="px-6 py-4"><%= patient.date_of_birth&.strftime('%Y年%m月%d日') %></td>
-              <td class="px-6 py-4"><%= t("activerecord.attributes.patient.genders.#{patient.gender}") %></td>
-              <td class="px-6 py-4"><%= patient.phone %></td>
+              <td class="px-6 py-4 whitespace-nowrap"><%= patient.date_of_birth&.strftime('%Y年%m月%d日') %></td>
+              <td class="px-6 py-4 whitespace-nowrap"><%= t("activerecord.attributes.patient.genders.#{patient.gender}") %></td>
+              <td class="px-6 py-4 whitespace-nowrap"><%= patient.phone %></td>
               <td class="px-6 py-4 whitespace-nowrap text-sm space-x-2">
                 <%= show_button "表示", patient %>
                 <%= edit_button "編集", edit_patient_path(patient) %>

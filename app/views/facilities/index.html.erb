@@ -1,7 +1,7 @@
-<div class="container mx-auto px-4 py-8">
-  <div class="flex justify-between items-center mb-6">
-    <h1 class="text-3xl font-bold text-greige-900">施設一覧</h1>
-    <%= new_button "新しい施設を登録", new_facility_path %>
+<div class="py-6 sm:py-8">
+  <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between mb-6">
+    <h1 class="text-2xl sm:text-3xl font-bold text-greige-900">施設一覧</h1>
+    <div><%= new_button "新しい施設を登録", new_facility_path %></div>
   </div>
 
   <% if notice %>
@@ -11,7 +11,35 @@
   <% end %>
 
   <% if @facilities.any? %>
-    <div class="bg-white shadow-md rounded">
+    <!-- スマホ・タブレット: カード表示（タブレットは2カラム） -->
+    <div class="lg:hidden space-y-3 md:space-y-0 md:grid md:grid-cols-2 md:gap-3">
+      <% @facilities.each do |facility| %>
+        <div class="bg-white shadow-sm border border-greige-200 rounded-lg p-4 flex flex-col">
+          <%= link_to facility.name, facility, class: "text-base font-semibold text-accent-primary hover:text-accent-primary/80 transition-colors break-words" %>
+          <dl class="mt-3 space-y-1 text-sm text-greige-700">
+            <div class="flex gap-2">
+              <dt class="shrink-0 text-greige-500">住所</dt>
+              <dd class="break-words"><%= facility.address.presence || '—' %></dd>
+            </div>
+            <div class="flex gap-2">
+              <dt class="shrink-0 text-greige-500">電話</dt>
+              <dd class="break-all"><%= facility.phone.presence || '—' %></dd>
+            </div>
+            <div class="flex gap-2">
+              <dt class="shrink-0 text-greige-500">メール</dt>
+              <dd class="break-all"><%= facility.email.presence || '—' %></dd>
+            </div>
+          </dl>
+          <div class="mt-4 md:mt-auto md:pt-4 flex flex-wrap gap-2">
+            <%= show_button "表示", facility %>
+            <%= edit_button "編集", edit_facility_path(facility) %>
+          </div>
+        </div>
+      <% end %>
+    </div>
+
+    <!-- デスクトップ(lg以上): テーブル表示 -->
+    <div class="hidden lg:block bg-white shadow-md rounded overflow-x-auto">
       <table class="min-w-full">
         <thead class="bg-greige-50">
           <tr>
@@ -29,7 +57,7 @@
                 <%= link_to facility.name, facility, class: "text-accent-primary hover:text-accent-primary/80 transition-colors" %>
               </td>
               <td class="px-6 py-4"><%= facility.address %></td>
-              <td class="px-6 py-4"><%= facility.phone %></td>
+              <td class="px-6 py-4 whitespace-nowrap"><%= facility.phone %></td>
               <td class="px-6 py-4"><%= facility.email %></td>
               <td class="px-6 py-4 whitespace-nowrap text-sm space-x-2">
                 <%= show_button "表示", facility %>

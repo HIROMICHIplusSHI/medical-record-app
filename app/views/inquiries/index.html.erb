@@ -1,11 +1,38 @@
-<div class="container mx-auto px-4 py-8">
-  <div class="flex justify-between items-center mb-6">
-    <h1 class="text-3xl font-bold text-greige-900">お問い合わせ一覧</h1>
-    <%= new_button "新規お問い合わせ", new_inquiry_path %>
+<div class="py-6 sm:py-8">
+  <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between mb-6">
+    <h1 class="text-2xl sm:text-3xl font-bold text-greige-900">お問い合わせ一覧</h1>
+    <div><%= new_button "新規お問い合わせ", new_inquiry_path %></div>
   </div>
 
   <% if @inquiries.any? %>
-    <div class="bg-white shadow-md rounded">
+    <%# 未読判定はクエリを伴うため、カード表示とテーブル表示で二重に発行しないよう先に評価しておく %>
+    <% unread_indicators = @inquiries.index_with { |i| unread_indicator_for(i, current_user) } %>
+    <!-- スマホ・タブレット: カード表示（タブレットは2カラム） -->
+    <div class="lg:hidden space-y-3 md:space-y-0 md:grid md:grid-cols-2 md:gap-3">
+      <% @inquiries.each do |inquiry| %>
+        <div class="bg-white shadow-sm border border-greige-200 rounded-lg p-4 flex flex-col">
+          <div class="flex items-start gap-2">
+            <span class="shrink-0 mt-1"><%= unread_indicators[inquiry] %></span>
+            <%= link_to inquiry.subject, inquiry_path(inquiry), class: "text-base font-semibold text-accent-primary hover:text-accent-primary/80 transition-colors break-words" %>
+          </div>
+          <div class="mt-3 flex flex-wrap items-center gap-2">
+            <span class="px-2 py-1 text-xs font-medium rounded-full bg-greige-100 text-greige-800">
+              <%= inquiry.category_i18n %>
+            </span>
+            <span class="px-2 py-1 text-xs font-medium rounded-full <%= inquiry.open? ? 'bg-blue-100 text-blue-800' : inquiry.in_progress? ? 'bg-accent-warning/10 text-accent-warning/90' : 'bg-greige-100 text-greige-800' %>">
+              <%= inquiry.status_i18n %>
+            </span>
+            <span class="text-xs text-greige-500"><%= l(inquiry.updated_at, format: :short) %></span>
+          </div>
+          <div class="mt-4 md:mt-auto md:pt-4">
+            <%= show_button "表示", inquiry_path(inquiry) %>
+          </div>
+        </div>
+      <% end %>
+    </div>
+
+    <!-- デスクトップ(lg以上): テーブル表示 -->
+    <div class="hidden lg:block bg-white shadow-md rounded overflow-x-auto">
       <table class="min-w-full">
         <thead class="bg-greige-50">
           <tr>
@@ -21,7 +48,7 @@
           <% @inquiries.each do |inquiry| %>
             <tr>
               <td class="px-3 py-4 text-center">
-                <%= unread_indicator_for(inquiry, current_user) %>
+                <%= unread_indicators[inquiry] %>
               </td>
               <td class="px-6 py-4">
                 <%= link_to inquiry.subject, inquiry_path(inquiry), class: "text-accent-primary hover:text-accent-primary/80 transition-colors" %>
@@ -36,7 +63,7 @@
                   <%= inquiry.status_i18n %>
                 </span>
               </td>
-              <td class="px-6 py-4 text-sm text-greige-500">
+              <td class="px-6 py-4 text-sm text-greige-500 whitespace-nowrap">
                 <%= l(inquiry.updated_at, format: :short) %>
               </td>
               <td class="px-6 py-4 whitespace-nowrap text-sm">

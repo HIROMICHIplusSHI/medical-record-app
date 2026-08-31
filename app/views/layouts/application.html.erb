@@ -22,7 +22,7 @@
   <body class="bg-greige-50 min-h-screen flex flex-col">
     <%= render 'shared/header' if user_signed_in? %>
 
-    <main class="<%= user_signed_in? ? 'mt-4' : 'mt-28' %> container mx-auto px-5 flex-grow">
+    <main class="<%= user_signed_in? ? 'mt-4' : 'mt-28' %> container mx-auto px-4 sm:px-6 lg:px-8 flex-grow">
       <%= render 'shared/flash' %>
       <%= yield %>
     </main>
