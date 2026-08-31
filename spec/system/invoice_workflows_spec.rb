@@ -3,7 +3,7 @@ require 'rails_helper'
 RSpec.describe '請求書管理ワークフロー', type: :system do
   let(:user) { create(:user) }
   let!(:facility) { create(:facility, user: user, name: 'テスト施設') }
-  let!(:patient) { create(:patient) }
+  let!(:patient) { create(:patient, user: user) }
 
   before do
     login_as user

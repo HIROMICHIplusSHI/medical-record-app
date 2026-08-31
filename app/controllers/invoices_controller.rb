@@ -20,7 +20,7 @@ class InvoicesController < ApplicationController
 
   def new
     @invoice = Invoice.new
-    @facilities = Facility.order(:name)
+    @facilities = current_user.facilities.by_name
   end
 
   def create
@@ -28,20 +28,20 @@ class InvoicesController < ApplicationController
     if save_invoice_with_items
       redirect_to @invoice, notice: '請求書を作成しました。'
     else
-      @facilities = Facility.order(:name)
+      @facilities = current_user.facilities.by_name
       render :new, status: :unprocessable_entity
     end
   end
 
   def edit
-    @facilities = Facility.order(:name)
+    @facilities = current_user.facilities.by_name
   end
 
   def update
     if @invoice.update(invoice_params.except(:facility_id))
       redirect_to @invoice, notice: '請求書を更新しました。'
     else
-      @facilities = Facility.order(:name)
+      @facilities = current_user.facilities.by_name
       render :edit, status: :unprocessable_entity
     end
   end
