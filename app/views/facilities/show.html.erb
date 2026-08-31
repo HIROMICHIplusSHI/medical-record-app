@@ -1,7 +1,7 @@
-<div class="container mx-auto px-4 py-8">
-  <div class="flex justify-between items-center mb-6">
-    <h1 class="text-3xl font-bold text-greige-900">施設詳細</h1>
-    <div class="flex space-x-3">
+<div class="py-6 sm:py-8">
+  <div class="flex flex-col items-start gap-3 sm:flex-row sm:items-center sm:justify-between mb-6">
+    <h1 class="text-2xl sm:text-3xl font-bold text-greige-900">施設詳細</h1>
+    <div class="flex flex-wrap gap-2 sm:gap-3">
       <%= edit_button "編集", edit_facility_path(@facility) %>
       <%= back_button "一覧に戻る", facilities_path %>
     </div>

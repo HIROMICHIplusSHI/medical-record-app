@@ -1,11 +1,33 @@
-<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-  <div class="flex justify-between items-center mb-6">
-    <h1 class="text-3xl font-bold text-greige-900">コストシート管理</h1>
-    <%= new_button "新規作成", new_cost_sheet_path %>
+<div class="max-w-7xl mx-auto py-6 sm:py-8">
+  <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between mb-6">
+    <h1 class="text-2xl sm:text-3xl font-bold text-greige-900">コストシート管理</h1>
+    <div><%= new_button "新規作成", new_cost_sheet_path %></div>
   </div>
 
   <% if @cost_sheets.any? %>
-    <div class="bg-white shadow-md rounded-lg overflow-hidden">
+    <!-- スマホ・タブレット: カード表示（タブレットは2カラム） -->
+    <div class="lg:hidden space-y-3 md:space-y-0 md:grid md:grid-cols-2 md:gap-3">
+      <% @cost_sheets.each do |cost_sheet| %>
+        <div class="bg-white shadow-sm border border-greige-200 rounded-lg p-4 flex flex-col">
+          <div class="flex items-start justify-between gap-3">
+            <div class="text-base font-semibold text-greige-900 break-words"><%= cost_sheet.item_name %></div>
+            <span class="shrink-0 px-2 py-0.5 inline-flex text-xs leading-5 font-semibold rounded-full bg-blue-100 text-blue-800">
+              <%= cost_sheet.category_name %>
+            </span>
+          </div>
+          <p class="mt-2 text-lg font-bold text-greige-900">¥<%= number_with_delimiter(cost_sheet.standard_price) %></p>
+          <% if cost_sheet.memo.present? %>
+            <p class="mt-2 text-sm text-greige-500 break-words"><%= truncate(cost_sheet.memo, length: 80) %></p>
+          <% end %>
+          <div class="mt-4 md:mt-auto md:pt-4">
+            <%= edit_button "編集", edit_cost_sheet_path(cost_sheet) %>
+          </div>
+        </div>
+      <% end %>
+    </div>
+
+    <!-- デスクトップ(lg以上): テーブル表示 -->
+    <div class="hidden lg:block bg-white shadow-md rounded-lg overflow-x-auto">
       <table class="min-w-full divide-y divide-greige-200">
         <thead class="bg-greige-50">
           <tr>

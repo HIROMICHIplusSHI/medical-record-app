@@ -1,49 +1,51 @@
-<div class="container mx-auto px-4 py-8">
-  <div class="flex justify-between items-center mb-6">
-    <h1 class="text-3xl font-bold text-greige-900">売上ダッシュボード</h1>
-    <%= link_to "CSV出力", export_dashboard_path(format: :csv, start_date: @start_date, end_date: @end_date),
-                class: "bg-accent-success text-white px-4 py-2 rounded-md hover:bg-accent-success/90 transition-colors" %>
+<div class="py-6 sm:py-8">
+  <div class="flex flex-col gap-3 sm:flex-row sm:justify-between sm:items-center mb-6">
+    <h1 class="text-2xl sm:text-3xl font-bold text-greige-900">売上ダッシュボード</h1>
+    <div>
+      <%= link_to "CSV出力", export_dashboard_path(format: :csv, start_date: @start_date, end_date: @end_date),
+                  class: "inline-block whitespace-nowrap bg-accent-success text-white px-4 py-2 rounded-md hover:bg-accent-success/90 transition-colors" %>
+    </div>
   </div>
 
   <!-- 期間選択フォーム -->
-  <div class="bg-white rounded-lg shadow-sm border border-greige-200 p-6 mb-6">
-    <%= form_with url: revenue_dashboard_path, method: :get, local: true, class: "flex gap-4 items-end" do |f| %>
-      <div>
+  <div class="bg-white rounded-lg shadow-sm border border-greige-200 p-4 sm:p-6 mb-6">
+    <%= form_with url: revenue_dashboard_path, method: :get, local: true, class: "flex flex-col gap-3 sm:flex-row sm:gap-4 sm:items-end" do |f| %>
+      <div class="min-w-0 sm:flex-1">
         <%= f.label :start_date, "開始日", class: "block text-sm font-medium text-greige-700 mb-1" %>
-        <%= f.date_field :start_date, value: @start_date, class: "border border-greige-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-accent-primary focus:border-transparent" %>
+        <%= f.date_field :start_date, value: @start_date, class: "w-full border border-greige-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-accent-primary focus:border-transparent" %>
       </div>
-      <div>
+      <div class="min-w-0 sm:flex-1">
         <%= f.label :end_date, "終了日", class: "block text-sm font-medium text-greige-700 mb-1" %>
-        <%= f.date_field :end_date, value: @end_date, class: "border border-greige-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-accent-primary focus:border-transparent" %>
+        <%= f.date_field :end_date, value: @end_date, class: "w-full border border-greige-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-accent-primary focus:border-transparent" %>
       </div>
-      <%= f.submit "表示", class: "bg-accent-primary text-white px-6 py-2 rounded-md hover:bg-accent-primary/90 transition-colors cursor-pointer" %>
+      <%= f.submit "表示", class: "w-full sm:w-auto shrink-0 bg-accent-primary text-white px-6 py-2 rounded-md hover:bg-accent-primary/90 transition-colors cursor-pointer" %>
     <% end %>
   </div>
 
   <!-- 総売上 -->
-  <div class="bg-white rounded-lg shadow-sm border border-greige-200 p-6 mb-6">
+  <div class="bg-white rounded-lg shadow-sm border border-greige-200 p-4 sm:p-6 mb-6">
     <h2 class="text-xl font-bold text-greige-900 mb-4">期間売上</h2>
     <p class="text-sm text-greige-600 mb-2">
       <%= @start_date.strftime("%Y年%m月%d日") %> 〜 <%= @end_date.strftime("%Y年%m月%d日") %>
     </p>
-    <p class="text-4xl font-bold text-accent-primary">
+    <p class="text-3xl sm:text-4xl font-bold text-accent-primary">
       ¥<%= number_with_delimiter(@total_revenue.to_i) %>
     </p>
   </div>
 
   <!-- 施設別売上 -->
-  <div class="bg-white rounded-lg shadow-sm border border-greige-200 p-6 mb-6">
+  <div class="bg-white rounded-lg shadow-sm border border-greige-200 p-4 sm:p-6 mb-6">
     <h2 class="text-xl font-bold text-greige-900 mb-4">施設別売上</h2>
     <div class="space-y-2">
       <% @facility_data.each do |facility| %>
         <div data-controller="accordion" class="border border-greige-200 rounded-lg">
           <!-- 施設行（クリック可能） -->
-          <div class="px-6 py-4 cursor-pointer hover:bg-greige-50 transition-colors flex justify-between items-center"
+          <div class="px-4 sm:px-6 py-4 cursor-pointer hover:bg-greige-50 transition-colors flex justify-between items-center gap-3"
                data-action="click->accordion#toggle">
-            <div class="flex-1">
-              <span class="text-sm font-medium text-greige-900"><%= facility.name %></span>
+            <div class="flex-1 min-w-0">
+              <span class="text-sm font-medium text-greige-900 break-words"><%= facility.name %></span>
             </div>
-            <div class="flex items-center gap-4">
+            <div class="flex items-center gap-2 sm:gap-4 shrink-0">
               <span class="text-sm text-greige-900">¥<%= number_with_delimiter(facility.revenue.to_i) %></span>
               <svg class="w-5 h-5 text-greige-400 transform transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
@@ -52,8 +54,8 @@
           </div>
 
           <!-- 詳細情報（アコーディオン） -->
-          <div data-accordion-target="content" class="hidden px-6 py-4 bg-greige-50 border-t border-greige-200">
-            <dl class="grid grid-cols-2 gap-4 text-sm">
+          <div data-accordion-target="content" class="hidden px-4 sm:px-6 py-4 bg-greige-50 border-t border-greige-200">
+            <dl class="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm">
               <div>
                 <dt class="text-greige-600 font-medium mb-1">コスト合計</dt>
                 <dd class="text-greige-900">¥<%= number_with_delimiter(facility.total_cost.to_i) %></dd>
@@ -78,27 +80,27 @@
   </div>
 
   <!-- 月次売上 -->
-  <div class="bg-white rounded-lg shadow-sm border border-greige-200 p-6">
+  <div class="bg-white rounded-lg shadow-sm border border-greige-200 p-4 sm:p-6">
     <h2 class="text-xl font-bold text-greige-900 mb-4">月次売上推移</h2>
     <div class="overflow-x-auto">
       <table class="min-w-full divide-y divide-greige-200">
         <thead class="bg-greige-50">
           <tr>
-            <th class="px-6 py-3 text-left text-xs font-medium text-greige-600 uppercase tracking-wider">月</th>
-            <th class="px-6 py-3 text-right text-xs font-medium text-greige-600 uppercase tracking-wider">売上金額</th>
-            <th class="px-6 py-3 text-right text-xs font-medium text-greige-600 uppercase tracking-wider">カルテ件数</th>
+            <th class="px-3 sm:px-6 py-3 text-left text-xs font-medium text-greige-600 uppercase tracking-wider">月</th>
+            <th class="px-3 sm:px-6 py-3 text-right text-xs font-medium text-greige-600 uppercase tracking-wider">売上金額</th>
+            <th class="px-3 sm:px-6 py-3 text-right text-xs font-medium text-greige-600 uppercase tracking-wider">カルテ件数</th>
           </tr>
         </thead>
         <tbody class="bg-white divide-y divide-greige-200">
           <% @monthly_data.each do |data| %>
             <tr class="hover:bg-greige-50 transition-colors">
-              <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-greige-900">
+              <td class="px-3 sm:px-6 py-4 whitespace-nowrap text-sm font-medium text-greige-900">
                 <%= data[:month] %>月
               </td>
-              <td class="px-6 py-4 whitespace-nowrap text-sm text-greige-900 text-right">
+              <td class="px-3 sm:px-6 py-4 whitespace-nowrap text-sm text-greige-900 text-right">
                 ¥<%= number_with_delimiter(data[:revenue].to_i) %>
               </td>
-              <td class="px-6 py-4 whitespace-nowrap text-sm text-greige-900 text-right">
+              <td class="px-3 sm:px-6 py-4 whitespace-nowrap text-sm text-greige-900 text-right">
                 <%= data[:count] %>件
               </td>
             </tr>

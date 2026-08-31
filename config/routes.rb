@@ -74,7 +74,7 @@ Rails.application.routes.draw do
     resource :questionnaire, only: [:new, :create, :show, :edit, :update, :destroy]
   end
   resources :cost_sheets
-  resources :tags
+  resources :tags, except: :show
   resources :medical_records do
     member do
       delete :remove_photo

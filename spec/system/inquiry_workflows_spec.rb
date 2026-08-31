@@ -152,7 +152,7 @@ RSpec.describe 'お問い合わせワークフロー', type: :system do
       visit user_dashboard_path
 
       # デスクトップナビゲーション
-      within('nav.hidden.md\\:flex') do
+      within('nav.hidden.lg\\:flex') do
         expect(page).to have_link('お問い合わせ', href: inquiries_path)
       end
     end

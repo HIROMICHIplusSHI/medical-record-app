@@ -229,7 +229,7 @@ RSpec.describe 'Admin Inquiries Management', type: :system do
       visit admin_root_path
 
       # デスクトップナビゲーション
-      within('nav.hidden.md\\:flex') do
+      within('nav.hidden.lg\\:flex') do
         expect(page).to have_link('お問い合わせ', href: admin_inquiries_path)
       end
     end
@@ -250,7 +250,7 @@ RSpec.describe 'Admin Inquiries Management', type: :system do
 
         visit admin_root_path
 
-        within('nav.hidden.md\\:flex') do
+        within('nav.hidden.lg\\:flex') do
           # バッジが表示されるまで待機
           expect(page).to have_css('.badge', text: '3')
           badge = page.find('.badge', text: '3')

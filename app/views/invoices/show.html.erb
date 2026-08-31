@@ -1,7 +1,7 @@
-<div class="container mx-auto px-4 py-8">
-  <div class="flex justify-between items-center mb-6">
-    <h1 class="text-3xl font-bold text-greige-900">請求書詳細</h1>
-    <div class="flex items-center gap-2">
+<div class="py-6 sm:py-8">
+  <div class="flex flex-col items-start gap-3 sm:flex-row sm:items-center sm:justify-between mb-6">
+    <h1 class="text-2xl sm:text-3xl font-bold text-greige-900">請求書詳細</h1>
+    <div class="flex flex-wrap items-center gap-2">
       <% if @invoice.can_edit? %>
         <%= edit_button "編集", edit_invoice_path(@invoice) %>
       <% end %>
@@ -139,20 +139,22 @@
   </div>
 
   <!-- アクション -->
-  <div class="bg-white shadow-md rounded p-6">
+  <div class="bg-white shadow-md rounded p-4 sm:p-6">
     <h2 class="text-xl font-bold text-greige-900 mb-4">操作</h2>
 
     <!-- PDF生成フォーム -->
     <div class="bg-greige-50 border border-greige-200 rounded-lg p-4 mb-4">
       <h3 class="text-sm font-semibold text-greige-900 mb-3">PDF生成オプション</h3>
 
-      <div class="flex items-center mb-4">
-        <input type="checkbox" id="tax-display-checkbox" <%= 'checked' if @invoice.tax_display %> class="h-4 w-4 text-accent-primary border-greige-300 rounded focus:ring-accent-primary">
-        <label for="tax-display-checkbox" class="ml-2 text-sm text-greige-700">消費税表示を含める</label>
-        <span class="ml-2 text-xs text-greige-500">（チェックすると消費税込みの金額が表示されます）</span>
+      <div class="flex items-start mb-4">
+        <input type="checkbox" id="tax-display-checkbox" <%= 'checked' if @invoice.tax_display %> class="mt-0.5 h-4 w-4 shrink-0 text-accent-primary border-greige-300 rounded focus:ring-accent-primary">
+        <div class="ml-2">
+          <label for="tax-display-checkbox" class="block text-sm text-greige-700">消費税表示を含める</label>
+          <span class="block text-xs text-greige-500">チェックすると消費税込みの金額が表示されます</span>
+        </div>
       </div>
 
-      <div class="flex gap-2">
+      <div class="flex flex-wrap gap-2">
         <%= form_with url: generate_pdf_invoice_path(@invoice), method: :post, local: true, class: "inline" do |f| %>
           <%= hidden_field_tag :tax_display, "", id: "tax-display-hidden" %>
           <%= f.submit "PDF生成", class: "bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-4 rounded shadow", onclick: "document.getElementById('tax-display-hidden').value = document.getElementById('tax-display-checkbox').checked ? '1' : '0';" %>

@@ -1,4 +1,4 @@
-<div class="container mx-auto px-4 py-8">
+<div class="py-6 sm:py-8">
   <div class="mb-6">
     <%= back_button '← 一覧に戻る', consent_form_templates_path %>
   </div>
@@ -40,7 +40,7 @@
       <% end %>
     </div>
 
-    <div class="flex space-x-3">
+    <div class="flex flex-wrap gap-2 sm:gap-3">
       <%= edit_button '編集', edit_consent_form_template_path(@consent_form_template) %>
       <%= delete_button '削除', @consent_form_template, data: { turbo_confirm: '本当に削除しますか？' } %>
     </div>

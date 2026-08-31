@@ -8,15 +8,15 @@
         <% end %>
       </div>
 
-      <!-- デスクトップナビゲーション（md以上で表示） -->
-      <nav class="hidden md:flex items-center space-x-1" role="navigation">
+      <!-- デスクトップナビゲーション（lg以上で表示） -->
+      <nav class="hidden lg:flex items-center space-x-1" role="navigation">
         <% if current_user.admin? %>
           <% badge_count = unread_inquiry_count(current_user) %>
           <%= link_to_nav_item('ダッシュボード', admin_root_path) %>
           <%= link_to_nav_item('ユーザー管理', admin_users_path) %>
           <%= link_to_nav_item('招待コード管理', admin_invitation_codes_path) %>
           <%= link_to_nav_item('お知らせ管理', admin_announcements_path) %>
-          <%= link_to admin_inquiries_path, class: "px-3 py-2 rounded-md text-sm font-medium text-greige-700 hover:text-accent-primary transition-colors #{current_page?(admin_inquiries_path) ? 'bg-greige-100 text-accent-primary' : 'hover:bg-greige-100'}" do %>
+          <%= link_to admin_inquiries_path, class: "whitespace-nowrap px-3 py-2 rounded-md text-sm font-medium text-greige-700 hover:text-accent-primary transition-colors #{current_page?(admin_inquiries_path) ? 'bg-greige-100 text-accent-primary' : 'hover:bg-greige-100'}" do %>
             お問い合わせ
             <% if badge_count > 0 %>
               <span class="ml-1 px-2 py-0.5 text-xs font-semibold rounded-full bg-accent-danger text-white" aria-label="<%= badge_count %>件の未対応お問い合わせ"><%= badge_count %></span>
@@ -31,7 +31,7 @@
           <%= link_to_nav_item('コストシート', cost_sheets_path) %>
           <%= link_to_nav_item('同意書', consent_form_templates_path) %>
           <%= link_to_nav_item('請求書', invoices_path) %>
-          <%= link_to inquiries_path, class: "px-3 py-2 rounded-md text-sm font-medium text-greige-700 hover:text-accent-primary transition-colors #{current_page?(inquiries_path) ? 'bg-greige-100 text-accent-primary' : 'hover:bg-greige-100'}" do %>
+          <%= link_to inquiries_path, class: "whitespace-nowrap px-3 py-2 rounded-md text-sm font-medium text-greige-700 hover:text-accent-primary transition-colors #{current_page?(inquiries_path) ? 'bg-greige-100 text-accent-primary' : 'hover:bg-greige-100'}" do %>
             お問い合わせ
             <% if user_badge_count > 0 %>
               <span class="ml-1 px-2 py-0.5 text-xs font-semibold rounded-full bg-accent-danger text-white" aria-label="<%= user_badge_count %>件の未読お問い合わせ"><%= user_badge_count %></span>
@@ -80,11 +80,11 @@
           </div>
         </div>
 
-        <!-- ハンバーガーメニューボタン（mdより小さい画面で表示） -->
+        <!-- ハンバーガーメニューボタン（lg未満＝スマホ・タブレットで表示） -->
         <button
           type="button"
           data-action="click->header#toggleMobileMenu"
-          class="md:hidden inline-flex items-center justify-center p-2 rounded-md text-greige-700 hover:bg-greige-100 focus:outline-none focus:ring-2 focus:ring-accent-primary"
+          class="lg:hidden inline-flex items-center justify-center p-2 rounded-md text-greige-700 hover:bg-greige-100 focus:outline-none focus:ring-2 focus:ring-accent-primary"
         >
           <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
@@ -94,10 +94,10 @@
     </div>
   </div>
 
-  <!-- モバイルメニュー（mdより小さい画面で表示） -->
+  <!-- モバイルメニュー（lg未満＝スマホ・タブレットで表示） -->
   <nav
     data-header-target="mobileMenu"
-    class="md:hidden hidden bg-white border-t border-greige-200"
+    class="lg:hidden hidden bg-white border-t border-greige-200"
     role="navigation"
   >
     <div class="px-2 pt-2 pb-3 space-y-1">
