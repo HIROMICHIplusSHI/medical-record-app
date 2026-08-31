@@ -1,0 +1,56 @@
+<%# 患者詳細に並べる施術履歴セクション（直近 N 件 + 全件への導線） %>
+<div class="mt-6 pt-6 border-t border-greige-200">
+  <div class="flex flex-col items-start gap-3 sm:flex-row sm:items-center sm:justify-between mb-4">
+    <h2 class="text-xl font-bold text-greige-900">
+      施術履歴
+      <% if medical_records_count.positive? %>
+        <span class="ml-2 text-sm font-normal text-greige-600">全<%= medical_records_count %>件</span>
+      <% end %>
+    </h2>
+    <%= new_button "施術記録を追加", new_patient_medical_record_path(patient) %>
+  </div>
+
+  <% if recent_medical_records.any? %>
+    <ul class="space-y-3">
+      <% recent_medical_records.each do |record| %>
+        <li class="border border-greige-200 rounded-lg p-4 hover:bg-greige-50 transition-colors">
+          <div class="flex flex-col gap-1 sm:flex-row sm:items-start sm:justify-between">
+            <span class="text-base font-semibold text-greige-900">
+              <%= l(record.visit_date, format: :long) %>
+            </span>
+            <span class="text-sm text-greige-600 break-words"><%= record.facility.name %></span>
+          </div>
+
+          <% if record.treatment_content.present? %>
+            <p class="mt-2 text-sm text-greige-700 break-words">
+              <%= truncate(record.treatment_content, length: 100) %>
+            </p>
+          <% end %>
+
+          <% if record.tags.any? %>
+            <div class="mt-3 flex flex-wrap gap-1">
+              <% record.tags.each do |tag| %>
+                <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium"
+                      style="background-color: <%= tag.color %>20; color: <%= tag.color %>;">
+                  <%= tag.name %>
+                </span>
+              <% end %>
+            </div>
+          <% end %>
+
+          <div class="mt-3">
+            <%= show_button "詳細", record %>
+          </div>
+        </li>
+      <% end %>
+    </ul>
+
+    <div class="mt-4">
+      <%= link_to "すべての施術履歴を見る（全#{medical_records_count}件）",
+                  patient_medical_records_path(patient),
+                  class: "text-sm font-medium text-accent-primary hover:underline" %>
+    </div>
+  <% else %>
+    <p class="text-greige-600">まだ施術記録がありません。</p>
+  <% end %>
+</div>

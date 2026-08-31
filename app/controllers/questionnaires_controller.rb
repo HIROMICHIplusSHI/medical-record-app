@@ -7,7 +7,7 @@ class QuestionnairesController < ApplicationController
   USE_CHECKBOX_UI = true
 
   def new
-    # カルテからの遷移の場合、セッションに保存
+    # 施術記録からの遷移の場合、セッションに保存
     store_return_medical_record_id
 
     # 予約時に入力された患者情報を事前入力（編集可能）
@@ -39,7 +39,7 @@ class QuestionnairesController < ApplicationController
   end
 
   def show
-    # カルテからの遷移の場合、セッションに保存
+    # 施術記録からの遷移の場合、セッションに保存
     store_return_medical_record_id
 
     redirect_to new_patient_questionnaire_path(@patient), alert: '問診票が見つかりません。' unless @questionnaire
@@ -216,12 +216,12 @@ class QuestionnairesController < ApplicationController
     end
   end
 
-  # カルテからの遷移の場合、セッションに保存
+  # 施術記録からの遷移の場合、セッションに保存
   def store_return_medical_record_id
     return unless params[:from_medical_record_id].present?
 
     medical_record_id = params[:from_medical_record_id].to_i
-    # セキュリティチェック: 現在のユーザーのカルテかどうか確認
+    # セキュリティチェック: 現在のユーザーの施術記録かどうか確認
     medical_record = current_user.medical_records.find_by(id: medical_record_id)
     session[:return_to_medical_record_id] = medical_record.id if medical_record
   end

@@ -1,0 +1,17 @@
+<%# パンくずリスト。items は [[表示名, パス], ...]（末尾はパス nil で現在地） %>
+<nav aria-label="パンくず" class="mb-4">
+  <ol class="flex flex-wrap items-center gap-x-2 gap-y-1 text-sm text-greige-600">
+    <% items.each_with_index do |(label, path), index| %>
+      <li class="flex items-center gap-x-2">
+        <% if index.positive? %>
+          <span aria-hidden="true" class="text-greige-400">/</span>
+        <% end %>
+        <% if path %>
+          <%= link_to label, path, class: "hover:text-accent-primary hover:underline" %>
+        <% else %>
+          <span aria-current="page" class="font-medium text-greige-900"><%= label %></span>
+        <% end %>
+      </li>
+    <% end %>
+  </ol>
+</nav>

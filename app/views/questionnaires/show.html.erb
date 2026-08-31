@@ -1,10 +1,12 @@
 <div class="py-6 sm:py-8">
   <div class="max-w-4xl mx-auto">
+    <%= patient_breadcrumb @patient, '問診票' %>
+
     <div class="flex flex-col items-start gap-3 sm:flex-row sm:items-center sm:justify-between mb-6">
       <h1 class="text-2xl sm:text-3xl font-bold text-greige-900">問診票</h1>
       <div class="flex flex-wrap gap-2 sm:gap-3">
         <% if session[:return_to_medical_record_id].present? %>
-          <%= back_button "元のカルテに戻る", medical_record_path(session[:return_to_medical_record_id]) %>
+          <%= back_button "元の施術記録に戻る", medical_record_path(session[:return_to_medical_record_id]) %>
         <% end %>
         <%= edit_button "編集", edit_patient_questionnaire_path(@patient) %>
         <%= cancel_button "患者詳細に戻る", patient_path(@patient) %>

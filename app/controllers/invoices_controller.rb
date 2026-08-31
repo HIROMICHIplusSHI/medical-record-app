@@ -5,6 +5,8 @@ class InvoicesController < ApplicationController
 
   def index
     @q = current_user.invoices.ransack(params[:q])
+    # 検索フォームの施設選択肢。ビュー内で Facility を直接引かない（他ユーザーの施設が並ぶため）
+    @facilities = current_user.facilities.by_name
     @invoices = @q.result
                   .includes(:facility)
                   .recent
@@ -20,7 +22,7 @@ class InvoicesController < ApplicationController
 
   def new
     @invoice = Invoice.new
-    @facilities = Facility.order(:name)
+    @facilities = current_user.facilities.by_name
   end
 
   def create
@@ -28,20 +30,20 @@ class InvoicesController < ApplicationController
     if save_invoice_with_items
       redirect_to @invoice, notice: '請求書を作成しました。'
     else
-      @facilities = Facility.order(:name)
+      @facilities = current_user.facilities.by_name
       render :new, status: :unprocessable_entity
     end
   end
 
   def edit
-    @facilities = Facility.order(:name)
+    @facilities = current_user.facilities.by_name
   end
 
   def update
     if @invoice.update(invoice_params.except(:facility_id))
       redirect_to @invoice, notice: '請求書を更新しました。'
     else
-      @facilities = Facility.order(:name)
+      @facilities = current_user.facilities.by_name
       render :edit, status: :unprocessable_entity
     end
   end
@@ -129,11 +131,11 @@ class InvoicesController < ApplicationController
       # 既存の明細を削除
       @invoice.invoice_items.destroy_all
 
-      # 期間内のカルテから明細を再作成
+      # 期間内の施術記録から明細を再作成
       medical_records_count = create_invoice_items_from_medical_records
 
-      # カルテが0件の場合はロールバックしてエラー表示
-      raise ActiveRecord::Rollback, '該当期間にカルテが見つかりません。' if medical_records_count.zero?
+      # 施術記録が0件の場合はロールバックしてエラー表示
+      raise ActiveRecord::Rollback, '該当期間に施術記録が見つかりません。' if medical_records_count.zero?
     end
 
     redirect_to @invoice, notice: '請求明細を更新しました。'
@@ -160,7 +162,7 @@ class InvoicesController < ApplicationController
       return false unless @invoice.save
 
       medical_records_count = create_invoice_items_from_medical_records
-      raise ActiveRecord::Rollback, '該当期間にカルテが見つかりません。' if medical_records_count.zero?
+      raise ActiveRecord::Rollback, '該当期間に施術記録が見つかりません。' if medical_records_count.zero?
 
       true
     end
@@ -179,7 +181,7 @@ class InvoicesController < ApplicationController
     )
   end
 
-  # 該当期間・施設のカルテから請求明細を自動作成
+  # 該当期間・施設の施術記録から請求明細を自動作成
   # @return [Integer] 作成した明細の件数
   def create_invoice_items_from_medical_records
     medical_records = MedicalRecord

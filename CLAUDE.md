@@ -42,11 +42,12 @@ Patient            # belongs_to :user。has_one :questionnaire（暗号化）
                    #   has_many :medical_records。個人情報は暗号化
 Facility           # belongs_to :user。has_many :medical_records, :invoices
                    #   has_many :facility_doctors
-MedicalRecord      # belongs_to :user, :patient, :facility
+MedicalRecord      # 1来院分の「施術記録」（UI表記=施術記録 / その集合=施術履歴）
+                   # belongs_to :user, :patient, :facility
                    #   has_many :cost_items, :invoice_items, :patient_consents
                    #   has_many :tags (through)。has_many_attached :photos
 Invoice            # belongs_to :user, :facility。has_many :invoice_items
-CostSheet          # コストテンプレ。CostItem がカルテ明細
+CostSheet          # コストテンプレ。CostItem が施術記録の明細
 ConsentFormTemplate / PatientConsent  # 同意書テンプレ + 電子署名付き作成
 Announcement / Inquiry / InvitationCode  # お知らせ / 問い合わせ / 招待コード
 ```

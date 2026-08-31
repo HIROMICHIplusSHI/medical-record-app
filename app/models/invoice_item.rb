@@ -14,7 +14,7 @@ class InvoiceItem < ApplicationRecord
 
   # Instance Methods
 
-  # カルテの基本情報を返す
+  # 施術記録の基本情報を返す
   def medical_record_info
     "#{medical_record.patient.name} (#{medical_record.visit_date})"
   end

@@ -81,7 +81,7 @@ RSpec.describe 'Admin Users Management', type: :system do
       visit admin_user_path(user)
 
       # カルテ数
-      expect(page).to have_content('カルテ数')
+      expect(page).to have_content('施術記録数')
       expect(page).to have_content('1')
 
       # 患者数

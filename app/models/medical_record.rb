@@ -21,6 +21,7 @@ class MedicalRecord < ApplicationRecord
   validates :visit_date, presence: true
   validates :treatment_content, presence: true
   validate :photos_count_limit
+  validate :associations_belong_to_same_user
   validate :photos_size_limit
 
   # コールバック
@@ -75,7 +76,7 @@ class MedicalRecord < ApplicationRecord
 
       records_in_month = in_period(start_date, end_date).includes(:facility, :cost_items)
 
-      # 各カルテの請求割合適用済み売上を計算
+      # 各施術記録の請求割合適用済み売上を計算
       revenue = records_in_month.sum do |record|
         total_cost = record.cost_items.sum(&:total_price)
         billing_rate = record.facility.billing_rate.presence || 100.0
@@ -106,6 +107,14 @@ class MedicalRecord < ApplicationRecord
   end
 
   private
+
+  # 施術記録・患者・施設は同一ユーザーに属していなければならない。
+  # user_id だけ current_user に束縛しても、patient_id / facility_id は
+  # リクエストボディから素通しできてしまうため、モデル側を最終防衛線にする。
+  def associations_belong_to_same_user
+    errors.add(:patient_id, 'が不正です') if patient && patient.user_id != user_id
+    errors.add(:facility_id, 'が不正です') if facility && facility.user_id != user_id
+  end
 
   def photos_count_limit
     return unless photos.attached?

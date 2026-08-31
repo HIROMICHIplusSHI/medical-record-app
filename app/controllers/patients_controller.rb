@@ -1,4 +1,7 @@
 class PatientsController < ApplicationController
+  # 患者詳細に並べる施術履歴の表示件数（超過分は施術履歴一覧へ誘導する）
+  RECENT_MEDICAL_RECORDS_LIMIT = 5
+
   before_action :authenticate_user!
   before_action :set_patient, only: %i[show edit update destroy]
 
@@ -8,7 +11,15 @@ class PatientsController < ApplicationController
     @patients = Kaminari.paginate_array(@patients).page(params[:page]).per(25)
   end
 
-  def show; end
+  def show
+    # 患者だけでなく施術記録側も current_user 起点にする。
+    # patient 経由だけだと、他ユーザーが作成した記録まで拾ってしまう。
+    records = current_user.medical_records.where(patient_id: @patient.id)
+    @recent_medical_records = records.includes(:facility, :tags)
+                                     .recent
+                                     .limit(RECENT_MEDICAL_RECORDS_LIMIT)
+    @medical_records_count = records.count
+  end
 
   def new
     @patient = current_user.patients.build

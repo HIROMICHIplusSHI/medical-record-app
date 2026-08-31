@@ -9,6 +9,9 @@ RSpec.describe 'patients/show.html.erb', type: :view do
   before do
     sign_in user
     assign(:patient, patient)
+    # PatientsController#show が用意する施術履歴セクション用の値
+    assign(:recent_medical_records, patient.medical_records.recent.limit(5))
+    assign(:medical_records_count, patient.medical_records.count)
   end
 
   context '問診票が存在する場合' do

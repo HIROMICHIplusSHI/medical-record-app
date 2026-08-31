@@ -1,4 +1,6 @@
 <div class="py-6 sm:py-8">
+  <%= breadcrumb ['お問い合わせ', inquiries_path], @inquiry.subject %>
+
   <div class="flex flex-col items-start gap-3 sm:flex-row sm:items-center sm:justify-between mb-6">
     <h1 class="text-2xl sm:text-3xl font-bold text-greige-900">お問い合わせ詳細</h1>
     <%= back_button "一覧に戻る", inquiries_path %>

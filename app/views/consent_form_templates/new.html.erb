@@ -1,4 +1,6 @@
 <div class="py-6 sm:py-8">
+  <%= breadcrumb ['同意書テンプレート', consent_form_templates_path], '新規作成' %>
+
   <h1 class="text-3xl font-bold text-greige-900 mb-6">同意書テンプレート新規作成</h1>
   <%= render 'form', consent_form_template: @consent_form_template %>
 </div>

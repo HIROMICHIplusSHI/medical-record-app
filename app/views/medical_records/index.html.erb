@@ -1,29 +1,42 @@
 <div class="py-6 sm:py-8">
+  <% if @patient %>
+    <%= patient_breadcrumb @patient, '施術履歴' %>
+  <% end %>
+
   <div class="sm:flex sm:items-center sm:justify-between mb-6">
     <div>
-      <h1 class="text-2xl font-semibold text-greige-900">カルテ一覧</h1>
+      <h1 class="text-2xl font-semibold text-greige-900">
+        <%= @patient ? "#{@patient.name}さんの施術履歴" : "施術履歴" %>
+      </h1>
       <p class="mt-2 text-sm text-greige-700">
-        全<%= @medical_records.total_count %>件のカルテ
+        全<%= @medical_records.total_count %>件の施術記録
       </p>
     </div>
-    <div class="mt-4 sm:mt-0">
-      <%= new_button "新規作成", new_medical_record_path %>
+    <div class="mt-4 flex flex-wrap gap-2 sm:mt-0 sm:gap-3">
+      <% if @patient %>
+        <%= back_button "患者詳細に戻る", patient_path(@patient) %>
+        <%= new_button "施術記録を追加", new_patient_medical_record_path(@patient) %>
+      <% else %>
+        <%= new_button "新規作成", new_medical_record_path %>
+      <% end %>
     </div>
   </div>
 
   <!-- 検索フォーム -->
   <div class="bg-white shadow-sm border border-greige-200 rounded-lg mb-6" data-controller="search-form">
     <div class="px-4 py-5 sm:p-6">
-      <%= search_form_for @q, url: medical_records_path, html: { method: :get, class: 'space-y-4' } do |f| %>
+      <%= search_form_for @q, url: medical_records_scope_path(@patient), html: { method: :get, class: 'space-y-4' } do |f| %>
         <!-- 基本検索（常に表示） -->
         <div class="flex flex-col gap-3 sm:flex-row sm:items-end sm:gap-4">
-          <div class="sm:flex-1">
-            <%= f.label :patient_name_cont, '患者名で検索', class: 'block text-sm font-medium text-greige-700 mb-1' %>
-            <%= f.search_field :patient_name_cont, class: 'block w-full rounded-md border-greige-300 shadow-sm focus:border-accent-primary focus:ring-accent-primary text-base sm:text-sm', placeholder: '患者名を入力...' %>
-          </div>
+          <% unless @patient %>
+            <div class="sm:flex-1">
+              <%= f.label :patient_name_cont, '患者名で検索', class: 'block text-sm font-medium text-greige-700 mb-1' %>
+              <%= f.search_field :patient_name_cont, class: 'block w-full rounded-md border-greige-300 shadow-sm focus:border-accent-primary focus:ring-accent-primary text-base sm:text-sm', placeholder: '患者名を入力...' %>
+            </div>
+          <% end %>
           <div class="flex flex-wrap items-center gap-2">
             <%= search_button '検索' %>
-            <%= clear_button 'クリア', medical_records_path %>
+            <%= clear_button 'クリア', medical_records_scope_path(@patient) %>
             <button type="button" data-action="click->search-form#toggle" class="inline-flex items-center px-4 py-2 border border-greige-300 rounded-md shadow-sm text-sm font-medium text-greige-700 bg-white hover:bg-greige-50 transition-colors">
               <span data-search-form-target="toggleText">詳細検索</span>
             </button>
@@ -74,13 +87,11 @@
               <!-- ソート順 -->
               <div>
                 <%= f.label :s, '並び替え', class: 'block text-sm font-medium text-greige-700' %>
+                <%# 患者スコープでは全件が同一患者なので、患者名での並び替えは出さない %>
                 <%= f.select :s,
-                    [
-                      ['来院日（新しい順）', 'visit_date desc'],
-                      ['来院日（古い順）', 'visit_date asc'],
-                      ['患者名（昇順）', 'patient_name asc'],
-                      ['患者名（降順）', 'patient_name desc']
-                    ],
+                    ([['来院日（新しい順）', 'visit_date desc'], ['来院日（古い順）', 'visit_date asc']] +
+                      (@patient ? [] : [['患者名（昇順）', 'patient_name asc'],
+                                        ['患者名（降順）', 'patient_name desc']])),
                     { selected: f.object.sorts.first&.to_s || 'visit_date desc' },
                     { class: 'mt-1 block w-full rounded-md border-greige-300 shadow-sm focus:border-accent-primary focus:ring-accent-primary sm:text-sm', data: { controller: 'tom-select' } } %>
               </div>
@@ -92,13 +103,17 @@
   </div>
 
   <% if @medical_records.any? %>
-    <!-- スマホ・タブレット: カード表示（タブレットは2カラム） -->
-    <div class="lg:hidden space-y-3 md:space-y-0 md:grid md:grid-cols-2 md:gap-3">
+    <!-- xl 未満（スマホ〜小型デスクトップ）: カード表示（md 以上は2カラム） -->
+    <div class="xl:hidden space-y-3 md:space-y-0 md:grid md:grid-cols-2 md:gap-3">
       <% @medical_records.each do |record| %>
         <div class="bg-white shadow-sm border border-greige-200 rounded-lg p-4 flex flex-col">
           <div class="flex items-start justify-between gap-3">
-            <span class="text-base font-semibold text-greige-900 break-words"><%= record.patient.name %></span>
-            <span class="shrink-0 text-xs text-greige-500"><%= l(record.visit_date, format: :long) %></span>
+            <% if @patient %>
+              <span class="text-base font-semibold text-greige-900"><%= l(record.visit_date, format: :long) %></span>
+            <% else %>
+              <span class="text-base font-semibold text-greige-900 break-words"><%= record.patient.name %></span>
+              <span class="shrink-0 text-xs text-greige-500"><%= l(record.visit_date, format: :long) %></span>
+            <% end %>
           </div>
           <p class="mt-1 text-sm text-greige-600 break-words"><%= record.facility.name %></p>
           <% if record.treatment_content.present? %>
@@ -121,17 +136,19 @@
       <% end %>
     </div>
 
-    <!-- デスクトップ(lg以上): テーブル表示 -->
-    <div class="hidden lg:block bg-white shadow-sm border border-greige-200 rounded-lg rounded-b-none border-b-0">
+    <!-- xl(1280px)以上: テーブル表示。6列あるためこれ未満では窮屈になる -->
+    <div class="hidden xl:block bg-white shadow-sm border border-greige-200 rounded-lg rounded-b-none border-b-0">
       <div class="overflow-x-auto">
         <table class="min-w-full divide-y divide-greige-200">
           <thead class="bg-greige-50">
             <tr>
-              <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-greige-600 uppercase tracking-wider">来院日</th>
-              <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-greige-600 uppercase tracking-wider">患者名</th>
-              <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-greige-600 uppercase tracking-wider">施術場所</th>
-              <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-greige-600 uppercase tracking-wider">施術内容</th>
-              <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-greige-600 uppercase tracking-wider">タグ</th>
+              <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-greige-600 uppercase tracking-wider whitespace-nowrap">来院日</th>
+              <% unless @patient %>
+                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-greige-600 uppercase tracking-wider whitespace-nowrap">患者名</th>
+              <% end %>
+              <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-greige-600 uppercase tracking-wider whitespace-nowrap">施術場所</th>
+              <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-greige-600 uppercase tracking-wider whitespace-nowrap">施術内容</th>
+              <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-greige-600 uppercase tracking-wider whitespace-nowrap">タグ</th>
               <th scope="col" class="relative px-6 py-3">
                 <span class="sr-only">操作</span>
               </th>
@@ -143,9 +160,11 @@
                 <td class="px-6 py-4 whitespace-nowrap text-sm text-greige-900">
                   <%= l(record.visit_date, format: :long) %>
                 </td>
-                <td class="px-6 py-4 whitespace-nowrap text-sm text-greige-900">
-                  <%= record.patient.name %>
-                </td>
+                <% unless @patient %>
+                  <td class="px-6 py-4 whitespace-nowrap text-sm text-greige-900">
+                    <%= record.patient.name %>
+                  </td>
+                <% end %>
                 <td class="px-6 py-4 whitespace-nowrap text-sm text-greige-900">
                   <%= record.facility.name %>
                 </td>
@@ -175,7 +194,7 @@
     </div>
 
     <!-- ページネーション -->
-    <div class="mt-4 lg:mt-0 bg-white px-4 py-3 border border-greige-200 lg:border-t lg:border-x-0 lg:border-b-0 rounded-lg lg:rounded-none lg:rounded-b-lg sm:px-6">
+    <div class="mt-4 xl:mt-0 bg-white px-4 py-3 border border-greige-200 xl:border-t xl:border-x-0 xl:border-b-0 rounded-lg xl:rounded-none xl:rounded-b-lg sm:px-6">
       <div class="flex flex-col items-center gap-3 sm:flex-row sm:justify-between">
         <p class="text-sm text-greige-700">
           全<span class="font-medium"><%= @medical_records.total_count %></span>件中
@@ -190,10 +209,14 @@
       <svg class="mx-auto h-12 w-12 text-greige-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
       </svg>
-      <h3 class="mt-2 text-sm font-medium text-greige-900">カルテがありません</h3>
-      <p class="mt-1 text-sm text-greige-500">最初のカルテを作成してください。</p>
+      <h3 class="mt-2 text-sm font-medium text-greige-900">施術記録がありません</h3>
+      <p class="mt-1 text-sm text-greige-500">最初の施術記録を作成してください。</p>
       <div class="mt-6">
-        <%= new_button "新規作成", new_medical_record_path %>
+        <% if @patient %>
+          <%= new_button "施術記録を追加", new_patient_medical_record_path(@patient) %>
+        <% else %>
+          <%= new_button "新規作成", new_medical_record_path %>
+        <% end %>
       </div>
     </div>
   <% end %>

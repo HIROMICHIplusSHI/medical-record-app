@@ -80,7 +80,7 @@
   </div>
 
   <div class="flex justify-end space-x-3">
-    <%= cancel_button "キャンセル", facilities_path %>
+    <%= cancel_button "キャンセル", facility.persisted? ? facility : facilities_path %>
     <%= form.submit "保存", class: "bg-accent-primary hover:bg-accent-primary/90 text-white font-bold py-2 px-4 rounded transition-colors" %>
   </div>
 <% end %>

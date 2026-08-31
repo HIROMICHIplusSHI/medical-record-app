@@ -22,7 +22,7 @@ RSpec.describe 'Header Navigation', type: :system do
       within('header') do
         # 有効化されたアイテムはlinkとして表示される
         expect(page).to have_link('売上', href: revenue_dashboard_path)
-        expect(page).to have_link('カルテ', href: medical_records_path)
+        expect(page).to have_link('施術履歴', href: medical_records_path)
         expect(page).to have_link('患者', href: patients_path)
         expect(page).to have_link('施術場所', href: facilities_path)
         expect(page).to have_link('コストシート', href: cost_sheets_path)
@@ -42,7 +42,7 @@ RSpec.describe 'Header Navigation', type: :system do
   end
 
   describe '現在ページのハイライト', js: true do
-    it 'カルテページで「カルテ」がハイライトされる' do
+    it '施術履歴ページで「施術履歴」がハイライトされる' do
       visit medical_records_path
 
       within('header') do
@@ -65,15 +65,15 @@ RSpec.describe 'Header Navigation', type: :system do
   end
 
   describe 'ナビゲーションの動作', js: true do
-    it '「カルテ」リンクをクリックするとカルテ一覧に遷移する' do
+    it '「施術履歴」リンクをクリックすると施術履歴に遷移する' do
       visit user_dashboard_path
 
       within('header') do
-        click_link 'カルテ'
+        click_link '施術履歴'
       end
 
       expect(page).to have_current_path(medical_records_path)
-      expect(page).to have_selector('h1', text: 'カルテ一覧')
+      expect(page).to have_selector('h1', text: '施術履歴')
     end
 
     it '「患者」リンクをクリックすると患者一覧に遷移する' do
@@ -161,7 +161,7 @@ RSpec.describe 'Header Navigation', type: :system do
           find('button[data-action="click->header#toggleMobileMenu"]').click
 
           # メニューが表示される
-          expect(page).to have_link('カルテ', visible: :visible)
+          expect(page).to have_link('施術履歴', visible: :visible)
           expect(page).to have_link('患者', visible: :visible)
         end
       end
@@ -184,7 +184,7 @@ RSpec.describe 'Header Navigation', type: :system do
       it 'デスクトップナビゲーションが非表示' do
         visit user_dashboard_path
 
-        expect(page).not_to have_css('header nav[role="navigation"] a', text: 'カルテ', visible: :visible)
+        expect(page).not_to have_css('header nav[role="navigation"] a', text: '施術履歴', visible: :visible)
       end
 
       it 'ハンバーガーメニューをクリックするとメニューが表示される' do
@@ -193,7 +193,7 @@ RSpec.describe 'Header Navigation', type: :system do
         within('header') do
           find('button[data-action="click->header#toggleMobileMenu"]').click
 
-          expect(page).to have_link('カルテ', visible: :visible)
+          expect(page).to have_link('施術履歴', visible: :visible)
           expect(page).to have_link('患者', visible: :visible)
         end
       end
@@ -218,7 +218,7 @@ RSpec.describe 'Header Navigation', type: :system do
         visit user_dashboard_path
 
         within('header nav') do
-          expect(page).to have_link('カルテ', visible: :visible)
+          expect(page).to have_link('施術履歴', visible: :visible)
           expect(page).to have_link('患者', visible: :visible)
         end
       end

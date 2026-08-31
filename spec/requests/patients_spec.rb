@@ -165,6 +165,111 @@ RSpec.describe 'Patients', type: :request do
     end
   end
 
+  describe 'GET /patients/:id の施術履歴セクション' do
+    let(:facility) { create(:facility, user: user) }
+
+    it '患者の施術履歴が表示される' do
+      create(:medical_record, user: user, patient: patient, facility: facility,
+                              visit_date: Date.new(2026, 3, 1), treatment_content: 'アイブロウ施術')
+
+      get patient_path(patient)
+
+      expect(response.body).to include('施術履歴')
+      expect(response.body).to include('アイブロウ施術')
+    end
+
+    it '施術記録が無い場合は空状態を表示する' do
+      get patient_path(patient)
+
+      expect(response.body).to include('まだ施術記録がありません')
+    end
+
+    # 杭: 患者ページには当該患者の施術記録だけが並ぶ（他患者の記録が混ざらない）
+    it '同じユーザーの他患者の施術記録は表示されない' do
+      another_patient = create(:patient, user: user, name: '別患者')
+      create(:medical_record, user: user, patient: another_patient, facility: facility,
+                              treatment_content: '別患者の施術内容')
+
+      get patient_path(patient)
+
+      expect(response.body).not_to include('別患者の施術内容')
+    end
+
+    # 杭1（強化）: 患者が自分のものでも、施術記録の所有者が他ユーザーなら表示しない。
+    # 越境作成されたレコードが被害者の画面に注入されるのを防ぐ。
+    it '他ユーザーが作成した施術記録は表示されない' do
+      foreign_user = create(:user)
+      foreign_facility = create(:facility, user: foreign_user)
+      # 所有者一致のバリデーション導入前に作られた越境データを再現する（多層防御の確認）
+      MedicalRecord.new(user: foreign_user, patient: patient, facility: foreign_facility,
+                        visit_date: Date.current,
+                        treatment_content: '他ユーザーが作成した内容').save(validate: false)
+
+      get patient_path(patient)
+
+      expect(response.body).not_to include('他ユーザーが作成した内容')
+      expect(response.body).to include('まだ施術記録がありません')
+    end
+
+    it '施術履歴は来院日の新しい順に並ぶ' do
+      create(:medical_record, user: user, patient: patient, facility: facility,
+                              visit_date: Date.new(2020, 1, 1), treatment_content: '最も古い施術')
+      create(:medical_record, user: user, patient: patient, facility: facility,
+                              visit_date: Date.new(2026, 1, 1), treatment_content: '最も新しい施術')
+
+      get patient_path(patient)
+
+      expect(response.body.index('最も新しい施術')).to be < response.body.index('最も古い施術')
+    end
+
+    it '表示は最大5件までで、超過分は一覧へ誘導する' do
+      6.times do |i|
+        create(:medical_record, user: user, patient: patient, facility: facility,
+                                visit_date: Date.new(2026, 1, i + 1), treatment_content: "施術#{i + 1}")
+      end
+
+      get patient_path(patient)
+
+      # 新しい順に5件（施術6〜施術2）が出て、最も古い「施術1」は出ない
+      expect(response.body).to include('施術6')
+      expect(response.body).not_to include('施術1<')
+      expect(response.body).to include('全6件')
+    end
+
+    # 杭1の逆方向（混入だけでなく欠落もしない）
+    it '当該患者の施術記録が欠落しない' do
+      3.times do |i|
+        create(:medical_record, user: user, patient: patient, facility: facility,
+                                treatment_content: "欠落確認#{i}")
+      end
+
+      get patient_path(patient)
+
+      3.times { |i| expect(response.body).to include("欠落確認#{i}") }
+    end
+
+    it '施術記録がある場合は施術履歴一覧への導線がある' do
+      create(:medical_record, user: user, patient: patient, facility: facility)
+
+      get patient_path(patient)
+
+      expect(response.body).to include('すべての施術履歴を見る')
+      expect(response.body).to include(patient_medical_records_path(patient))
+    end
+
+    it '施術記録が無い場合は一覧への導線を出さない' do
+      get patient_path(patient)
+
+      expect(response.body).not_to include('すべての施術履歴を見る')
+    end
+
+    it '施術記録の有無によらず施術記録の追加導線がある' do
+      get patient_path(patient)
+
+      expect(response.body).to include(new_patient_medical_record_path(patient))
+    end
+  end
+
   describe 'GET /patients/new' do
     it '正常にレスポンスを返す' do
       get new_patient_path

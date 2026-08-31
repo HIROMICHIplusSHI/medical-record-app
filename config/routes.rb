@@ -72,6 +72,8 @@ Rails.application.routes.draw do
   end
   resources :patients do
     resource :questionnaire, only: [:new, :create, :show, :edit, :update, :destroy]
+    # 患者起点の施術履歴（一覧・患者を指定した新規作成）
+    resources :medical_records, only: [:index, :new]
   end
   resources :cost_sheets
   resources :tags, except: :show

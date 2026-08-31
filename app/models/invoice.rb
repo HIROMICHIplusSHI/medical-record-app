@@ -12,6 +12,7 @@ class Invoice < ApplicationRecord
 
   # Validations
   validates :invoice_number, presence: true, uniqueness: true
+  validate :facility_belongs_to_same_user
   validates :issued_at, presence: true
   validates :billing_period_start, presence: true
   validates :billing_period_end, presence: true
@@ -75,6 +76,12 @@ class Invoice < ApplicationRecord
   end
 
   private
+
+  # 請求書と施設は同一ユーザーに属していなければならない。
+  # 施設は請求書PDFに宛名・住所・電話・請求割合として出力されるため、越境を許すと持ち出される。
+  def facility_belongs_to_same_user
+    errors.add(:facility_id, 'が不正です') if facility && facility.user_id != user_id
+  end
 
   # 請求書番号の自動生成
   # 並行処理対策として悲観的ロック（FOR UPDATE）を使用
